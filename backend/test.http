@@ -1,0 +1,31 @@
+### 회원가입 테스트
+POST http://localhost:8080/api/users/signup
+Content-Type: application/json
+
+{
+  "email": "test@uniwiki.com",
+  "password": "mypassword123",
+  "nickname": "uni_student"
+}
+
+###
+
+### 로그인 테스트 (성공 케이스)
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "test@uniwiki.com",
+  "password": "mypassword123"
+}
+
+###
+
+### 로그인 테스트 (비밀번호 틀림 케이스)
+POST http://localhost:8080/api/users/login
+Content-Type: application/json
+
+{
+  "email": "test@uniwiki.com",
+  "password": "wrongpassword"
+}
