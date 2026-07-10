@@ -164,4 +164,22 @@ public class WikiPostService {
             );
         }
     }
+
+    // 제목 또는 본문으로 위키 문서 검색
+    public List<WikiPostDto.ListResponse> searchWikiPosts(String keyword) {
+
+    // 검색어가 없으면 전체 문서를 반환
+        if (keyword == null || keyword.isBlank()) {
+                return getWikiPosts();
+        }
+        String trimmedKeyword = keyword.trim();
+        return wikiPostRepository
+                .findByTitleContainingOrContentContainingOrderByCreatedAtDesc(
+                    trimmedKeyword,
+                    trimmedKeyword
+                 )
+                .stream()
+                  .map(WikiPostDto.ListResponse::new)
+                  .toList();
+        }
 }
