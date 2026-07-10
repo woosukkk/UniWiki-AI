@@ -75,3 +75,11 @@ ai/data/processed/
 # =========================================================
 *.tmp
 *.temp
+
+# Backend - Gradle
+backend/.gradle/
+backend/build/
+backend/out/
+
+# 직접 내려받은 Gradle 배포 폴더
+backend/gradle-*/

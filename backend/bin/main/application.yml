@@ -1,0 +1,22 @@
+spring:
+  application:
+    name: uniwiki
+
+  datasource:
+    # 사용자 로컬 PC에 설치된 MySQL을 바라보는 설정
+    url: jdbc:mysql://localhost:3306/uniwiki_ai?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true
+    username: root
+    password: "han@1009#"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: none # 이미 스키마(schema.sql)가 있으므로 자동 생성(update) 기능을 끕니다.
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+server:
+  port: 8080
