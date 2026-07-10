@@ -172,4 +172,12 @@ public class WikiPostController {
                     .body(e.getMessage());
         }
     }
+    @Operation(summary = "위키 문서 검색")
+    @GetMapping("/search")
+    public ResponseEntity<List<WikiPostDto.ListResponse>> searchWikiPosts(
+        @RequestParam(required = false) String keyword) {
+                return ResponseEntity.ok(
+                        wikiPostService.searchWikiPosts(keyword)
+                );
+        }
 }
