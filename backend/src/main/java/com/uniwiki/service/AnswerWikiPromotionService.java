@@ -23,6 +23,7 @@ public class AnswerWikiPromotionService {
     private final AnswerWikiPromotionRepository promotionRepository;
     private final CategoryRepository categoryRepository;
     private final WikiPostRepository wikiPostRepository;
+    private final WikiVectorSyncService vectorSyncService;
 
     @Value("${uniwiki.promotion.like-threshold:3}")
     private long likeThreshold;
@@ -54,6 +55,7 @@ public class AnswerWikiPromotionService {
 
         WikiPost savedWikiPost = wikiPostRepository.save(wikiPost);
         promotionRepository.save(new AnswerWikiPromotion(answer, savedWikiPost));
+        vectorSyncService.enqueueUpsert(savedWikiPost);
     }
 
     private Category findPromotionCategory() {

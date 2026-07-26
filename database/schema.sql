@@ -132,3 +132,19 @@ CREATE TABLE answer_wiki_promotions (
         FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id)
         ON DELETE CASCADE
 );
+
+CREATE TABLE wiki_vector_sync_jobs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    wiki_post_id BIGINT NOT NULL,
+    operation ENUM('UPSERT', 'DELETE') NOT NULL,
+    payload LONGTEXT,
+    status ENUM('PENDING', 'COMPLETED', 'FAILED') NOT NULL DEFAULT 'PENDING',
+    attempt_count INT NOT NULL DEFAULT 0,
+    last_error VARCHAR(2000),
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    processed_at DATETIME,
+
+    INDEX idx_vector_sync_retry (status, attempt_count, created_at),
+    INDEX idx_vector_sync_wiki_post (wiki_post_id)
+);
