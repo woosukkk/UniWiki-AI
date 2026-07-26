@@ -5,7 +5,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+
+import java.util.Arrays;
 
 /**
  * 프론트엔드에서 API 요청 시 헤더에 담아보낸 JWT 토큰을 가로채서 검증하는 문지기입니다.
@@ -20,6 +23,11 @@ public class JwtInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         // 프리플라이트(CORS OPTIONS) 요청은 무조건 통과
         if (request.getMethod().equals("OPTIONS")) {
+            return true;
+        }
+
+        if (!(handler instanceof HandlerMethod handlerMethod)
+                || !requiresLogin(handlerMethod)) {
             return true;
         }
 
@@ -46,5 +54,10 @@ public class JwtInterceptor implements HandlerInterceptor {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write("Authorization token is missing");
         return false;
+    }
+
+    private boolean requiresLogin(HandlerMethod handlerMethod) {
+        return Arrays.stream(handlerMethod.getMethodParameters())
+                .anyMatch(parameter -> parameter.hasParameterAnnotation(LoginUserId.class));
     }
 }
