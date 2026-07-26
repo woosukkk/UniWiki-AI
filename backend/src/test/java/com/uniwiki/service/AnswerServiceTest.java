@@ -118,6 +118,50 @@ class AnswerServiceTest {
         verify(answerRepository).delete(answer);
     }
 
+    @Test
+    void questionAuthorAcceptsAnswerAndClosesQuestion() {
+        Answer answer = answer(101L, otherUser, "채택할 답변");
+        when(answerRepository.findById(101L)).thenReturn(Optional.of(answer));
+        when(questionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(question));
+        when(answerRepository.findByQuestion_IdAndAcceptedTrue(10L))
+                .thenReturn(Optional.empty());
+
+        AnswerDto.Response response = answerService.accept(1L, 101L);
+
+        assertThat(response.isAccepted()).isTrue();
+        assertThat(question.getStatus()).isEqualTo(com.uniwiki.entity.QuestionStatus.CLOSED);
+    }
+
+    @Test
+    void rejectsAcceptanceByUserWhoDidNotWriteQuestion() {
+        Answer answer = answer(101L, otherUser, "채택 시도");
+        when(answerRepository.findById(101L)).thenReturn(Optional.of(answer));
+        when(questionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(question));
+
+        assertThatThrownBy(() -> answerService.accept(2L, 101L))
+                .isInstanceOfSatisfying(ResponseStatusException.class, exception ->
+                        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN)
+                );
+        assertThat(answer.isAccepted()).isFalse();
+    }
+
+    @Test
+    void rejectsSecondAcceptedAnswerForQuestion() {
+        Answer answer = answer(101L, otherUser, "새 답변");
+        Answer acceptedAnswer = answer(102L, author, "기존 채택 답변");
+        acceptedAnswer.accept();
+        when(answerRepository.findById(101L)).thenReturn(Optional.of(answer));
+        when(questionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(question));
+        when(answerRepository.findByQuestion_IdAndAcceptedTrue(10L))
+                .thenReturn(Optional.of(acceptedAnswer));
+
+        assertThatThrownBy(() -> answerService.accept(1L, 101L))
+                .isInstanceOfSatisfying(ResponseStatusException.class, exception ->
+                        assertThat(exception.getStatusCode()).isEqualTo(HttpStatus.CONFLICT)
+                );
+        assertThat(answer.isAccepted()).isFalse();
+    }
+
     private User user(Long id, String nickname) {
         return User.builder()
                 .id(id)

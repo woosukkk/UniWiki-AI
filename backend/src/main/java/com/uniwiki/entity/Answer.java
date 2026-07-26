@@ -48,6 +48,10 @@ public class Answer {
         this.content = content;
     }
 
+    public void accept() {
+        this.accepted = true;
+    }
+
     public boolean isAuthor(Long userId) {
         return author.getId().equals(userId);
     }

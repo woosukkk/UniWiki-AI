@@ -66,6 +66,37 @@ public class AnswerService {
         answerRepository.delete(answer);
     }
 
+    @Transactional
+    public AnswerDto.Response accept(Long loginUserId, Long answerId) {
+        Answer answer = findAnswer(answerId);
+        Long questionId = answer.getQuestion().getId();
+        Question question = questionRepository.findByIdForUpdate(questionId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "질문을 찾을 수 없습니다."
+                ));
+
+        if (!question.isAuthor(loginUserId)) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN,
+                    "질문 작성자만 답변을 채택할 수 있습니다."
+            );
+        }
+
+        answerRepository.findByQuestion_IdAndAcceptedTrue(questionId)
+                .filter(acceptedAnswer -> !acceptedAnswer.getId().equals(answerId))
+                .ifPresent(acceptedAnswer -> {
+                    throw new ResponseStatusException(
+                            HttpStatus.CONFLICT,
+                            "이미 채택된 답변이 있습니다."
+                    );
+                });
+
+        answer.accept();
+        question.close();
+        return AnswerDto.Response.from(answer);
+    }
+
     private User findUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(
