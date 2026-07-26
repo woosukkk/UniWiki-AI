@@ -33,6 +33,7 @@ frontend/.vite/
 # =========================================================
 # Backend (Spring Boot / Gradle)
 # =========================================================
+.gradle/
 backend/.gradle/
 backend/build/
 backend/out/

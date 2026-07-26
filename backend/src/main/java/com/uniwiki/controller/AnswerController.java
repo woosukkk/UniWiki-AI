@@ -52,4 +52,12 @@ public class AnswerController {
         answerService.delete(loginUserId, answerId);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/api/answers/{answerId}/accept")
+    public ResponseEntity<AnswerDto.Response> accept(
+            @LoginUserId Long loginUserId,
+            @PathVariable Long answerId
+    ) {
+        return ResponseEntity.ok(answerService.accept(loginUserId, answerId));
+    }
 }
