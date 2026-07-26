@@ -37,6 +37,9 @@ class AnswerWikiPromotionServiceTest {
     @Mock
     private WikiPostRepository wikiPostRepository;
 
+    @Mock
+    private WikiVectorSyncService vectorSyncService;
+
     @InjectMocks
     private AnswerWikiPromotionService promotionService;
 
@@ -86,6 +89,7 @@ class AnswerWikiPromotionServiceTest {
         assertThat(promotionCaptor.getValue().getWikiPost()).isEqualTo(wikiPost);
         assertThat(promotionCaptor.getValue().getStatus())
                 .isEqualTo(AnswerPromotionStatus.COMPLETED);
+        verify(vectorSyncService).enqueueUpsert(wikiPost);
     }
 
     @Test
@@ -96,7 +100,7 @@ class AnswerWikiPromotionServiceTest {
         int promotedCount = promotionService.promoteEligibleAnswers();
 
         assertThat(promotedCount).isZero();
-        verifyNoInteractions(wikiPostRepository, promotionRepository);
+        verifyNoInteractions(wikiPostRepository, promotionRepository, vectorSyncService);
     }
 
     @Test
@@ -106,6 +110,11 @@ class AnswerWikiPromotionServiceTest {
         assertThatThrownBy(() -> promotionService.promoteEligibleAnswers())
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessageContaining("FAQ");
-        verifyNoInteractions(answerRepository, wikiPostRepository, promotionRepository);
+        verifyNoInteractions(
+                answerRepository,
+                wikiPostRepository,
+                promotionRepository,
+                vectorSyncService
+        );
     }
 }
