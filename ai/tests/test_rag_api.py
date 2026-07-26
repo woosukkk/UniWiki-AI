@@ -29,8 +29,8 @@ class FakeLanguageModel:
         return self.answer
 
 
-def search_result(score=0.91):
-    return SemanticSearchResult(chunkId="wiki-7-chunk-0", wikiPostId=7, title="수강신청 안내", content="수강신청은 학교 포털의 수강신청 메뉴에서 진행합니다.", categoryId=2, chunkIndex=0, score=score)
+def search_result(score=0.91, chunk_index=0):
+    return SemanticSearchResult(chunkId=f"wiki-7-chunk-{chunk_index}", wikiPostId=7, title="수강신청 안내", content="수강신청은 학교 포털의 수강신청 메뉴에서 진행합니다.", categoryId=2, chunkIndex=chunk_index, score=score)
 
 
 def override_service(results, language_model=None):
@@ -46,7 +46,19 @@ def test_generates_answer_from_retrieved_wiki_context() -> None:
     response = TestClient(app).post("/api/rag/answers", json={"question": "수강신청은 어디서 하나요?", "categoryId": 2})
     app.dependency_overrides.clear()
     assert response.status_code == 200
-    assert response.json() == {"question": "수강신청은 어디서 하나요?", "answer": "포털의 수강신청 메뉴에서 신청할 수 있습니다.", "grounded": True, "retrievedChunkCount": 1}
+    assert response.json() == {
+        "question": "수강신청은 어디서 하나요?",
+        "answer": "포털의 수강신청 메뉴에서 신청할 수 있습니다.",
+        "grounded": True,
+        "retrievedChunkCount": 1,
+        "sources": [
+            {
+                "wikiPostId": 7,
+                "title": "수강신청 안내",
+                "url": "/api/wiki-posts/7",
+            }
+        ],
+    }
     assert search_service.request.top_k == 4
     assert search_service.request.category_id == 2
     assert "수강신청 안내" in language_model.calls[0][1]
@@ -60,6 +72,26 @@ def test_does_not_call_llm_when_evidence_is_insufficient() -> None:
     assert response.json()["answer"] == INSUFFICIENT_EVIDENCE_ANSWER
     assert response.json()["grounded"] is False
     assert language_model.calls == []
+    assert response.json()["sources"] == []
+
+
+def test_deduplicates_sources_from_chunks_of_the_same_wiki_post() -> None:
+    override_service([search_result(chunk_index=0), search_result(chunk_index=1)])
+    response = TestClient(app).post(
+        "/api/rag/answers",
+        json={"question": "수강신청은 어디서 하나요?"},
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["retrievedChunkCount"] == 2
+    assert response.json()["sources"] == [
+        {
+            "wikiPostId": 7,
+            "title": "수강신청 안내",
+            "url": "/api/wiki-posts/7",
+        }
+    ]
 
 
 def test_returns_service_unavailable_when_api_key_is_missing() -> None:

@@ -13,6 +13,8 @@
 
 Only retrieved chunks at or above `RAG_MIN_SCORE` are passed to the language model. When evidence is insufficient, the API skips the model call and returns `grounded: false`. Set `OPENAI_API_KEY` locally to enable answer generation; never commit the key.
 
+The response includes a deduplicated `sources` list. Each source contains `wikiPostId`, `title`, and a frontend-usable `url` in the form `/api/wiki-posts/{wikiPostId}`. An ungrounded response returns an empty source list.
+
 위키 문서를 청킹하고 다국어 임베딩 벡터를 생성하는 FastAPI 서비스입니다.
 
 ## 로컬 실행

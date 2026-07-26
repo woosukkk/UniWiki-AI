@@ -133,6 +133,14 @@ class RagAnswerRequest(BaseModel):
         return value
 
 
+class RagAnswerSource(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    wiki_post_id: int = Field(alias="wikiPostId")
+    title: str
+    url: str
+
+
 class RagAnswerResponse(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
@@ -140,3 +148,4 @@ class RagAnswerResponse(BaseModel):
     answer: str
     grounded: bool
     retrieved_chunk_count: int = Field(alias="retrievedChunkCount")
+    sources: list[RagAnswerSource]

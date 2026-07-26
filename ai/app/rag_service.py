@@ -2,6 +2,7 @@ from app.llm import LanguageModel
 from app.models import (
     RagAnswerRequest,
     RagAnswerResponse,
+    RagAnswerSource,
     SemanticSearchRequest,
     SemanticSearchResult,
 )
@@ -51,9 +52,10 @@ class RagAnswerService:
                 answer=INSUFFICIENT_EVIDENCE_ANSWER,
                 grounded=False,
                 retrievedChunkCount=0,
+                sources=[],
             )
 
-        context, used_chunk_count = self._build_context(relevant_results)
+        context, used_results = self._build_context(relevant_results)
         answer = self.language_model.generate(
             RAG_INSTRUCTIONS,
             f"질문:\n{request.question}\n\n위키 컨텍스트:\n{context}",
@@ -62,14 +64,16 @@ class RagAnswerService:
             question=request.question,
             answer=answer,
             grounded=True,
-            retrievedChunkCount=used_chunk_count,
+            retrievedChunkCount=len(used_results),
+            sources=self._build_sources(used_results),
         )
 
     def _build_context(
         self,
         results: list[SemanticSearchResult],
-    ) -> tuple[str, int]:
+    ) -> tuple[str, list[SemanticSearchResult]]:
         sections = []
+        used_results = []
         current_length = 0
         for index, result in enumerate(results, start=1):
             section = f"[문서 {index}]\n제목: {result.title}\n내용: {result.content}\n"
@@ -77,5 +81,25 @@ class RagAnswerService:
             if remaining <= 0:
                 break
             sections.append(section[:remaining])
+            used_results.append(result)
             current_length += len(sections[-1])
-        return "\n".join(sections), len(sections)
+        return "\n".join(sections), used_results
+
+    @staticmethod
+    def _build_sources(
+        results: list[SemanticSearchResult],
+    ) -> list[RagAnswerSource]:
+        sources = []
+        seen_wiki_post_ids = set()
+        for result in results:
+            if result.wiki_post_id in seen_wiki_post_ids:
+                continue
+            seen_wiki_post_ids.add(result.wiki_post_id)
+            sources.append(
+                RagAnswerSource(
+                    wikiPostId=result.wiki_post_id,
+                    title=result.title,
+                    url=f"/api/wiki-posts/{result.wiki_post_id}",
+                )
+            )
+        return sources
