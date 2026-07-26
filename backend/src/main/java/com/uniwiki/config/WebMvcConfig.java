@@ -22,8 +22,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtInterceptor)
-                // 아래 경로들에 대해서만 토큰 검사를 수행합니다. (추후 위키 등록 등 API 추가 예정)
-                .addPathPatterns("/api/users/me");
+                .addPathPatterns(
+                        "/api/users/me",
+                        "/api/answers/**"
+                );
     }
 
     @Override
