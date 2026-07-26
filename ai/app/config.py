@@ -23,6 +23,13 @@ class Settings:
         "uniwiki_wiki_chunks",
     )
     search_top_k: int = int(os.getenv("SEARCH_TOP_K", "5"))
+    rag_top_k: int = int(os.getenv("RAG_TOP_K", "5"))
+    rag_min_score: float = float(os.getenv("RAG_MIN_SCORE", "0.35"))
+    rag_max_context_chars: int = int(os.getenv("RAG_MAX_CONTEXT_CHARS", "12000"))
+    openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
+    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-5.6-sol")
+    openai_timeout_seconds: float = float(os.getenv("OPENAI_TIMEOUT_SECONDS", "30"))
+    openai_max_output_tokens: int = int(os.getenv("OPENAI_MAX_OUTPUT_TOKENS", "1000"))
 
     def __post_init__(self) -> None:
         if self.chunk_max_chars < 100:
@@ -31,6 +38,16 @@ class Settings:
             raise ValueError("CHUNK_OVERLAP_CHARS는 청크 크기보다 작아야 합니다.")
         if not 1 <= self.search_top_k <= 50:
             raise ValueError("SEARCH_TOP_K는 1에서 50 사이여야 합니다.")
+        if not 1 <= self.rag_top_k <= 20:
+            raise ValueError("RAG_TOP_K must be between 1 and 20.")
+        if not -1.0 <= self.rag_min_score <= 1.0:
+            raise ValueError("RAG_MIN_SCORE must be between -1 and 1.")
+        if self.rag_max_context_chars < 100:
+            raise ValueError("RAG_MAX_CONTEXT_CHARS must be at least 100.")
+        if self.openai_timeout_seconds <= 0:
+            raise ValueError("OPENAI_TIMEOUT_SECONDS must be positive.")
+        if self.openai_max_output_tokens < 1:
+            raise ValueError("OPENAI_MAX_OUTPUT_TOKENS must be positive.")
 
 
 settings = Settings()

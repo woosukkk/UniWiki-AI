@@ -1,5 +1,18 @@
 # UniWiki AI Service
 
+## RAG answer generation
+
+`POST /api/rag/answers`
+
+```json
+{
+  "question": "수강신청은 어디서 하나요?",
+  "categoryId": 1
+}
+```
+
+Only retrieved chunks at or above `RAG_MIN_SCORE` are passed to the language model. When evidence is insufficient, the API skips the model call and returns `grounded: false`. Set `OPENAI_API_KEY` locally to enable answer generation; never commit the key.
+
 위키 문서를 청킹하고 다국어 임베딩 벡터를 생성하는 FastAPI 서비스입니다.
 
 ## 로컬 실행

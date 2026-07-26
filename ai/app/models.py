@@ -116,3 +116,27 @@ class SemanticSearchResponse(BaseModel):
     top_k: int = Field(alias="topK")
     result_count: int = Field(alias="resultCount")
     results: list[SemanticSearchResult]
+
+
+class RagAnswerRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    question: str = Field(min_length=1, max_length=1000)
+    category_id: int | None = Field(default=None, alias="categoryId", gt=0)
+
+    @field_validator("question")
+    @classmethod
+    def reject_blank_question(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Question must not be blank.")
+        return value
+
+
+class RagAnswerResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    question: str
+    answer: str
+    grounded: bool
+    retrieved_chunk_count: int = Field(alias="retrievedChunkCount")

@@ -1,12 +1,14 @@
 from functools import lru_cache
 
-from fastapi import Depends, FastAPI, Response, status
+from fastapi import Depends, FastAPI, HTTPException, Response, status
 
 from app.config import settings
 from app.embedder import SentenceTransformerEmbedder
 from app.embedding_service import WikiEmbeddingService
 from app.models import (
     HealthResponse,
+    RagAnswerRequest,
+    RagAnswerResponse,
     SemanticSearchRequest,
     SemanticSearchResponse,
     VectorStoreDocumentResponse,
@@ -15,6 +17,13 @@ from app.models import (
     WikiDocumentRequest,
     WikiEmbeddingResponse,
 )
+from app.llm import (
+    LlmConfigurationError,
+    LlmProviderError,
+    LlmTimeoutError,
+    OpenAIResponsesClient,
+)
+from app.rag_service import RagAnswerService
 from app.vector_store import ChromaVectorStore
 from app.vector_store_service import WikiVectorStoreService
 from app.search_service import SemanticSearchService
@@ -58,6 +67,22 @@ def get_search_service() -> SemanticSearchService:
         embedder=get_embedding_service().embedder,
         vector_store=get_vector_store(),
         default_top_k=settings.search_top_k,
+    )
+
+
+@lru_cache(maxsize=1)
+def get_rag_service() -> RagAnswerService:
+    return RagAnswerService(
+        search_service=get_search_service(),
+        language_model=OpenAIResponsesClient(
+            api_key=settings.openai_api_key,
+            model=settings.openai_model,
+            timeout_seconds=settings.openai_timeout_seconds,
+            max_output_tokens=settings.openai_max_output_tokens,
+        ),
+        top_k=settings.rag_top_k,
+        min_score=settings.rag_min_score,
+        max_context_chars=settings.rag_max_context_chars,
     )
 
 
@@ -134,3 +159,22 @@ def search_wiki_documents(
     service: SemanticSearchService = Depends(get_search_service),
 ) -> SemanticSearchResponse:
     return service.search(request)
+
+
+@app.post(
+    "/api/rag/answers",
+    response_model=RagAnswerResponse,
+    response_model_by_alias=True,
+)
+def create_rag_answer(
+    request: RagAnswerRequest,
+    service: RagAnswerService = Depends(get_rag_service),
+) -> RagAnswerResponse:
+    try:
+        return service.answer(request)
+    except LlmConfigurationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except LlmTimeoutError as exc:
+        raise HTTPException(status_code=504, detail=str(exc)) from exc
+    except LlmProviderError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
