@@ -45,3 +45,16 @@ cd ai
 기본 모델은 `sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2`이며 384차원 벡터를 생성합니다. 모델은 첫 임베딩 요청 시 로딩됩니다.
 
 청크 크기, 오버랩 및 모델은 환경 변수로 변경할 수 있습니다. 지원 항목은 `.env.example`을 참고하세요.
+
+## Vector DB
+
+ChromaDB 데이터를 기본적으로 `ai/data/vectorstore/chroma`에 영속 저장합니다. 이 경로는 Git에서 제외됩니다.
+
+```text
+PUT    /api/vector-store/wiki-posts
+GET    /api/vector-store/wiki-posts/{wikiPostId}
+DELETE /api/vector-store/wiki-posts/{wikiPostId}
+GET    /api/vector-store/stats
+```
+
+저장 API의 요청 형식은 위키 문서 임베딩 API와 같습니다. 동일 문서를 다시 저장하면 같은 청크는 갱신되고 이전 버전에만 존재하는 청크는 제거됩니다.

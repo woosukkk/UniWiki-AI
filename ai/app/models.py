@@ -49,3 +49,33 @@ class WikiEmbeddingResponse(BaseModel):
 class HealthResponse(BaseModel):
     status: str
     model: str
+
+
+class VectorStoreWriteResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    wiki_post_id: int = Field(alias="wikiPostId")
+    stored_chunk_count: int = Field(alias="storedChunkCount")
+    collection: str
+
+
+class VectorStoreRecord(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    chunk_id: str = Field(alias="chunkId")
+    text: str
+    embedding: list[float]
+    metadata: ChunkMetadata
+
+
+class VectorStoreDocumentResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    wiki_post_id: int = Field(alias="wikiPostId")
+    chunk_count: int = Field(alias="chunkCount")
+    chunks: list[VectorStoreRecord]
+
+
+class VectorStoreStatsResponse(BaseModel):
+    collection: str
+    count: int
