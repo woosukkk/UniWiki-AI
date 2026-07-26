@@ -30,6 +30,8 @@ class Settings:
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-5.6-sol")
     openai_timeout_seconds: float = float(os.getenv("OPENAI_TIMEOUT_SECONDS", "30"))
     openai_max_output_tokens: int = int(os.getenv("OPENAI_MAX_OUTPUT_TOKENS", "1000"))
+    summary_max_chars: int = int(os.getenv("SUMMARY_MAX_CHARS", "600"))
+    summary_context_chars: int = int(os.getenv("SUMMARY_CONTEXT_CHARS", "12000"))
 
     def __post_init__(self) -> None:
         if self.chunk_max_chars < 100:
@@ -48,6 +50,10 @@ class Settings:
             raise ValueError("OPENAI_TIMEOUT_SECONDS must be positive.")
         if self.openai_max_output_tokens < 1:
             raise ValueError("OPENAI_MAX_OUTPUT_TOKENS must be positive.")
+        if not 100 <= self.summary_max_chars <= 2000:
+            raise ValueError("SUMMARY_MAX_CHARS must be between 100 and 2000.")
+        if self.summary_context_chars < 4000:
+            raise ValueError("SUMMARY_CONTEXT_CHARS must be at least 4000.")
 
 
 settings = Settings()

@@ -1,6 +1,6 @@
 from functools import lru_cache
 
-from fastapi import Depends, FastAPI, HTTPException, Response, status
+from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
 
 from app.config import settings
 from app.embedder import SentenceTransformerEmbedder
@@ -16,6 +16,7 @@ from app.models import (
     VectorStoreWriteResponse,
     WikiDocumentRequest,
     WikiEmbeddingResponse,
+    WikiSummaryResponse,
 )
 from app.llm import (
     LlmConfigurationError,
@@ -24,6 +25,7 @@ from app.llm import (
     OpenAIResponsesClient,
 )
 from app.rag_service import RagAnswerService
+from app.summary_service import WikiDocumentNotFoundError, WikiSummaryService
 from app.vector_store import ChromaVectorStore
 from app.vector_store_service import WikiVectorStoreService
 from app.search_service import SemanticSearchService
@@ -71,18 +73,33 @@ def get_search_service() -> SemanticSearchService:
 
 
 @lru_cache(maxsize=1)
+def get_language_model() -> OpenAIResponsesClient:
+    return OpenAIResponsesClient(
+        api_key=settings.openai_api_key,
+        model=settings.openai_model,
+        timeout_seconds=settings.openai_timeout_seconds,
+        max_output_tokens=settings.openai_max_output_tokens,
+    )
+
+
+@lru_cache(maxsize=1)
 def get_rag_service() -> RagAnswerService:
     return RagAnswerService(
         search_service=get_search_service(),
-        language_model=OpenAIResponsesClient(
-            api_key=settings.openai_api_key,
-            model=settings.openai_model,
-            timeout_seconds=settings.openai_timeout_seconds,
-            max_output_tokens=settings.openai_max_output_tokens,
-        ),
+        language_model=get_language_model(),
         top_k=settings.rag_top_k,
         min_score=settings.rag_min_score,
         max_context_chars=settings.rag_max_context_chars,
+    )
+
+
+@lru_cache(maxsize=1)
+def get_summary_service() -> WikiSummaryService:
+    return WikiSummaryService(
+        vector_store=get_vector_store(),
+        language_model=get_language_model(),
+        default_max_chars=settings.summary_max_chars,
+        context_chars=settings.summary_context_chars,
     )
 
 
@@ -172,6 +189,28 @@ def create_rag_answer(
 ) -> RagAnswerResponse:
     try:
         return service.answer(request)
+    except LlmConfigurationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except LlmTimeoutError as exc:
+        raise HTTPException(status_code=504, detail=str(exc)) from exc
+    except LlmProviderError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+
+@app.post(
+    "/api/summaries/wiki-posts/{wiki_post_id}",
+    response_model=WikiSummaryResponse,
+    response_model_by_alias=True,
+)
+def summarize_wiki_document(
+    wiki_post_id: int,
+    max_chars: int | None = Query(default=None, alias="maxChars", ge=100, le=2000),
+    service: WikiSummaryService = Depends(get_summary_service),
+) -> WikiSummaryResponse:
+    try:
+        return service.summarize(wiki_post_id, max_chars)
+    except WikiDocumentNotFoundError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
     except LlmConfigurationError as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except LlmTimeoutError as exc:

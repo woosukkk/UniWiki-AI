@@ -15,6 +15,12 @@ Only retrieved chunks at or above `RAG_MIN_SCORE` are passed to the language mod
 
 The response includes a deduplicated `sources` list. Each source contains `wikiPostId`, `title`, and a frontend-usable `url` in the form `/api/wiki-posts/{wikiPostId}`. An ungrounded response returns an empty source list.
 
+## Wiki document summary
+
+`POST /api/summaries/wiki-posts/{wikiPostId}?maxChars=600`
+
+The service reads the synchronized vector-store chunks for the wiki post. Long documents are summarized in batches and reduced into a final result. `maxChars` accepts 100 through 2000; an unknown or empty document returns `404`.
+
 위키 문서를 청킹하고 다국어 임베딩 벡터를 생성하는 FastAPI 서비스입니다.
 
 ## 로컬 실행
