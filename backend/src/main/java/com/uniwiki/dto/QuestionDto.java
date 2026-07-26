@@ -15,9 +15,9 @@ public class QuestionDto {
     @NoArgsConstructor
     public static class CreateRequest {
 
-        // 제목은 공백일 수 없고 최대 255자까지 허용
+        // 제목은 공백일 수 없고 DB 스키마와 동일하게 최대 200자까지 허용
         @NotBlank(message = "질문 제목은 필수입니다.")
-        @Size(max = 255, message = "질문 제목은 255자 이하여야 합니다.")
+        @Size(max = 200, message = "질문 제목은 200자 이하여야 합니다.")
         private String title;
 
         // 질문 내용은 필수
@@ -30,7 +30,7 @@ public class QuestionDto {
     public static class UpdateRequest {
 
         @NotBlank(message = "질문 제목은 필수입니다.")
-        @Size(max = 255, message = "질문 제목은 255자 이하여야 합니다.")
+        @Size(max = 200, message = "질문 제목은 200자 이하여야 합니다.")
         private String title;
 
         @NotBlank(message = "질문 내용은 필수입니다.")

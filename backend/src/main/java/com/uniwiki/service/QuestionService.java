@@ -43,7 +43,7 @@ public class QuestionService {
 
     // 질문 전체 조회
     public List<QuestionDto.Response> findAll() {
-        return questionRepository.findAll()
+        return questionRepository.findAllByOrderByCreatedAtDesc()
                 .stream()
                 .map(QuestionDto.Response::from)
                 .toList();
