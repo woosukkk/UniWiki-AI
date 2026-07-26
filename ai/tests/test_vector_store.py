@@ -73,3 +73,22 @@ def test_persists_and_deletes_document_chunks(tmp_path: Path) -> None:
     reopened_store.delete_document(9)
     assert reopened_store.get_document(9).chunk_count == 0
     assert reopened_store.count() == 0
+
+
+def test_searches_by_cosine_similarity_and_category(tmp_path: Path) -> None:
+    store = create_store(tmp_path)
+    first = embedding_response(1, ["수강신청은 학교 포털에서 진행합니다."])
+    second = embedding_response(2, ["도서관 운영 시간 안내입니다."])
+    first.chunks[0].embedding = [1.0, 0.0, 0.0]
+    second.chunks[0].embedding = [0.0, 1.0, 0.0]
+    second.chunks[0].metadata.category_id = 3
+    store.replace_document(first)
+    store.replace_document(second)
+
+    results = store.search([1.0, 0.0, 0.0], top_k=2)
+    filtered = store.search([1.0, 0.0, 0.0], top_k=2, category_id=3)
+
+    assert [result.wiki_post_id for result in results] == [1, 2]
+    assert results[0].score == 1.0
+    assert filtered[0].wiki_post_id == 2
+    assert len(filtered) == 1

@@ -22,12 +22,15 @@ class Settings:
         "CHROMA_COLLECTION",
         "uniwiki_wiki_chunks",
     )
+    search_top_k: int = int(os.getenv("SEARCH_TOP_K", "5"))
 
     def __post_init__(self) -> None:
         if self.chunk_max_chars < 100:
             raise ValueError("CHUNK_MAX_CHARS는 100 이상이어야 합니다.")
         if not 0 <= self.chunk_overlap_chars < self.chunk_max_chars:
             raise ValueError("CHUNK_OVERLAP_CHARS는 청크 크기보다 작아야 합니다.")
+        if not 1 <= self.search_top_k <= 50:
+            raise ValueError("SEARCH_TOP_K는 1에서 50 사이여야 합니다.")
 
 
 settings = Settings()

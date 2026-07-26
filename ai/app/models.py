@@ -79,3 +79,40 @@ class VectorStoreDocumentResponse(BaseModel):
 class VectorStoreStatsResponse(BaseModel):
     collection: str
     count: int
+
+
+class SemanticSearchRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    query: str = Field(min_length=1, max_length=1000)
+    top_k: int | None = Field(default=None, alias="topK", ge=1, le=50)
+    category_id: int | None = Field(default=None, alias="categoryId", gt=0)
+
+    @field_validator("query")
+    @classmethod
+    def reject_blank_query(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("검색 질문은 공백일 수 없습니다.")
+        return value
+
+
+class SemanticSearchResult(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    chunk_id: str = Field(alias="chunkId")
+    wiki_post_id: int = Field(alias="wikiPostId")
+    title: str
+    content: str
+    category_id: int = Field(alias="categoryId")
+    chunk_index: int = Field(alias="chunkIndex")
+    score: float
+
+
+class SemanticSearchResponse(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    query: str
+    top_k: int = Field(alias="topK")
+    result_count: int = Field(alias="resultCount")
+    results: list[SemanticSearchResult]

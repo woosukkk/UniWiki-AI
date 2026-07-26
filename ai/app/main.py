@@ -7,6 +7,8 @@ from app.embedder import SentenceTransformerEmbedder
 from app.embedding_service import WikiEmbeddingService
 from app.models import (
     HealthResponse,
+    SemanticSearchRequest,
+    SemanticSearchResponse,
     VectorStoreDocumentResponse,
     VectorStoreStatsResponse,
     VectorStoreWriteResponse,
@@ -15,6 +17,7 @@ from app.models import (
 )
 from app.vector_store import ChromaVectorStore
 from app.vector_store_service import WikiVectorStoreService
+from app.search_service import SemanticSearchService
 
 app = FastAPI(
     title="UniWiki AI Service",
@@ -46,6 +49,15 @@ def get_vector_store_service() -> WikiVectorStoreService:
     return WikiVectorStoreService(
         embedding_service=get_embedding_service(),
         vector_store=get_vector_store(),
+    )
+
+
+@lru_cache(maxsize=1)
+def get_search_service() -> SemanticSearchService:
+    return SemanticSearchService(
+        embedder=get_embedding_service().embedder,
+        vector_store=get_vector_store(),
+        default_top_k=settings.search_top_k,
     )
 
 
@@ -110,3 +122,15 @@ def vector_store_stats(
     service: WikiVectorStoreService = Depends(get_vector_store_service),
 ) -> VectorStoreStatsResponse:
     return service.stats()
+
+
+@app.post(
+    "/api/search/wiki-posts",
+    response_model=SemanticSearchResponse,
+    response_model_by_alias=True,
+)
+def search_wiki_documents(
+    request: SemanticSearchRequest,
+    service: SemanticSearchService = Depends(get_search_service),
+) -> SemanticSearchResponse:
+    return service.search(request)

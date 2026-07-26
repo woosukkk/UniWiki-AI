@@ -58,3 +58,17 @@ GET    /api/vector-store/stats
 ```
 
 저장 API의 요청 형식은 위키 문서 임베딩 API와 같습니다. 동일 문서를 다시 저장하면 같은 청크는 갱신되고 이전 버전에만 존재하는 청크는 제거됩니다.
+
+## 유사 문서 검색
+
+`POST /api/search/wiki-posts`
+
+```json
+{
+  "query": "수강신청은 어디서 하나요?",
+  "topK": 5,
+  "categoryId": 1
+}
+```
+
+`categoryId`와 `topK`는 선택 항목입니다. 결과는 코사인 유사도 내림차순이며 각 항목에 `wikiPostId`, `title`, `content`, `score`, 청크 메타데이터가 포함됩니다.

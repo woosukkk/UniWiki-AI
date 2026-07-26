@@ -3,6 +3,7 @@ from typing import Protocol
 
 from app.models import (
     ChunkMetadata,
+    SemanticSearchResult,
     VectorStoreDocumentResponse,
     VectorStoreRecord,
     WikiEmbeddingResponse,
@@ -24,6 +25,14 @@ class VectorStore(Protocol):
     def count(self) -> int:
         """Return the total number of chunks."""
 
+    def search(
+        self,
+        query_embedding: list[float],
+        top_k: int,
+        category_id: int | None = None,
+    ) -> list[SemanticSearchResult]:
+        """Return chunks ordered by cosine similarity."""
+
 
 class ChromaVectorStore:
     def __init__(self, persist_dir: str, collection_name: str) -> None:
@@ -35,7 +44,13 @@ class ChromaVectorStore:
         self.collection = self.client.get_or_create_collection(
             name=collection_name,
             metadata={"description": "UniWiki wiki document chunks"},
+            configuration={"hnsw": {"space": "cosine"}},
         )
+        current_space = self.collection.configuration["hnsw"]["space"]
+        if current_space != "cosine":
+            raise RuntimeError(
+                f"Chroma 컬렉션 거리 함수가 cosine이 아닙니다: {current_space}"
+            )
 
     def replace_document(self, embedding: WikiEmbeddingResponse) -> int:
         existing = self.collection.get(
@@ -93,3 +108,38 @@ class ChromaVectorStore:
 
     def count(self) -> int:
         return self.collection.count()
+
+    def search(
+        self,
+        query_embedding: list[float],
+        top_k: int,
+        category_id: int | None = None,
+    ) -> list[SemanticSearchResult]:
+        collection_count = self.collection.count()
+        if collection_count == 0:
+            return []
+
+        where = {"categoryId": category_id} if category_id is not None else None
+        result = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=min(top_k, collection_count),
+            where=where,
+            include=["documents", "metadatas", "distances"],
+        )
+
+        records = []
+        for index, chunk_id in enumerate(result["ids"][0]):
+            metadata = result["metadatas"][0][index]
+            distance = float(result["distances"][0][index])
+            records.append(
+                SemanticSearchResult(
+                    chunkId=chunk_id,
+                    wikiPostId=metadata["wikiPostId"],
+                    title=metadata["title"],
+                    content=result["documents"][0][index],
+                    categoryId=metadata["categoryId"],
+                    chunkIndex=metadata["chunkIndex"],
+                    score=max(-1.0, min(1.0, 1.0 - distance)),
+                )
+            )
+        return records
