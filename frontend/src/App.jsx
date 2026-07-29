@@ -14,6 +14,7 @@ import { QuestionDetailPage } from './pages/QuestionDetailPage.jsx';
 import { QuestionFormPage } from './pages/QuestionFormPage.jsx';
 import { QuestionListPage } from './pages/QuestionListPage.jsx';
 import { ChatbotPage } from './pages/ChatbotPage.jsx';
+import { MyPage } from './pages/MyPage.jsx';
 import { AdminRoute } from './routes/AdminRoute.jsx';
 import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
@@ -623,7 +624,7 @@ function App() {
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="mypage" element={<PlaceholderPage title="마이페이지" description="내 활동을 확인하는 화면입니다." />} />
+          <Route path="mypage" element={<MyPage />} />
           <Route path="wiki/new" element={<WikiFormPage />} />
           <Route path="wiki/:wikiPostId/edit" element={<WikiFormPage />} />
           <Route path="questions/new" element={<QuestionFormPage />} />

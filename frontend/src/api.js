@@ -42,6 +42,7 @@ async function request(config) {
 export const api = {
   login: (payload) => request({ url: '/api/users/login', method: 'POST', data: payload }),
   signup: (payload) => request({ url: '/api/users/signup', method: 'POST', data: payload }),
+  getMe: () => request({ url: '/api/users/me' }),
   getWikiPosts: () => request({ url: '/api/wiki-posts' }),
   searchWikiPosts: (keyword) => request({ url: '/api/wiki-posts/search', params: { keyword } }),
   getWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}` }),

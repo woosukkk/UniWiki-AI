@@ -264,6 +264,19 @@ a { color: inherit; text-decoration: none; }
 .wiki-ai-summary small { color: var(--muted); }
 .wiki-ai-summary .text-button { margin-left: 12px; }
 .wiki-summary-error { flex-basis: 100%; margin: 0; color: #a73f2e; font-size: 12px; }
+.mypage { padding: 52px 0 90px; }
+.profile-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 22px; padding: 32px 38px; color: white; background: var(--green); }
+.profile-avatar { width: 64px; height: 64px; display: grid; place-items: center; color: var(--green); background: var(--lime); border-radius: 50%; font-size: 28px; font-weight: 900; }
+.profile-card span { color: var(--lime); font-size: 9px; font-weight: 900; letter-spacing: 2px; }
+.profile-card h1 { margin: 3px 0; }.profile-card p { margin: 0; color: rgba(255,255,255,.6); }
+.profile-card > strong { padding: 7px 10px; color: var(--green); background: var(--lime); font-size: 10px; }
+.activity-card { margin-top: 25px; padding: 28px 36px; background: var(--paper); box-shadow: 0 14px 40px rgba(33,45,37,.06); }
+.activity-tabs { display: flex; gap: 8px; padding-bottom: 18px; border-bottom: 2px solid var(--ink); }
+.activity-tabs button { padding: 9px 12px; border: 0; color: var(--muted); background: transparent; font-weight: 800; }
+.activity-tabs button.active { color: white; background: var(--green); }.activity-tabs em { margin-left: 6px; color: var(--accent); font-style: normal; }
+.activity-list > a { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 20px 6px; border-bottom: 1px solid var(--line); }
+.activity-list p { grid-column: 1 / -1; margin: 0; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.activity-list span { color: var(--accent); font-size: 11px; }.activity-empty { padding: 70px 0; text-align: center; color: var(--muted); }
 @keyframes pulse { to { opacity: .25; transform: translateY(-5px); } }
 
 @media (max-width: 760px) {
@@ -297,6 +310,8 @@ a { color: inherit; text-decoration: none; }
   .chat-message { max-width: 90%; }
   .chat-input { grid-template-columns: 1fr; }
   .wiki-summary-panel { margin-left: 28px; margin-right: 28px; }
+  .profile-card { grid-template-columns: auto 1fr; padding: 25px; }.profile-card > strong { display: none; }
+  .activity-card { padding: 22px 18px; }.activity-tabs { overflow-x: auto; }
 }
 
 @media (max-width: 480px) {
