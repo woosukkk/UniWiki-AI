@@ -43,6 +43,7 @@ export const api = {
   login: (payload) => request({ url: '/api/users/login', method: 'POST', data: payload }),
   signup: (payload) => request({ url: '/api/users/signup', method: 'POST', data: payload }),
   getWikiPosts: () => request({ url: '/api/wiki-posts' }),
+  searchWikiPosts: (keyword) => request({ url: '/api/wiki-posts/search', params: { keyword } }),
   getWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}` }),
   getCategories: () => request({ url: '/api/categories' }),
   createWikiPost: (payload) => request({ url: '/api/wiki-posts', method: 'POST', data: payload }),
