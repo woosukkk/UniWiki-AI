@@ -179,13 +179,17 @@ a { color: inherit; text-decoration: none; }
 .answers-heading h2 em { color: var(--accent); font-style: normal; }
 .answers-heading p { margin: 0; color: var(--muted); font-size: 12px; }
 .answer-card { display: grid; grid-template-columns: 42px 1fr; gap: 17px; padding: 27px 10px; border-bottom: 1px solid var(--line); }
+.answer-card-accepted { margin: 12px 0; padding-left: 18px; padding-right: 18px; background: #edf3dc; border: 1px solid #cddd9e; }
 .answer-avatar { width: 39px; height: 39px; display: grid; place-items: center; color: var(--lime); background: var(--green); border-radius: 50%; font-weight: 700; }
 .answer-meta strong { color: var(--ink); font-size: 13px; }
 .answer-body > p { margin: 13px 0 16px; color: #454941; font-size: 14px; line-height: 1.8; white-space: pre-wrap; }
 .accepted { padding: 2px 6px; color: var(--green); background: var(--lime); font-size: 9px; font-weight: 700; }
 .answer-actions { display: flex; align-items: center; gap: 13px; }
 .mini-like { padding: 5px 9px; border: 1px solid var(--line); color: var(--accent); background: transparent; border-radius: 3px; font-size: 12px; }
+.accept-answer-button { padding: 6px 10px; border: 1px solid var(--green); color: var(--green); background: var(--lime); border-radius: 3px; font-size: 11px; font-weight: 800; }
 .no-answers { padding: 46px; text-align: center; color: var(--muted); border-bottom: 1px solid var(--line); }
+.answer-login-guide { margin-top: 28px; padding: 24px; text-align: center; color: var(--muted); background: var(--paper); border: 1px solid var(--line); }
+.answer-login-guide a { margin-right: 4px; color: var(--green); font-weight: 800; text-decoration: underline; }
 
 .answer-form { margin-top: 35px; padding: 24px; color: white; background: var(--green); }
 .answer-form-heading, .form-footer { display: flex; justify-content: space-between; align-items: center; }

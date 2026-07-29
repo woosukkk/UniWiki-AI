@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
+import { AnswerItem } from '../components/AnswerItem.jsx';
 import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
@@ -15,13 +16,17 @@ function formatDate(value) {
 export function QuestionDetailPage() {
   const { questionId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const [question, setQuestion] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showDelete, setShowDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [answerContent, setAnswerContent] = useState('');
+  const [answerSubmitting, setAnswerSubmitting] = useState(false);
+  const [answerToDelete, setAnswerToDelete] = useState(null);
+  const [actionError, setActionError] = useState('');
 
   const loadQuestion = useCallback(async () => {
     setLoading(true);
@@ -54,6 +59,60 @@ export function QuestionDetailPage() {
     }
   }
 
+  async function createAnswer(event) {
+    event.preventDefault();
+    if (!answerContent.trim()) return;
+    setAnswerSubmitting(true);
+    setActionError('');
+    try {
+      const created = await api.createAnswer(questionId, { content: answerContent.trim() });
+      setAnswers((current) => [...current, created]);
+      setAnswerContent('');
+    } catch (requestError) {
+      setActionError(requestError.message);
+    } finally {
+      setAnswerSubmitting(false);
+    }
+  }
+
+  async function updateAnswer(answerId, content) {
+    setActionError('');
+    try {
+      const updated = await api.updateAnswer(answerId, { content });
+      setAnswers((current) => current.map((answer) => answer.id === answerId ? updated : answer));
+      return true;
+    } catch (requestError) {
+      setActionError(requestError.message);
+      return false;
+    }
+  }
+
+  async function deleteAnswer() {
+    if (!answerToDelete) return;
+    setDeleting(true);
+    setActionError('');
+    try {
+      await api.deleteAnswer(answerToDelete.id);
+      setAnswers((current) => current.filter((answer) => answer.id !== answerToDelete.id));
+      setAnswerToDelete(null);
+    } catch (requestError) {
+      setActionError(requestError.message);
+    } finally {
+      setDeleting(false);
+    }
+  }
+
+  async function acceptAnswer(answerId) {
+    setActionError('');
+    try {
+      const accepted = await api.acceptAnswer(answerId);
+      setAnswers((current) => current.map((answer) => answer.id === answerId ? accepted : answer));
+      setQuestion((current) => ({ ...current, status: 'CLOSED' }));
+    } catch (requestError) {
+      setActionError(requestError.message);
+    }
+  }
+
   if (loading) return <main className="detail-page container"><LoadingSpinner /></main>;
   if (error) return <main className="detail-page container"><ErrorMessage message={error} onRetry={loadQuestion} /></main>;
   if (!question) return null;
@@ -82,17 +141,30 @@ export function QuestionDetailPage() {
       </article>
       <section className="question-answers-section">
         <div className="answers-heading"><h2>답변 <em>{answers.length}</em></h2></div>
+        {actionError && <div className="auth-error" role="alert">{actionError}</div>}
         {answers.length === 0 ? <div className="no-answers">아직 등록된 답변이 없습니다.</div> : answers.map((answer) => (
-          <article className="answer-card" key={answer.id}>
-            <div className="answer-avatar">{answer.authorNickname.slice(0, 1)}</div>
-            <div className="answer-body">
-              <div className="answer-meta"><strong>{answer.authorNickname}</strong><span>{formatDate(answer.createdAt)}</span>{answer.accepted && <span className="accepted">채택된 답변</span>}</div>
-              <p>{answer.content}</p>
-            </div>
-          </article>
+          <AnswerItem
+            key={answer.id}
+            answer={answer}
+            canEdit={user?.id === answer.authorId}
+            canAccept={isAuthor && !answer.accepted && !answers.some((item) => item.accepted)}
+            onUpdate={updateAnswer}
+            onDelete={setAnswerToDelete}
+            onAccept={acceptAnswer}
+          />
         ))}
+        {isAuthenticated ? (
+          <form className="answer-form" onSubmit={createAnswer}>
+            <div className="answer-form-heading"><strong>답변 작성</strong><span>{answerContent.length}자</span></div>
+            <textarea value={answerContent} onChange={(event) => setAnswerContent(event.target.value)} placeholder="알고 있는 정보와 경험을 구체적으로 알려주세요." />
+            <div className="form-footer"><span>정확하고 친절한 답변을 작성해 주세요.</span><button className="button button-small" disabled={answerSubmitting || !answerContent.trim()}>{answerSubmitting ? '등록 중...' : '답변 등록'}</button></div>
+          </form>
+        ) : (
+          <div className="answer-login-guide"><Link to="/login" state={{ from: { pathname: `/questions/${questionId}` } }}>로그인</Link>하면 답변을 작성할 수 있습니다.</div>
+        )}
       </section>
       {showDelete && <ConfirmDialog title="질문을 삭제할까요?" message="질문과 관련 답변이 함께 삭제될 수 있습니다." confirmLabel="삭제" busy={deleting} onConfirm={deleteQuestion} onCancel={() => setShowDelete(false)} />}
+      {answerToDelete && <ConfirmDialog title="답변을 삭제할까요?" message="삭제한 답변은 복구할 수 없습니다." confirmLabel="삭제" busy={deleting} onConfirm={deleteAnswer} onCancel={() => setAnswerToDelete(null)} />}
     </main>
   );
 }

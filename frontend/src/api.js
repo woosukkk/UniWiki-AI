@@ -61,6 +61,7 @@ export const api = {
   createAnswer: (questionId, payload) => request({ url: `/api/answers/questions/${questionId}`, method: 'POST', data: payload }),
   updateAnswer: (answerId, payload) => request({ url: `/api/answers/${answerId}`, method: 'PUT', data: payload }),
   deleteAnswer: (answerId) => request({ url: `/api/answers/${answerId}`, method: 'DELETE' }),
+  acceptAnswer: (answerId) => request({ url: `/api/answers/${answerId}/accept`, method: 'PATCH' }),
   getAnswerLikes: (answerId) => request({ url: `/api/answers/${answerId}/likes/count` }),
   likeAnswer: (answerId) => request({ url: `/api/answers/${answerId}/likes`, method: 'POST' }),
   unlikeAnswer: (answerId) => request({ url: `/api/answers/${answerId}/likes`, method: 'DELETE' }),
