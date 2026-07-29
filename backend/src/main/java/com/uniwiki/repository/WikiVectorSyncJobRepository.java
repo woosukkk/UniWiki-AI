@@ -15,4 +15,8 @@ public interface WikiVectorSyncJobRepository
             Collection<VectorSyncStatus> statuses,
             int maxAttempts
     );
+
+    List<WikiVectorSyncJob> findTop20ByOrderByCreatedAtDesc();
+
+    long countByStatus(VectorSyncStatus status);
 }

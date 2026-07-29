@@ -15,6 +15,7 @@ import { QuestionFormPage } from './pages/QuestionFormPage.jsx';
 import { QuestionListPage } from './pages/QuestionListPage.jsx';
 import { ChatbotPage } from './pages/ChatbotPage.jsx';
 import { MyPage } from './pages/MyPage.jsx';
+import { AdminPage } from './pages/AdminPage.jsx';
 import { AdminRoute } from './routes/AdminRoute.jsx';
 import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
@@ -631,7 +632,7 @@ function App() {
           <Route path="questions/:questionId/edit" element={<QuestionFormPage />} />
         </Route>
         <Route element={<AdminRoute />}>
-          <Route path="admin" element={<PlaceholderPage title="관리자" description="서비스 운영 현황을 확인하는 화면입니다." />} />
+          <Route path="admin" element={<AdminPage />} />
         </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>
