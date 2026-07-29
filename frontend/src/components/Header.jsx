@@ -1,31 +1,27 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-
-function storedUser() {
-  try {
-    return JSON.parse(localStorage.getItem('uniwiki-user'));
-  } catch {
-    return null;
-  }
-}
+import {
+  AUTH_CHANGED_EVENT,
+  clearAuthentication,
+  getStoredUser,
+} from '../auth.js';
 
 export function Header() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(storedUser);
+  const [user, setUser] = useState(getStoredUser);
 
   useEffect(() => {
-    const syncUser = () => setUser(storedUser());
+    const syncUser = () => setUser(getStoredUser());
     window.addEventListener('storage', syncUser);
-    window.addEventListener('uniwiki-auth-changed', syncUser);
+    window.addEventListener(AUTH_CHANGED_EVENT, syncUser);
     return () => {
       window.removeEventListener('storage', syncUser);
-      window.removeEventListener('uniwiki-auth-changed', syncUser);
+      window.removeEventListener(AUTH_CHANGED_EVENT, syncUser);
     };
   }, []);
 
   function logout() {
-    localStorage.removeItem('uniwiki-token');
-    localStorage.removeItem('uniwiki-user');
+    clearAuthentication();
     setUser(null);
     navigate('/');
   }

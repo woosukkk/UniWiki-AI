@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { api } from './api.js';
+import { clearAuthentication, getStoredUser, saveAuthentication } from './auth.js';
 import { MainLayout } from './layouts/MainLayout.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
+import { LoginPage } from './pages/LoginPage.jsx';
 import { PlaceholderPage } from './pages/PlaceholderPage.jsx';
+import { SignupPage } from './pages/SignupPage.jsx';
 
 const initialQuestionForm = { title: '', content: '' };
 
@@ -14,14 +17,6 @@ function formatDate(value) {
     hour: '2-digit',
     minute: '2-digit',
   }).format(new Date(value));
-}
-
-function getStoredUser() {
-  try {
-    return JSON.parse(localStorage.getItem('uniwiki-user'));
-  } catch {
-    return null;
-  }
 }
 
 function QuestionPage() {
@@ -242,23 +237,14 @@ function QuestionPage() {
   }
 
   function handleAuthenticated(response) {
-    const authUser = {
-      id: response.id,
-      email: response.email,
-      nickname: response.nickname,
-      role: response.role,
-    };
-    localStorage.setItem('uniwiki-token', response.token);
-    localStorage.setItem('uniwiki-user', JSON.stringify(authUser));
-    window.dispatchEvent(new Event('uniwiki-auth-changed'));
+    const authUser = saveAuthentication(response);
     setUser(authUser);
     setShowAuth(false);
     setNotice(`${authUser.nickname}님, 환영합니다.`);
   }
 
   function logout() {
-    localStorage.removeItem('uniwiki-token');
-    localStorage.removeItem('uniwiki-user');
+    clearAuthentication();
     setUser(null);
     setNotice('로그아웃했습니다.');
   }
@@ -632,8 +618,8 @@ function App() {
         <Route path="chatbot" element={<PlaceholderPage title="AI 챗봇" description="위키 문서를 근거로 답변하는 챗봇 화면입니다." />} />
         <Route path="mypage" element={<PlaceholderPage title="마이페이지" description="내 활동을 확인하는 화면입니다." />} />
         <Route path="admin" element={<PlaceholderPage title="관리자" description="서비스 운영 현황을 확인하는 화면입니다." />} />
-        <Route path="login" element={<PlaceholderPage title="로그인" description="로그인 화면을 준비하고 있습니다." />} />
-        <Route path="signup" element={<PlaceholderPage title="회원가입" description="회원가입 화면을 준비하고 있습니다." />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="signup" element={<SignupPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>
