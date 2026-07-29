@@ -71,4 +71,5 @@ export const api = {
   likeAnswer: (answerId) => request({ url: `/api/answers/${answerId}/likes`, method: 'POST' }),
   unlikeAnswer: (answerId) => request({ url: `/api/answers/${answerId}/likes`, method: 'DELETE' }),
   askAi: (payload) => request({ url: '/api/ai/answers', method: 'POST', data: payload }),
+  summarizeWikiPost: (wikiPostId, maxChars = 500) => request({ url: `/api/ai/wiki-posts/${wikiPostId}/summary`, method: 'POST', params: { maxChars } }),
 };

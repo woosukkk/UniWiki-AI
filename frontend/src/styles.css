@@ -256,6 +256,14 @@ a { color: inherit; text-decoration: none; }
 .chat-input { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 20px; background: var(--green); }
 .chat-input textarea { min-height: 62px; max-height: 150px; padding: 14px; resize: vertical; border: 0; outline: 0; line-height: 1.6; }
 .chat-input .button { align-self: stretch; color: var(--green); background: var(--lime); }
+.wiki-summary-panel { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 18px; margin: 0 52px 30px; padding: 22px 24px; background: #eef3dd; border-left: 4px solid var(--accent); }
+.wiki-summary-panel span { color: var(--accent); font-size: 9px; font-weight: 900; letter-spacing: 1.5px; }
+.wiki-summary-panel h2 { margin: 4px 0 0; font-size: 18px; }
+.wiki-ai-summary { flex-basis: 100%; padding-top: 16px; border-top: 1px solid #ced8b2; }
+.wiki-ai-summary p { margin: 0 0 10px; line-height: 1.8; white-space: pre-wrap; }
+.wiki-ai-summary small { color: var(--muted); }
+.wiki-ai-summary .text-button { margin-left: 12px; }
+.wiki-summary-error { flex-basis: 100%; margin: 0; color: #a73f2e; font-size: 12px; }
 @keyframes pulse { to { opacity: .25; transform: translateY(-5px); } }
 
 @media (max-width: 760px) {
@@ -288,6 +296,7 @@ a { color: inherit; text-decoration: none; }
   .chat-messages { padding: 24px 18px; }
   .chat-message { max-width: 90%; }
   .chat-input { grid-template-columns: 1fr; }
+  .wiki-summary-panel { margin-left: 28px; margin-right: 28px; }
 }
 
 @media (max-width: 480px) {

@@ -23,6 +23,9 @@ export function WikiDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [like, setLike] = useState({ likeCount: 0, liked: false, busy: false });
+  const [summary, setSummary] = useState(null);
+  const [summaryLoading, setSummaryLoading] = useState(false);
+  const [summaryError, setSummaryError] = useState('');
 
   const loadWikiPost = useCallback(async () => {
     setLoading(true);
@@ -83,6 +86,20 @@ export function WikiDetailPage() {
       setLike((current) => ({ ...current, busy: false }));
     }
   }
+
+  async function createSummary() {
+    setSummaryLoading(true);
+    setSummaryError('');
+    try {
+      setSummary(await api.summarizeWikiPost(wikiPostId));
+    } catch (requestError) {
+      setSummaryError(requestError.status === 404
+        ? '아직 AI 검색 저장소에 반영되지 않은 문서입니다.'
+        : 'AI 요약을 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    } finally {
+      setSummaryLoading(false);
+    }
+  }
   return (
     <main className="wiki-detail-page container">
       <Link className="back-button" to="/wiki">← 위키 목록으로</Link>
@@ -107,6 +124,18 @@ export function WikiDetailPage() {
           )}
         </header>
         {wikiPost.summary && <aside className="wiki-summary"><strong>한눈에 보기</strong><p>{wikiPost.summary}</p></aside>}
+        <section className="wiki-summary-panel">
+          <div><span>AI SUMMARY</span><h2>이 문서 핵심 요약</h2></div>
+          {!summary && <button className="button button-small" disabled={summaryLoading} onClick={createSummary}>{summaryLoading ? '요약 중…' : 'AI 요약하기'}</button>}
+          {summary && (
+            <div className="wiki-ai-summary">
+              <p>{summary.summary}</p>
+              <small>위키 본문의 {summary.sourceChunkCount}개 구간을 바탕으로 생성했습니다.</small>
+              <button className="text-button" disabled={summaryLoading} onClick={createSummary}>다시 요약</button>
+            </div>
+          )}
+          {summaryError && <p className="wiki-summary-error" role="alert">{summaryError}</p>}
+        </section>
         <div className="wiki-content">{wikiPost.content}</div>
       </article>
       {showDeleteConfirm && (
