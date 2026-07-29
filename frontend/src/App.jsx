@@ -1,12 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { api } from './api.js';
-import { clearAuthentication, getStoredUser, saveAuthentication } from './auth.js';
+import { useAuth } from './contexts/AuthContext.jsx';
 import { MainLayout } from './layouts/MainLayout.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { PlaceholderPage } from './pages/PlaceholderPage.jsx';
 import { SignupPage } from './pages/SignupPage.jsx';
+import { AdminRoute } from './routes/AdminRoute.jsx';
+import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
 const initialQuestionForm = { title: '', content: '' };
 
@@ -20,7 +22,7 @@ function formatDate(value) {
 }
 
 function QuestionPage() {
-  const [user, setUser] = useState(getStoredUser);
+  const { user, login } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [questionLikes, setQuestionLikes] = useState({});
   const [selectedQuestion, setSelectedQuestion] = useState(null);
@@ -237,16 +239,9 @@ function QuestionPage() {
   }
 
   function handleAuthenticated(response) {
-    const authUser = saveAuthentication(response);
-    setUser(authUser);
+    const authUser = login(response);
     setShowAuth(false);
     setNotice(`${authUser.nickname}님, 환영합니다.`);
-  }
-
-  function logout() {
-    clearAuthentication();
-    setUser(null);
-    setNotice('로그아웃했습니다.');
   }
 
   return (
@@ -616,10 +611,16 @@ function App() {
         <Route path="wiki" element={<PlaceholderPage title="위키" description="위키 목록 화면을 준비하고 있습니다." />} />
         <Route path="questions" element={<QuestionPage />} />
         <Route path="chatbot" element={<PlaceholderPage title="AI 챗봇" description="위키 문서를 근거로 답변하는 챗봇 화면입니다." />} />
-        <Route path="mypage" element={<PlaceholderPage title="마이페이지" description="내 활동을 확인하는 화면입니다." />} />
-        <Route path="admin" element={<PlaceholderPage title="관리자" description="서비스 운영 현황을 확인하는 화면입니다." />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="mypage" element={<PlaceholderPage title="마이페이지" description="내 활동을 확인하는 화면입니다." />} />
+          <Route path="wiki/new" element={<PlaceholderPage title="위키 작성" description="로그인 사용자만 위키를 작성할 수 있습니다." />} />
+          <Route path="questions/new" element={<PlaceholderPage title="질문 작성" description="로그인 사용자만 질문을 작성할 수 있습니다." />} />
+        </Route>
+        <Route element={<AdminRoute />}>
+          <Route path="admin" element={<PlaceholderPage title="관리자" description="서비스 운영 현황을 확인하는 화면입니다." />} />
+        </Route>
         <Route path="*" element={<NotFoundPage />} />
       </Route>
     </Routes>

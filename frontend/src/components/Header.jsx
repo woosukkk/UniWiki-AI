@@ -1,28 +1,12 @@
-import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import {
-  AUTH_CHANGED_EVENT,
-  clearAuthentication,
-  getStoredUser,
-} from '../auth.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 export function Header() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(getStoredUser);
+  const { user, isAdmin, logout } = useAuth();
 
-  useEffect(() => {
-    const syncUser = () => setUser(getStoredUser());
-    window.addEventListener('storage', syncUser);
-    window.addEventListener(AUTH_CHANGED_EVENT, syncUser);
-    return () => {
-      window.removeEventListener('storage', syncUser);
-      window.removeEventListener(AUTH_CHANGED_EVENT, syncUser);
-    };
-  }, []);
-
-  function logout() {
-    clearAuthentication();
-    setUser(null);
+  function handleLogout() {
+    logout();
     navigate('/');
   }
 
@@ -37,6 +21,7 @@ export function Header() {
           <NavLink to="/wiki">위키</NavLink>
           <NavLink to="/questions">질문 게시판</NavLink>
           <NavLink to="/chatbot">AI 챗봇</NavLink>
+          {isAdmin && <NavLink to="/admin">관리자</NavLink>}
         </nav>
         <div className="user-area">
           {user ? (
@@ -44,7 +29,7 @@ export function Header() {
               <NavLink className="user-chip" to="/mypage">
                 <span>{user.nickname.slice(0, 1)}</span>{user.nickname}
               </NavLink>
-              <button className="text-button" onClick={logout}>로그아웃</button>
+              <button className="text-button" onClick={handleLogout}>로그아웃</button>
             </>
           ) : (
             <NavLink className="button button-small" to="/login">로그인</NavLink>

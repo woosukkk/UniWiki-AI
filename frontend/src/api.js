@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { clearAuthentication } from './auth.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
@@ -19,6 +20,9 @@ httpClient.interceptors.request.use((config) => {
 httpClient.interceptors.response.use(
   (response) => response,
   (requestError) => {
+    if (requestError.response?.status === 401) {
+      clearAuthentication();
+    }
     const data = requestError.response?.data;
     const message = typeof data === 'string'
       ? data

@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api.js';
-import { saveAuthentication } from '../auth.js';
+import { useAuth } from '../contexts/AuthContext.jsx';
 
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
@@ -19,8 +20,8 @@ export function LoginPage() {
         email: form.email.trim(),
         password: form.password,
       });
-      saveAuthentication(response);
-      navigate('/questions', { replace: true });
+      login(response);
+      navigate(location.state?.from?.pathname || '/questions', { replace: true });
     } catch (requestError) {
       setError(requestError.message || '이메일 또는 비밀번호를 확인해 주세요.');
     } finally {
