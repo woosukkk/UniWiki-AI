@@ -109,4 +109,15 @@ class AnswerLikeServiceTest {
         assertThat(response.getLikeCount()).isEqualTo(4L);
         assertThat(response.isLiked()).isFalse();
     }
+
+    @Test
+    void returnsAuthenticatedUsersAnswerLikeStatus() {
+        when(answerRepository.existsById(10L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(likeRepository.existsByUser_IdAndTargetTypeAndTargetId(
+                1L, LikeTargetType.ANSWER, 10L
+        )).thenReturn(true);
+
+        assertThat(answerLikeService.getStatus(1L, 10L).isLiked()).isTrue();
+    }
 }

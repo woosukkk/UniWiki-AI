@@ -123,4 +123,15 @@ class QuestionLikeServiceTest {
         assertThat(response.getLikeCount()).isEqualTo(3L);
         assertThat(response.isLiked()).isFalse();
     }
+
+    @Test
+    void returnsAuthenticatedUsersQuestionLikeStatus() {
+        when(questionRepository.existsById(10L)).thenReturn(true);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(likeRepository.existsByUser_IdAndTargetTypeAndTargetId(
+                1L, LikeTargetType.QUESTION, 10L
+        )).thenReturn(true);
+
+        assertThat(questionLikeService.getStatus(1L, 10L).isLiked()).isTrue();
+    }
 }

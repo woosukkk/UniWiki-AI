@@ -66,6 +66,17 @@ public class AnswerLikeService {
         return response(answerId, false);
     }
 
+    public AnswerLikeDto.Response getStatus(Long loginUserId, Long answerId) {
+        validateAnswerExists(answerId);
+        findUser(loginUserId);
+        boolean liked = likeRepository.existsByUser_IdAndTargetTypeAndTargetId(
+                loginUserId,
+                TARGET_TYPE,
+                answerId
+        );
+        return response(answerId, liked);
+    }
+
     private AnswerLikeDto.Response response(Long answerId, boolean liked) {
         long likeCount = likeRepository.countByTargetTypeAndTargetId(TARGET_TYPE, answerId);
         return new AnswerLikeDto.Response(answerId, likeCount, liked);

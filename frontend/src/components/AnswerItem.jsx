@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { LikeButton } from './LikeButton.jsx';
 
 function formatDate(value) {
   return new Intl.DateTimeFormat('ko-KR', {
@@ -6,7 +7,7 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
-export function AnswerItem({ answer, canEdit, canAccept, onUpdate, onDelete, onAccept }) {
+export function AnswerItem({ answer, like, canEdit, canAccept, onUpdate, onDelete, onAccept, onLike }) {
   const [editing, setEditing] = useState(false);
   const [content, setContent] = useState(answer.content);
   const [submitting, setSubmitting] = useState(false);
@@ -40,6 +41,7 @@ export function AnswerItem({ answer, canEdit, canAccept, onUpdate, onDelete, onA
         ) : <p>{answer.content}</p>}
         {!editing && (
           <div className="answer-actions">
+            <LikeButton count={like?.likeCount || 0} liked={Boolean(like?.liked)} busy={Boolean(like?.busy)} onClick={() => onLike(answer.id)} />
             {canAccept && <button className="accept-answer-button" onClick={() => onAccept(answer.id)}>답변 채택</button>}
             {canEdit && <button className="text-button" onClick={() => setEditing(true)}>수정</button>}
             {canEdit && <button className="text-button danger" onClick={() => onDelete(answer)}>삭제</button>}

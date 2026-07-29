@@ -38,4 +38,12 @@ public class QuestionLikeController {
     public ResponseEntity<LikeDto.Response> getCount(@PathVariable Long questionId) {
         return ResponseEntity.ok(questionLikeService.getCount(questionId));
     }
+
+    @GetMapping
+    public ResponseEntity<LikeDto.Response> getStatus(
+            @LoginUserId Long loginUserId,
+            @PathVariable Long questionId
+    ) {
+        return ResponseEntity.ok(questionLikeService.getStatus(loginUserId, questionId));
+    }
 }

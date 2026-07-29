@@ -5,6 +5,7 @@ import { AnswerItem } from '../components/AnswerItem.jsx';
 import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
+import { LikeButton } from '../components/LikeButton.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 function formatDate(value) {
@@ -27,23 +28,34 @@ export function QuestionDetailPage() {
   const [answerSubmitting, setAnswerSubmitting] = useState(false);
   const [answerToDelete, setAnswerToDelete] = useState(null);
   const [actionError, setActionError] = useState('');
+  const [questionLike, setQuestionLike] = useState({ likeCount: 0, liked: false, busy: false });
+  const [answerLikes, setAnswerLikes] = useState({});
 
   const loadQuestion = useCallback(async () => {
     setLoading(true);
     setError('');
     try {
-      const [questionData, answerList] = await Promise.all([
+      const [questionData, answerList, questionLikeStatus] = await Promise.all([
         api.getQuestion(questionId),
         api.getAnswers(questionId),
+        isAuthenticated ? api.getQuestionLikeStatus(questionId) : api.getQuestionLikes(questionId),
       ]);
+      const answerLikeEntries = await Promise.all(answerList.map(async (answer) => {
+        const status = isAuthenticated
+          ? await api.getAnswerLikeStatus(answer.id)
+          : await api.getAnswerLikes(answer.id);
+        return [answer.id, { ...status, busy: false }];
+      }));
       setQuestion(questionData);
       setAnswers(answerList);
+      setQuestionLike({ ...questionLikeStatus, busy: false });
+      setAnswerLikes(Object.fromEntries(answerLikeEntries));
     } catch (requestError) {
       setError(requestError.message);
     } finally {
       setLoading(false);
     }
-  }, [questionId]);
+  }, [questionId, isAuthenticated]);
 
   useEffect(() => { loadQuestion(); }, [loadQuestion]);
 
@@ -67,6 +79,7 @@ export function QuestionDetailPage() {
     try {
       const created = await api.createAnswer(questionId, { content: answerContent.trim() });
       setAnswers((current) => [...current, created]);
+      setAnswerLikes((current) => ({ ...current, [created.id]: { likeCount: 0, liked: false, busy: false } }));
       setAnswerContent('');
     } catch (requestError) {
       setActionError(requestError.message);
@@ -113,6 +126,47 @@ export function QuestionDetailPage() {
     }
   }
 
+  async function toggleQuestionLike() {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: `/questions/${questionId}` } } });
+      return;
+    }
+    setQuestionLike((current) => ({ ...current, busy: true }));
+    try {
+      if (questionLike.liked) {
+        await api.unlikeQuestion(questionId);
+        setQuestionLike((current) => ({ likeCount: Math.max(0, current.likeCount - 1), liked: false, busy: false }));
+      } else {
+        const response = await api.likeQuestion(questionId);
+        setQuestionLike({ ...response, busy: false });
+      }
+    } catch (requestError) {
+      setActionError(requestError.message);
+      setQuestionLike((current) => ({ ...current, busy: false }));
+    }
+  }
+
+  async function toggleAnswerLike(answerId) {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: `/questions/${questionId}` } } });
+      return;
+    }
+    const currentLike = answerLikes[answerId] || { likeCount: 0, liked: false };
+    setAnswerLikes((current) => ({ ...current, [answerId]: { ...currentLike, busy: true } }));
+    try {
+      if (currentLike.liked) {
+        await api.unlikeAnswer(answerId);
+        setAnswerLikes((current) => ({ ...current, [answerId]: { likeCount: Math.max(0, currentLike.likeCount - 1), liked: false, busy: false } }));
+      } else {
+        const response = await api.likeAnswer(answerId);
+        setAnswerLikes((current) => ({ ...current, [answerId]: { ...response, busy: false } }));
+      }
+    } catch (requestError) {
+      setActionError(requestError.message);
+      setAnswerLikes((current) => ({ ...current, [answerId]: { ...currentLike, busy: false } }));
+    }
+  }
+
   if (loading) return <main className="detail-page container"><LoadingSpinner /></main>;
   if (error) return <main className="detail-page container"><ErrorMessage message={error} onRetry={loadQuestion} /></main>;
   if (!question) return null;
@@ -129,15 +183,15 @@ export function QuestionDetailPage() {
         </div>
         <h1>{question.title}</h1>
         <p className="detail-content">{question.content}</p>
-        {isAuthor && (
-          <div className="detail-actions">
-            <span />
+        <div className="detail-actions">
+          <LikeButton count={questionLike.likeCount} liked={questionLike.liked} busy={questionLike.busy} onClick={toggleQuestionLike} />
+          {isAuthor && (
             <div className="owner-actions">
               <Link className="text-button" to={`/questions/${question.id}/edit`}>수정</Link>
               <button className="text-button danger" onClick={() => setShowDelete(true)}>삭제</button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </article>
       <section className="question-answers-section">
         <div className="answers-heading"><h2>답변 <em>{answers.length}</em></h2></div>
@@ -146,11 +200,13 @@ export function QuestionDetailPage() {
           <AnswerItem
             key={answer.id}
             answer={answer}
+            like={answerLikes[answer.id]}
             canEdit={user?.id === answer.authorId}
             canAccept={isAuthor && !answer.accepted && !answers.some((item) => item.accepted)}
             onUpdate={updateAnswer}
             onDelete={setAnswerToDelete}
             onAccept={acceptAnswer}
+            onLike={toggleAnswerLike}
           />
         ))}
         {isAuthenticated ? (
