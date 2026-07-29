@@ -70,4 +70,5 @@ export const api = {
   getAnswerLikeStatus: (answerId) => request({ url: `/api/answers/${answerId}/likes` }),
   likeAnswer: (answerId) => request({ url: `/api/answers/${answerId}/likes`, method: 'POST' }),
   unlikeAnswer: (answerId) => request({ url: `/api/answers/${answerId}/likes`, method: 'DELETE' }),
+  askAi: (payload) => request({ url: '/api/ai/answers', method: 'POST', data: payload }),
 };

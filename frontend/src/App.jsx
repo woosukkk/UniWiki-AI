@@ -13,6 +13,7 @@ import { WikiFormPage } from './pages/WikiFormPage.jsx';
 import { QuestionDetailPage } from './pages/QuestionDetailPage.jsx';
 import { QuestionFormPage } from './pages/QuestionFormPage.jsx';
 import { QuestionListPage } from './pages/QuestionListPage.jsx';
+import { ChatbotPage } from './pages/ChatbotPage.jsx';
 import { AdminRoute } from './routes/AdminRoute.jsx';
 import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
@@ -618,7 +619,7 @@ function App() {
         <Route path="wiki/:wikiPostId" element={<WikiDetailPage />} />
         <Route path="questions" element={<QuestionListPage />} />
         <Route path="questions/:questionId" element={<QuestionDetailPage />} />
-        <Route path="chatbot" element={<PlaceholderPage title="AI 챗봇" description="위키 문서를 근거로 답변하는 챗봇 화면입니다." />} />
+        <Route path="chatbot" element={<ChatbotPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
         <Route element={<ProtectedRoute />}>
