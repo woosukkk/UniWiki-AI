@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
 import { api } from './api.js';
+import { MainLayout } from './layouts/MainLayout.jsx';
+import { NotFoundPage } from './pages/NotFoundPage.jsx';
+import { PlaceholderPage } from './pages/PlaceholderPage.jsx';
 
 const initialQuestionForm = { title: '', content: '' };
 
@@ -20,7 +24,7 @@ function getStoredUser() {
   }
 }
 
-function App() {
+function QuestionPage() {
   const [user, setUser] = useState(getStoredUser);
   const [questions, setQuestions] = useState([]);
   const [questionLikes, setQuestionLikes] = useState({});
@@ -246,6 +250,7 @@ function App() {
     };
     localStorage.setItem('uniwiki-token', response.token);
     localStorage.setItem('uniwiki-user', JSON.stringify(authUser));
+    window.dispatchEvent(new Event('uniwiki-auth-changed'));
     setUser(authUser);
     setShowAuth(false);
     setNotice(`${authUser.nickname}님, 환영합니다.`);
@@ -259,9 +264,7 @@ function App() {
   }
 
   return (
-    <div className="app-shell">
-      <Header user={user} onLogin={() => setShowAuth(true)} onLogout={logout} />
-
+    <div className="question-page">
       <main>
         {notice && <Toast message={notice} onClose={() => setNotice('')} />}
         {error && <ErrorBanner message={error} onClose={() => setError('')} />}
@@ -314,33 +317,6 @@ function App() {
         </Modal>
       )}
     </div>
-  );
-}
-
-function Header({ user, onLogin, onLogout }) {
-  return (
-    <header className="site-header">
-      <div className="header-inner">
-        <a className="brand" href="/" aria-label="UniWiki 홈">
-          <span className="brand-mark">U</span>
-          <span>UniWiki</span>
-        </a>
-        <nav className="main-nav" aria-label="주요 메뉴">
-          <a href="/">위키</a>
-          <a className="active" href="/">질문 게시판</a>
-        </nav>
-        <div className="user-area">
-          {user ? (
-            <>
-              <span className="user-chip"><span>{user.nickname.slice(0, 1)}</span>{user.nickname}</span>
-              <button className="text-button" onClick={onLogout}>로그아웃</button>
-            </>
-          ) : (
-            <button className="button button-small" onClick={onLogin}>로그인</button>
-          )}
-        </div>
-      </div>
-    </header>
   );
 }
 
@@ -644,6 +620,24 @@ function Toast({ message, onClose }) {
 
 function ErrorBanner({ message, onClose }) {
   return <div className="error-banner"><strong>요청을 완료하지 못했습니다.</strong><span>{message}</span><button onClick={onClose}>×</button></div>;
+}
+
+function App() {
+  return (
+    <Routes>
+      <Route element={<MainLayout />}>
+        <Route index element={<PlaceholderPage title="UniWiki" description="대학 생활 정보를 함께 만들고 찾아보세요." />} />
+        <Route path="wiki" element={<PlaceholderPage title="위키" description="위키 목록 화면을 준비하고 있습니다." />} />
+        <Route path="questions" element={<QuestionPage />} />
+        <Route path="chatbot" element={<PlaceholderPage title="AI 챗봇" description="위키 문서를 근거로 답변하는 챗봇 화면입니다." />} />
+        <Route path="mypage" element={<PlaceholderPage title="마이페이지" description="내 활동을 확인하는 화면입니다." />} />
+        <Route path="admin" element={<PlaceholderPage title="관리자" description="서비스 운영 현황을 확인하는 화면입니다." />} />
+        <Route path="login" element={<PlaceholderPage title="로그인" description="로그인 화면을 준비하고 있습니다." />} />
+        <Route path="signup" element={<PlaceholderPage title="회원가입" description="회원가입 화면을 준비하고 있습니다." />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
+  );
 }
 
 export default App;

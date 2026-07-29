@@ -1,74 +1,56 @@
+import axios from 'axios';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 
-async function request(path, options = {}) {
+export const httpClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 15000,
+  headers: { 'Content-Type': 'application/json' },
+});
+
+httpClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('uniwiki-token');
-  const headers = new Headers(options.headers);
-
-  if (options.body) {
-    headers.set('Content-Type', 'application/json');
-  }
   if (token) {
-    headers.set('Authorization', `Bearer ${token}`);
+    config.headers.Authorization = `Bearer ${token}`;
   }
+  return config;
+});
 
-  const response = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
-  if (response.status === 204) {
-    return null;
-  }
-
-  const contentType = response.headers.get('content-type') || '';
-  const data = contentType.includes('application/json')
-    ? await response.json()
-    : await response.text();
-
-  if (!response.ok) {
+httpClient.interceptors.response.use(
+  (response) => response,
+  (requestError) => {
+    const data = requestError.response?.data;
     const message = typeof data === 'string'
       ? data
       : data?.message || data?.detail || '요청을 처리하지 못했습니다.';
     const error = new Error(message);
-    error.status = response.status;
-    throw error;
-  }
+    error.status = requestError.response?.status;
+    error.cause = requestError;
+    return Promise.reject(error);
+  },
+);
 
-  return data;
+async function request(config) {
+  const response = await httpClient.request(config);
+  return response.status === 204 ? null : response.data;
 }
 
 export const api = {
-  login: (payload) => request('/api/users/login', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  }),
-  signup: (payload) => request('/api/users/signup', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  }),
-  getQuestions: () => request('/api/questions'),
-  getQuestion: (questionId) => request(`/api/questions/${questionId}`),
-  createQuestion: (payload) => request('/api/questions', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  }),
-  updateQuestion: (questionId, payload) => request(`/api/questions/${questionId}`, {
-    method: 'PUT',
-    body: JSON.stringify(payload),
-  }),
-  deleteQuestion: (questionId) => request(`/api/questions/${questionId}`, {
-    method: 'DELETE',
-  }),
-  getQuestionLikes: (questionId) => request(`/api/questions/${questionId}/likes/count`),
-  likeQuestion: (questionId) => request(`/api/questions/${questionId}/likes`, { method: 'POST' }),
-  unlikeQuestion: (questionId) => request(`/api/questions/${questionId}/likes`, { method: 'DELETE' }),
-  getAnswers: (questionId) => request(`/api/questions/${questionId}/answers`),
-  createAnswer: (questionId, payload) => request(`/api/answers/questions/${questionId}`, {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  }),
-  updateAnswer: (answerId, payload) => request(`/api/answers/${answerId}`, {
-    method: 'PUT',
-    body: JSON.stringify(payload),
-  }),
-  deleteAnswer: (answerId) => request(`/api/answers/${answerId}`, { method: 'DELETE' }),
-  getAnswerLikes: (answerId) => request(`/api/answers/${answerId}/likes/count`),
-  likeAnswer: (answerId) => request(`/api/answers/${answerId}/likes`, { method: 'POST' }),
-  unlikeAnswer: (answerId) => request(`/api/answers/${answerId}/likes`, { method: 'DELETE' }),
+  login: (payload) => request({ url: '/api/users/login', method: 'POST', data: payload }),
+  signup: (payload) => request({ url: '/api/users/signup', method: 'POST', data: payload }),
+  getQuestions: () => request({ url: '/api/questions' }),
+  getQuestion: (questionId) => request({ url: `/api/questions/${questionId}` }),
+  createQuestion: (payload) => request({ url: '/api/questions', method: 'POST', data: payload }),
+  updateQuestion: (questionId, payload) => request({ url: `/api/questions/${questionId}`, method: 'PUT', data: payload }),
+  deleteQuestion: (questionId) => request({ url: `/api/questions/${questionId}`, method: 'DELETE' }),
+  getQuestionLikes: (questionId) => request({ url: `/api/questions/${questionId}/likes/count` }),
+  likeQuestion: (questionId) => request({ url: `/api/questions/${questionId}/likes`, method: 'POST' }),
+  unlikeQuestion: (questionId) => request({ url: `/api/questions/${questionId}/likes`, method: 'DELETE' }),
+  getAnswers: (questionId) => request({ url: `/api/questions/${questionId}/answers` }),
+  createAnswer: (questionId, payload) => request({ url: `/api/answers/questions/${questionId}`, method: 'POST', data: payload }),
+  updateAnswer: (answerId, payload) => request({ url: `/api/answers/${answerId}`, method: 'PUT', data: payload }),
+  deleteAnswer: (answerId) => request({ url: `/api/answers/${answerId}`, method: 'DELETE' }),
+  getAnswerLikes: (answerId) => request({ url: `/api/answers/${answerId}/likes/count` }),
+  likeAnswer: (answerId) => request({ url: `/api/answers/${answerId}/likes`, method: 'POST' }),
+  unlikeAnswer: (answerId) => request({ url: `/api/answers/${answerId}/likes`, method: 'DELETE' }),
 };
