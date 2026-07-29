@@ -18,6 +18,7 @@
 body { margin: 0; min-width: 320px; min-height: 100vh; background: #f6f5ef; }
 button, input, textarea { font: inherit; }
 button { cursor: pointer; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 a { color: inherit; text-decoration: none; }
 .app-shell { min-height: 100vh; }
 .system-page { min-height: calc(100vh - 72px); display: grid; place-items: center; padding-top: 56px; padding-bottom: 80px; }
@@ -113,6 +114,8 @@ a { color: inherit; text-decoration: none; }
 .main-nav a { height: 100%; display: grid; place-items: center; border-bottom: 2px solid transparent; }
 .main-nav .active { color: var(--ink); border-color: var(--ink); }
 .user-area { justify-self: end; display: flex; align-items: center; gap: 14px; }
+.mobile-menu-button { display: none; width: 40px; height: 40px; padding: 9px; border: 0; background: transparent; }
+.mobile-menu-button span { display: block; height: 2px; margin: 4px 0; background: var(--ink); transition: transform .2s, opacity .2s; }
 .user-chip { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
 .user-chip span { width: 27px; height: 27px; border-radius: 50%; display: grid; place-items: center; color: white; background: var(--green); }
 
@@ -283,8 +286,11 @@ a { color: inherit; text-decoration: none; }
 @keyframes pulse { to { opacity: .25; transform: translateY(-5px); } }
 
 @media (max-width: 760px) {
-  .header-inner { grid-template-columns: 1fr auto; }
-  .main-nav { display: none; }
+  .header-inner { position: relative; grid-template-columns: 1fr auto auto; gap: 8px; }
+  .mobile-menu-button { display: block; }
+  .main-nav { position: absolute; top: 72px; left: -20px; right: -20px; height: auto; display: none; flex-direction: column; align-items: stretch; gap: 0; padding: 10px 20px 18px; background: var(--paper); border-bottom: 1px solid var(--line); box-shadow: 0 14px 24px rgba(33,45,37,.12); }
+  .main-nav-open { display: flex; }
+  .main-nav a { height: auto; padding: 14px 4px; place-items: start; border-bottom: 1px solid var(--line); }
   .hero { min-height: 370px; padding: 60px 24px; }
   .hero::after { display: none; }
   .hero h1 { letter-spacing: -2px; }
@@ -321,6 +327,7 @@ a { color: inherit; text-decoration: none; }
 @media (max-width: 480px) {
   .container, .header-inner { width: min(100% - 28px, 1120px); }
   .user-chip { display: none; }
+  .user-area { gap: 6px; }.user-area .text-button { font-size: 11px; }
   .hero-actions { align-items: flex-start; flex-direction: column; gap: 15px; }
   .question-card { grid-template-columns: 1fr; }
   .question-stats { display: flex; align-items: center; gap: 5px; text-align: left; border: 0; }
@@ -331,4 +338,8 @@ a { color: inherit; text-decoration: none; }
   .modal { padding: 32px 24px; }
   .placeholder-page, .not-found-page, .common-state { padding: 38px 22px; }
   .auth-card { padding: 38px 24px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
