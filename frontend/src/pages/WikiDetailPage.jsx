@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../api.js';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
+import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 function formatDate(value) {
@@ -13,10 +14,13 @@ function formatDate(value) {
 
 export function WikiDetailPage() {
   const { wikiPostId } = useParams();
+  const navigate = useNavigate();
   const { user, isAdmin } = useAuth();
   const [wikiPost, setWikiPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const loadWikiPost = useCallback(async () => {
     setLoading(true);
@@ -39,6 +43,19 @@ export function WikiDetailPage() {
   if (!wikiPost) return null;
 
   const canManage = user?.id === wikiPost.authorId || isAdmin;
+
+  async function deleteWikiPost() {
+    setDeleting(true);
+    setError('');
+    try {
+      await api.deleteWikiPost(wikiPost.id);
+      navigate('/wiki', { replace: true });
+    } catch (requestError) {
+      setError(requestError.message);
+      setShowDeleteConfirm(false);
+      setDeleting(false);
+    }
+  }
   return (
     <main className="wiki-detail-page container">
       <Link className="back-button" to="/wiki">← 위키 목록으로</Link>
@@ -57,13 +74,23 @@ export function WikiDetailPage() {
           {canManage && (
             <div className="wiki-owner-actions">
               <Link className="text-button" to={`/wiki/${wikiPost.id}/edit`}>수정</Link>
-              <button className="text-button danger" type="button">삭제</button>
+              <button className="text-button danger" type="button" onClick={() => setShowDeleteConfirm(true)}>삭제</button>
             </div>
           )}
         </header>
         {wikiPost.summary && <aside className="wiki-summary"><strong>한눈에 보기</strong><p>{wikiPost.summary}</p></aside>}
         <div className="wiki-content">{wikiPost.content}</div>
       </article>
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          title="위키 문서를 삭제할까요?"
+          message="삭제한 문서는 복구할 수 없습니다."
+          confirmLabel="삭제"
+          busy={deleting}
+          onConfirm={deleteWikiPost}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
     </main>
   );
 }

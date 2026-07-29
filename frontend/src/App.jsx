@@ -9,6 +9,7 @@ import { PlaceholderPage } from './pages/PlaceholderPage.jsx';
 import { SignupPage } from './pages/SignupPage.jsx';
 import { WikiDetailPage } from './pages/WikiDetailPage.jsx';
 import { WikiListPage } from './pages/WikiListPage.jsx';
+import { WikiFormPage } from './pages/WikiFormPage.jsx';
 import { AdminRoute } from './routes/AdminRoute.jsx';
 import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
@@ -618,7 +619,8 @@ function App() {
         <Route path="signup" element={<SignupPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="mypage" element={<PlaceholderPage title="마이페이지" description="내 활동을 확인하는 화면입니다." />} />
-          <Route path="wiki/new" element={<PlaceholderPage title="위키 작성" description="로그인 사용자만 위키를 작성할 수 있습니다." />} />
+          <Route path="wiki/new" element={<WikiFormPage />} />
+          <Route path="wiki/:wikiPostId/edit" element={<WikiFormPage />} />
           <Route path="questions/new" element={<PlaceholderPage title="질문 작성" description="로그인 사용자만 질문을 작성할 수 있습니다." />} />
         </Route>
         <Route element={<AdminRoute />}>
