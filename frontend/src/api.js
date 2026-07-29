@@ -42,6 +42,8 @@ async function request(config) {
 export const api = {
   login: (payload) => request({ url: '/api/users/login', method: 'POST', data: payload }),
   signup: (payload) => request({ url: '/api/users/signup', method: 'POST', data: payload }),
+  getWikiPosts: () => request({ url: '/api/wiki-posts' }),
+  getWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}` }),
   getQuestions: () => request({ url: '/api/questions' }),
   getQuestion: (questionId) => request({ url: `/api/questions/${questionId}` }),
   createQuestion: (payload) => request({ url: '/api/questions', method: 'POST', data: payload }),

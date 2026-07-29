@@ -7,6 +7,8 @@ import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
 import { PlaceholderPage } from './pages/PlaceholderPage.jsx';
 import { SignupPage } from './pages/SignupPage.jsx';
+import { WikiDetailPage } from './pages/WikiDetailPage.jsx';
+import { WikiListPage } from './pages/WikiListPage.jsx';
 import { AdminRoute } from './routes/AdminRoute.jsx';
 import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
@@ -608,7 +610,8 @@ function App() {
     <Routes>
       <Route element={<MainLayout />}>
         <Route index element={<PlaceholderPage title="UniWiki" description="대학 생활 정보를 함께 만들고 찾아보세요." />} />
-        <Route path="wiki" element={<PlaceholderPage title="위키" description="위키 목록 화면을 준비하고 있습니다." />} />
+        <Route path="wiki" element={<WikiListPage />} />
+        <Route path="wiki/:wikiPostId" element={<WikiDetailPage />} />
         <Route path="questions" element={<QuestionPage />} />
         <Route path="chatbot" element={<PlaceholderPage title="AI 챗봇" description="위키 문서를 근거로 답변하는 챗봇 화면입니다." />} />
         <Route path="login" element={<LoginPage />} />
