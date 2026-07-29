@@ -10,6 +10,9 @@ import { SignupPage } from './pages/SignupPage.jsx';
 import { WikiDetailPage } from './pages/WikiDetailPage.jsx';
 import { WikiListPage } from './pages/WikiListPage.jsx';
 import { WikiFormPage } from './pages/WikiFormPage.jsx';
+import { QuestionDetailPage } from './pages/QuestionDetailPage.jsx';
+import { QuestionFormPage } from './pages/QuestionFormPage.jsx';
+import { QuestionListPage } from './pages/QuestionListPage.jsx';
 import { AdminRoute } from './routes/AdminRoute.jsx';
 import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
@@ -613,7 +616,8 @@ function App() {
         <Route index element={<PlaceholderPage title="UniWiki" description="대학 생활 정보를 함께 만들고 찾아보세요." />} />
         <Route path="wiki" element={<WikiListPage />} />
         <Route path="wiki/:wikiPostId" element={<WikiDetailPage />} />
-        <Route path="questions" element={<QuestionPage />} />
+        <Route path="questions" element={<QuestionListPage />} />
+        <Route path="questions/:questionId" element={<QuestionDetailPage />} />
         <Route path="chatbot" element={<PlaceholderPage title="AI 챗봇" description="위키 문서를 근거로 답변하는 챗봇 화면입니다." />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
@@ -621,7 +625,8 @@ function App() {
           <Route path="mypage" element={<PlaceholderPage title="마이페이지" description="내 활동을 확인하는 화면입니다." />} />
           <Route path="wiki/new" element={<WikiFormPage />} />
           <Route path="wiki/:wikiPostId/edit" element={<WikiFormPage />} />
-          <Route path="questions/new" element={<PlaceholderPage title="질문 작성" description="로그인 사용자만 질문을 작성할 수 있습니다." />} />
+          <Route path="questions/new" element={<QuestionFormPage />} />
+          <Route path="questions/:questionId/edit" element={<QuestionFormPage />} />
         </Route>
         <Route element={<AdminRoute />}>
           <Route path="admin" element={<PlaceholderPage title="관리자" description="서비스 운영 현황을 확인하는 화면입니다." />} />
