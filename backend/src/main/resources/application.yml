@@ -20,3 +20,14 @@ spring:
 
 server:
   port: 8080
+
+uniwiki:
+  promotion:
+    like-threshold: 3
+    category-name: FAQ
+    cron: "0 0 3 * * *"
+  ai-service:
+    base-url: ${AI_SERVICE_BASE_URL:http://localhost:8000}
+  vector-sync:
+    interval-ms: 60000
+    max-attempts: 5

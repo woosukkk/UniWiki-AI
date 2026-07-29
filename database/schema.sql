@@ -116,3 +116,35 @@ CREATE TABLE likes (
 
     CONSTRAINT uq_like UNIQUE (user_id, target_type, target_id)
 );
+
+CREATE TABLE answer_wiki_promotions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    answer_id BIGINT NOT NULL UNIQUE,
+    wiki_post_id BIGINT NOT NULL UNIQUE,
+    status ENUM('COMPLETED') NOT NULL DEFAULT 'COMPLETED',
+    promoted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_promotion_answer
+        FOREIGN KEY (answer_id) REFERENCES answers(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_promotion_wiki_post
+        FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE wiki_vector_sync_jobs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    wiki_post_id BIGINT NOT NULL,
+    operation ENUM('UPSERT', 'DELETE') NOT NULL,
+    payload LONGTEXT,
+    status ENUM('PENDING', 'COMPLETED', 'FAILED') NOT NULL DEFAULT 'PENDING',
+    attempt_count INT NOT NULL DEFAULT 0,
+    last_error VARCHAR(2000),
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    processed_at DATETIME,
+
+    INDEX idx_vector_sync_retry (status, attempt_count, created_at),
+    INDEX idx_vector_sync_wiki_post (wiki_post_id)
+);

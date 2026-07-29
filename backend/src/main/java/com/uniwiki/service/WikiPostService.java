@@ -21,6 +21,7 @@ public class WikiPostService {
     private final WikiPostRepository wikiPostRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final WikiVectorSyncService vectorSyncService;
 
     // 위키 문서 생성
     @Transactional
@@ -41,6 +42,7 @@ public class WikiPostService {
         );
 
         WikiPost savedWikiPost = wikiPostRepository.save(wikiPost);
+        vectorSyncService.enqueueUpsert(savedWikiPost);
 
         return new WikiPostDto.Response(savedWikiPost);
     }
@@ -107,6 +109,7 @@ public class WikiPostService {
                 request.getSummary(),
                 request.getStatus()
         );
+        vectorSyncService.enqueueUpsert(wikiPost);
 
         return new WikiPostDto.Response(wikiPost);
     }
@@ -121,6 +124,7 @@ public class WikiPostService {
 
         validateAuthor(wikiPost, userId);
 
+        vectorSyncService.enqueueDelete(wikiPostId);
         wikiPostRepository.delete(wikiPost);
     }
 
