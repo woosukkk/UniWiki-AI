@@ -26,6 +26,7 @@ export function Header() {
           <NavLink to="/wiki">위키</NavLink>
           <NavLink to="/questions">질문 게시판</NavLink>
           <NavLink to="/chatbot">AI 챗봇</NavLink>
+          <NavLink to="/visualization">데이터 지도</NavLink>
           {isAdmin && <NavLink to="/admin">관리자</NavLink>}
         </nav>
         <button className="mobile-menu-button" type="button" aria-label="메뉴 열기" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>

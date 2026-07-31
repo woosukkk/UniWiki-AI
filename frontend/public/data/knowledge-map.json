@@ -1,0 +1,26 @@
+{
+  "generatedAt": "2026-07-31",
+  "totalRecords": 1253,
+  "categories": [
+    {"name":"교과정보","count":435,"level":"dense"},
+    {"name":"학교정보","count":17,"level":"scarce"},
+    {"name":"학교생활","count":29,"level":"scarce"},
+    {"name":"학생지원","count":171,"level":"balanced"},
+    {"name":"진로·취업","count":559,"level":"dense"},
+    {"name":"SW·인증","count":42,"level":"scarce"}
+  ],
+  "nodes": [
+    {"id":"schedule","category":"교과정보","label":"소프트웨어학과 강의시간표","shortLabel":"시간표","count":206,"x":170,"y":145,"range":"2024-1 ~ 2026-2","description":"학기별 개설 강좌와 담당 교수, 시간, 강의실 정보입니다.","source":"https://www.sejong.ac.kr/kor/intro/notice3.do"},
+    {"id":"curriculum","category":"교과정보","label":"소프트웨어학과 교과과정","shortLabel":"교과과정","count":229,"x":285,"y":215,"range":"2024 ~ 2026","description":"연도별 교과과정 편성과 변경 비교 데이터입니다.","source":"https://dept.sejong.ac.kr/softwaredpt/index.do"},
+    {"id":"academic-policy","category":"학교정보","label":"학사·졸업 제도","shortLabel":"학사제도","count":8,"x":420,"y":105,"range":"현재 확인된 공식 안내","description":"졸업 자가진단과 영어·고전독서 인증 등 학사 제도입니다.","source":"https://www.sejong.ac.kr/kor/intro/notice3.do"},
+    {"id":"catalog","category":"학교정보","label":"수강편람","shortLabel":"수강편람","count":6,"x":520,"y":150,"range":"2024-1 ~ 2026-2","description":"학기별 공식 수강편람 원문 자료입니다.","source":"https://www.sejong.ac.kr/kor/intro/notice3.do"},
+    {"id":"registration","category":"학교정보","label":"수강신청 안내","shortLabel":"수강신청","count":3,"x":470,"y":225,"range":"2024 ~ 2026","description":"연도별 수강신청 안내 문서입니다.","source":"https://www.sejong.ac.kr/kor/intro/notice3.do"},
+    {"id":"department","category":"학교생활","label":"소프트웨어학과 공지","shortLabel":"학과공지","count":29,"x":710,"y":115,"range":"2024 이후","description":"소프트웨어학과 홈페이지 공지사항입니다.","source":"https://dept.sejong.ac.kr/softwaredpt/board/notice.do"},
+    {"id":"scholarship","category":"학생지원","label":"장학 공지","shortLabel":"장학","count":104,"x":675,"y":285,"range":"2024 이후","description":"학생지원과 장학금 모집과 지급 관련 공지입니다.","source":"https://www.sejong.ac.kr/kor/intro/notice7.do"},
+    {"id":"field","category":"학생지원","label":"현장실습 안내","shortLabel":"현장실습","count":67,"x":770,"y":360,"range":"2024 이후","description":"학점연계 현장실습과 인턴십 관련 선별 공지입니다.","source":"https://www.sejong.ac.kr/kor/intro/notice6.do"},
+    {"id":"career","category":"진로·취업","label":"진로·취업 공지","shortLabel":"취업공지","count":510,"x":380,"y":395,"range":"2024 이후","description":"대학일자리플러스센터의 채용, 진로, 프로그램 공지입니다.","source":"https://www.sejong.ac.kr/kor/intro/notice6.do"},
+    {"id":"career-program","category":"진로·취업","label":"진로 프로그램","shortLabel":"프로그램","count":49,"x":510,"y":445,"range":"2024 이후","description":"상담, 캠프, 직무 프로그램을 선별한 데이터입니다.","source":"https://www.sejong.ac.kr/kor/intro/notice6.do"},
+    {"id":"sw-program","category":"SW·인증","label":"SW중심대학사업단 공지","shortLabel":"SW사업","count":24,"x":155,"y":390,"range":"현재 게시 목록","description":"SW 교육과 비교과 프로그램 관련 공지입니다.","source":"https://sw.sejong.ac.kr/sw/notice.do"},
+    {"id":"tosc","category":"SW·인증","label":"TOSC 공지","shortLabel":"TOSC","count":18,"x":245,"y":465,"range":"2024 이후","description":"SW역량평가인증원 TOSC 시험과 인증 공지입니다.","source":"https://tosc.sejong.ac.kr/ko/cusomter_support/notice"}
+  ]
+}
