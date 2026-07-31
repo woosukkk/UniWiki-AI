@@ -34,6 +34,7 @@ frontend/.vite/
 # Backend (Spring Boot / Gradle)
 # =========================================================
 .gradle/
+.gradle-local/
 backend/.gradle/
 backend/build/
 backend/out/
