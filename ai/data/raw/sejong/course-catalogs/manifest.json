@@ -45,11 +45,11 @@
     },
     {
       "term": "2026-2",
-      "status": "not-published-as-of-retrieved-date",
-      "file": null,
-      "officialFileName": null,
-      "noticeUrl": null,
-      "downloadUrl": null
+      "status": "published",
+      "file": "2026-2-course-catalog.pdf",
+      "officialFileName": "2026-2학기 수강편람_20260730.pdf",
+      "noticeUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=891086&mode=view",
+      "downloadUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=891086&attachNo=236497&mode=download"
     }
   ]
 }
