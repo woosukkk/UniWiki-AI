@@ -1,0 +1,20 @@
+{
+  "sourceBoard": "https://www.sejong.ac.kr/kor/intro/notice3.do",
+  "languages": ["ko", "en"],
+  "retrievedAt": "2026-07-31",
+  "schedules": [
+    {"term":"2024-1","file":"2024-1-course-schedule-ko.xlsx","officialFileName":"2024-1강의시간표(한국어)_20240215.xlsx","articleNo":805695,"attachNo":217072},
+    {"term":"2024-2","file":"2024-2-course-schedule-ko.xlsx","officialFileName":"2024-2강의시간표(한국어)_20240809.xlsx","articleNo":805814,"attachNo":217175},
+    {"term":"2025-1","file":"2025-1-course-schedule-ko.xlsx","officialFileName":"2025-1강의시간표(한국어)_20250205.xlsx","articleNo":805910,"attachNo":217260},
+    {"term":"2025-2","file":"2025-2-course-schedule-ko.xlsx","officialFileName":"2025-2 강의시간표 (한국어)_20250831.xlsx","articleNo":853683,"attachNo":229538},
+    {"term":"2026-1","file":"2026-1-course-schedule-ko.xlsx","officialFileName":"2026-1학기 강의시간표(한국어)_20260224.xlsx","articleNo":863048,"attachNo":232453},
+    {"term":"2026-2","file":"2026-2-course-schedule-ko.xlsx","officialFileName":"2026-2강의시간표(한국어)_20260730.xlsx","articleNo":891086,"attachNo":236498},
+    {"term":"2024-1","file":"2024-1-course-schedule-en.xlsx","officialFileName":"2024 Spring Lecture Schedule(English)_20240206 .xlsx","articleNo":805695,"attachNo":217073},
+    {"term":"2024-2","file":"2024-2-course-schedule-en.xlsx","officialFileName":"2024 Fall Lecture Schedule(English)_20240809 .xlsx","articleNo":805814,"attachNo":217177},
+    {"term":"2025-1","file":"2025-1-course-schedule-en.xlsx","officialFileName":"2025 Spring Lecture Schedule(English)_20250205.xlsx","articleNo":805910,"attachNo":217261},
+    {"term":"2025-2","file":"2025-2-course-schedule-en.xlsx","officialFileName":"2025 Fall Lectuire Schedule(English)_20250831.xlsx","articleNo":853683,"attachNo":229539},
+    {"term":"2026-1","file":"2026-1-course-schedule-en.xlsx","officialFileName":"2026 Spring Lecture Schedule(English)_20260224.xlsx","articleNo":863048,"attachNo":232454},
+    {"term":"2026-2","file":"2026-2-course-schedule-en.xlsx","officialFileName":"2026 Fall Lecture Schedule(English)_20260730.xlsx","articleNo":891086,"attachNo":236499}
+  ],
+  "downloadUrlTemplate": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo={articleNo}&attachNo={attachNo}&mode=download"
+}
