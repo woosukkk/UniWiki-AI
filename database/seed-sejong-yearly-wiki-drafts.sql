@@ -1,0 +1,1622 @@
+USE uniwiki_ai;
+
+INSERT INTO users (email, password, nickname, role)
+VALUES ('official-source@local.invalid', SHA2(UUID(), 256), '세종대 공식자료', 'USER')
+ON DUPLICATE KEY UPDATE nickname = VALUES(nickname);
+
+INSERT INTO categories (name, description)
+SELECT '교과목', '교과목 연도별 공식자료 초안'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = '교과목');
+INSERT INTO categories (name, description)
+SELECT '인증제도', '인증제도 연도별 공식자료 초안'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = '인증제도');
+INSERT INTO categories (name, description)
+SELECT '장학·지원', '장학·지원 연도별 공식자료 초안'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = '장학·지원');
+INSERT INTO categories (name, description)
+SELECT '진로·취업', '진로·취업 연도별 공식자료 초안'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = '진로·취업');
+INSERT INTO categories (name, description)
+SELECT '프로젝트', '프로젝트 연도별 공식자료 초안'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = '프로젝트');
+INSERT INTO categories (name, description)
+SELECT '학교생활', '학교생활 연도별 공식자료 초안'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = '학교생활');
+INSERT INTO categories (name, description)
+SELECT '현장실습', '현장실습 연도별 공식자료 초안'
+WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = '현장실습');
+
+SET @source_author_id = (SELECT id FROM users WHERE email = 'official-source@local.invalid');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2024년 소프트웨어학과 교과과정', '# 2024년 소프트웨어학과 교과과정
+
+2024년 교과과정 77개를 정리한 초안입니다. 교육과정 연도와 실제 수강 학기는 다를 수 있으므로 본인의 입학년도 기준 교과과정을 확인해야 합니다.
+
+| 학년 | 교과목명 | 이수구분 | 학점/이론/실습 |
+| --- | --- | --- | --- |
+| 0 | 창업과기업가정신1 | 공필 | 1.0 / 1 / 0 |
+| 0 | 문제해결을위한글쓰기와발표 | 공필 | 3.0 / 3 / 0 |
+| 0 | 서양철학:쟁점과토론 | 공필 | 3.0 / 3 / 0 |
+| 0 | 우주자연인간 | 공필 | 1.0 / 1 / 0 |
+| 0 | 대학영어 | 공필 | 2.0 / 2 / 1 |
+| 0 | 세종인을위한진로설계 | 공필 | 1.0 / 1 / 0 |
+| 0 | 세종인을위한전공탐색 | 공필 | 1.0 / 0 / 1 |
+| 0 | 한국현대사 | 균필 | 3.0 / 3 / 0 |
+| 0 | 동서양의사상과윤리 | 균필 | 3.0 / 3 / 0 |
+| 0 | 성서와기독교 | 균필 | 3.0 / 3 / 0 |
+| 0 | 세계사 | 균필 | 3.0 / 3 / 0 |
+| 0 | 경영학 | 균필 | 3.0 / 3 / 0 |
+| 0 | 경제학 | 균필 | 3.0 / 3 / 0 |
+| 0 | 미디어빅뱅과방송 | 균필 | 3.0 / 3 / 0 |
+| 0 | 현대사회와법 | 균필 | 3.0 / 3 / 0 |
+| 0 | 융합예술의이해 | 균필 | 3.0 / 3 / 0 |
+| 0 | 컴퓨터게임과메타버스 | 균필 | 3.0 / 3 / 0 |
+| 0 | 한국의문화와한류 | 균필 | 3.0 / 3 / 0 |
+| 0 | 현대예술의이해 | 균필 | 3.0 / 3 / 0 |
+| 1 | 미적분학1 | 기필 | 3.0 / 3 / 1 |
+| 1 | 고급프로그래밍활용 | 기필 | 3.0 / 2 / 1 |
+| 1 | 확률및통계 | 전기 | 3.0 / 3 / 0 |
+| 1 | C프로그래밍및실습 | 전기 | 3.0 / 2 / 2 |
+| 1 | 인공지능과빅데이터 | 기필 | 3.0 / 2 / 1 |
+| 1 | 공업수학1 | 전기 | 3.0 / 3 / 0 |
+| 1 | 선형대수 | 전기 | 3.0 / 3 / 0 |
+| 1 | 고급C프로그래밍및실습 | 전기 | 3.0 / 2 / 2 |
+| 2 | 자료구조및실습 | 전필 | 3.0 / 2 / 2 |
+| 2 | 문제해결및실습:C++ | 전필 | 3.0 / 3 / 0 |
+| 2 | 멀티미디어프로그래밍 | 전선 | 3.0 / 2 / 1 |
+| 2 | 웹프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 윈도우즈프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 일반물리및시뮬레이션 | 전선 | 3.0 / 3 / 0 |
+| 2 | 컴퓨터구조 | 전필 | 3.0 / 3 / 0 |
+| 2 | 알고리즘및실습 | 전필 | 3.0 / 2 / 2 |
+| 2 | SW설계기초(산학프로젝트입문) | 전필 | 3.0 / 3 / 0 |
+| 2 | 통계학개론 | 전선 | 3.0 / 3 / 0 |
+| 2 | 이산수학및프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 문제해결및실습:JAVA | 전선 | 3.0 / 3 / 0 |
+| 2 | 창의SW융합노마드 | 전선 | 3.0 / 3 / 0 |
+| 2 | K-MOOC:멀티미디어 | 전선 | 3.0 / 3 / 0 |
+| 3 | 운영체제 | 전필 | 3.0 / 3 / 0 |
+| 3 | 데이터베이스 | 전필 | 3.0 / 2 / 1 |
+| 3 | 오픈소스SW개론 | 전필 | 3.0 / 3 / 0 |
+| 3 | 수치해석 | 전선 | 3.0 / 3 / 0 |
+| 3 | 게임프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 소프트웨어교육1 | 전선 | 3.0 / 3 / 0 |
+| 3 | 소프트웨어공학 | 전선 | 3.0 / 3 / 0 |
+| 3 | 컴퓨터그래픽스 | 전선 | 3.0 / 2 / 1 |
+| 3 | 컴퓨터네트워크 | 전선 | 3.0 / 3 / 0 |
+| 3 | 데이터베이스프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 오픈소스SW공학 | 전선 | 3.0 / 3 / 0 |
+| 3 | 소프트웨어교육2 | 전선 | 3.0 / 3 / 0 |
+| 3 | 앱프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 음성오디오처리 | 전선 | 3.0 / 3 / 0 |
+| 3 | 데이터공학 | 전선 | 3.0 / 3 / 0 |
+| 0 | 취창업과진로설계 | 공필 | 1.0 / 1 / 0 |
+| 4 | Capstone디자인(산학협력프로젝트) | 전필 | 6.0 / 3 / 3 |
+| 4 | 영상처리 | 전선 | 3.0 / 3 / 0 |
+| 4 | 가상현실 | 전선 | 3.0 / 3 / 0 |
+| 4 | 컴퓨터애니메이션 | 전선 | 3.0 / 3 / 0 |
+| 4 | 패턴인식 | 전선 | 3.0 / 3 / 0 |
+| 4 | 소프트웨어특강1 | 전선 | 3.0 / 3 / 0 |
+| 4 | 인턴쉽1 | 전선 | 3.0 / 1 / 2 |
+| 4 | 기계학습 | 전선 | 3.0 / 3 / 0 |
+| 4 | 졸업연구및진로1 | 전선 | 1.0 / 0 / 1 |
+| 4 | 고급데이터베이스 | 전선 | 3.0 / 3 / 0 |
+| 4 | 인공지능 | 전선 | 3.0 / 3 / 0 |
+| 4 | HCI개론 | 전선 | 3.0 / 3 / 0 |
+| 4 | 지능형시스템 | 전선 | 3.0 / 3 / 0 |
+| 4 | 특허와창업 | 전선 | 3.0 / 3 / 0 |
+| 4 | 컴퓨터비전시스템 | 전선 | 3.0 / 3 / 0 |
+| 4 | 소프트웨어특강2 | 전선 | 3.0 / 3 / 0 |
+| 4 | 인턴쉽2 | 전선 | 3.0 / 1 / 2 |
+| 4 | 증강현실 | 전선 | 3.0 / 3 / 0 |
+| 4 | 졸업연구및진로2 | 전선 | 1.0 / 0 / 1 |
+| 4 | 음성인식 | 전선 | 3.0 / 3 / 0 |
+
+## 출처
+- 세종대학교 학사정보에서 내려받은 해당 연도 교과과정 목록
+
+초안 ID: software-curriculum-2024', '2024년 적용 교과과정 77개와 전년도 대비 변경 사항', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024년 소프트웨어학과 교과과정');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '인증제도');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2024년 TOSC 공지 모음', '# 2024년 TOSC 공지
+
+2024년에 게시된 TOSC 공지 3건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2024-11-22 | ※필독 ! 제10회 SW코딩역량평가 인증시험  TOSC 공지사항 (제9회 SW코딩경시대회 본선) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/39 |
+| 2024-11-22 | [고사장 안내] 제10회 SW코딩역량평가 TOSC 고사장 (시험일: 2024년 11월 26일 화요일) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/38 |
+| 2024-01-04 | [필독] 회원가입 및 접수 절차 안내 | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/18 |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2024년
+
+초안 ID: tosc-2024', '2024년에 게시된 TOSC 공지 3건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024년 TOSC 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '장학·지원');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2024년 장학 공지 모음', '# 2024년 장학 공지
+
+2024년에 게시된 장학 공지 36건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2024-12-30 | 2025-1 푸른등대 기부장학사업 신규장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810911&mode=view |
+| 2024-12-23 | 2025년 1학기 「청년창업농장학금」 장학생 선발 공고 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810910&mode=view |
+| 2024-12-17 | 2024-2 국가Ⅱ유형 및 에델바이스Ⅱ ‘추가’지급 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810909&mode=view |
+| 2024-12-04 | 2025년도 제12기 운해장학재단 신규 장학생 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810908&mode=view |
+| 2024-12-02 | 2025학년도 한국지도자육성장학재단 신규장학생 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810907&mode=view |
+| 2024-11-20 | 2025-1 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810906&mode=view |
+| 2024-11-06 | 2024-2 푸른등대 삼성기부장학금 ‘추가선발’ 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810902&mode=view |
+| 2024-11-04 | 2024-2 예술체육비전 재학중우수자 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810901&mode=view |
+| 2024-11-04 | 2024-2 인문100년 일시지원 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810900&mode=view |
+| 2024-10-15 | 2024-2 국가장학금 및 에델바이스Ⅱ 지급 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810895&mode=view |
+| 2024-09-02 | (기간연장) 2024-2 희망사다리Ⅱ유형(고졸후학습지원) 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810894&mode=view |
+| 2024-09-02 | 2024-2 희망사다리Ⅰ유형(중소기업취업연계) 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810893&mode=view |
+| 2024-08-13 | 2024-2 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 신청안내(2차) | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810890&mode=view |
+| 2024-08-09 | 2024-2 국가장학금 및 에델바이스Ⅱ 선발결과 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810889&mode=view |
+| 2024-08-01 | ﻿2024년 하반기 월정김용복장학금 장학생 모집 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810888&mode=view |
+| 2024-07-11 | 2024-2 푸른등대 기부장학사업 신규장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810887&mode=view |
+| 2024-06-14 | 2024년 2학기 「청년창업농장학금」 장학생 선발 공고 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810886&mode=view |
+| 2024-05-22 | 2024학년도 하이트진로 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810884&mode=view |
+| 2024-05-21 | 2024-2 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810883&mode=view |
+| 2024-05-07 | 2024 국가이공계 재학중우수자(2년지원) 장학생 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810880&mode=view |
+| 2024-04-18 | 2024 국가Ⅱ 신편입지원금 지급안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810878&mode=view |
+| 2024-04-15 | 2024-1 국가장학금 및 에델바이스Ⅱ 지급 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810876&mode=view |
+| 2024-04-09 | 2024 푸른등대 삼성기부장학금 신규장학생 선발안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810875&mode=view |
+| 2024-03-15 | 2024 예술체육비전 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810874&mode=view |
+| 2024-03-15 | 2024 인문100년 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810873&mode=view |
+| 2024-03-08 | ◆전액장학생 등록절차안내(0원 고지서)◆ | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810872&mode=view |
+| 2024-03-05 | 2024-1 희망사다리Ⅱ유형(고졸후학습지원) 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810871&mode=view |
+| 2024-02-28 | 2024-1 희망사다리Ⅰ유형(중소기업취업연계) 장학금 신청 안내(기간 연장) | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810870&mode=view |
+| 2024-02-27 | 2024학년도 대학생 청소년교육지원사업 장학생 모집 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810869&mode=view |
+| 2024-02-07 | 2024-1 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 선발 결과안내(1차) | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810865&mode=view |
+| 2024-02-07 | 2024-1 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 신청안내(2차) | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810864&mode=view |
+| 2024-01-30 | 2024학년도 하영호장학재단 장학생 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810863&mode=view |
+| 2024-01-30 | 2024학년도 신라문화재단 장학생 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810862&mode=view |
+| 2024-01-16 | 2024학년도 정수장학회 장학생 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810861&mode=view |
+| 2024-01-16 | 2024학년도 오뚜기함태호재단 장학생 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810860&mode=view |
+| 2024-01-11 | 2024-1 푸른등대 기부장학사업 신규장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810858&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2024년
+
+초안 ID: scholarship-2024', '2024년에 게시된 장학 공지 36건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024년 장학 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '진로·취업');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2024년 진로·취업 공지 모음', '# 2024년 진로·취업 공지
+
+2024년에 게시된 진로·취업 공지 268건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2024-12-31 | [추천채용/공통][외국계/연봉5300] 미쓰이스미토모해상 회계총무 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809953&mode=view |
+| 2024-12-31 | [추천채용/공통][대기업/외감] 신라HM 신라스테이 프론트, 식음, 조리 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809952&mode=view |
+| 2024-12-26 | [추천채용/공통][강소/서류패스] 이데아코즈 면세사업 어시스턴트 브랜드 매니저 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809951&mode=view |
+| 2024-12-26 | [추천채용/공통][중견/외감] 락앤락 국내(영업, 개발/구매 등), 중국법인(중국영업 등) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809950&mode=view |
+| 2024-12-19 | [현장실습] ICT 글로벌 과정 참여학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809949&mode=view |
+| 2024-12-17 | [추천채용/이공계][대기업/세아계열사] 세아네트웍스 KOICA 영프로페셔널 행정지원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809948&mode=view |
+| 2024-12-17 | [추천채용/공통][외국계/외감] 키사이트테크놀로지스코리아 기술영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809947&mode=view |
+| 2024-12-17 | [추천채용/이공계][중견/외국계] 한국아즈빌 기술영업, 엔지니어 등 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809946&mode=view |
+| 2024-12-17 | [추천채용/공통][중견/신용우수]한국에바라정밀기계 인사담당자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809945&mode=view |
+| 2024-12-13 | [추천채용/공통][외국계/바이트댄스]틱톡(TIKTOK) Quality Assurance 등 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809944&mode=view |
+| 2024-12-06 | [추천채용/공통][강소/기업등급상위] 페렌벨 온라인MD 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809943&mode=view |
+| 2024-12-03 | [추천채용/공통][대기업/GS계열사] 휴젤 국내영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809942&mode=view |
+| 2024-12-03 | [추천채용/공통][중견/외감] 우미건설 본사직, 현장직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809941&mode=view |
+| 2024-12-03 | [추천채용/공통][대기업/삼성계열사] 하만커넥티드서비시즈인크 HR인턴 채용_기간연장 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809940&mode=view |
+| 2024-11-27 | [추천채용/공통][중견/업계3위]오티스엘리베이터코리아 승강기 리모델링 영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809939&mode=view |
+| 2024-11-27 | [추천채용/공통][강소] 리얼데이타랩스 컨설팅/UX 채용형인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809938&mode=view |
+| 2024-11-27 | [추천채용/공통][강소] 라라스윗 온라인마케팅 채용형인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809937&mode=view |
+| 2024-11-25 | [추천채용/공통][강소/코스닥] 패션플랫폼 소싱, MD, 디자인, VMD 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809936&mode=view |
+| 2024-11-25 | [추천채용/공통][중견/코스피] 한신공영 전산 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809935&mode=view |
+| 2024-11-25 | [추천채용/공통][대기업/한화계열사] 한화모멘텀 스마트팩토리 솔루션SW개발_기간연장 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809934&mode=view |
+| 2024-11-20 | [추천채용/공통][중견/외감] SK마이크로웍스 SHE-환경관리 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809933&mode=view |
+| 2024-11-18 | [추천채용/이공계][중견/코스닥] 테크윙 연구소(SW개발 등) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809932&mode=view |
+| 2024-11-18 | [추천채용/공통][중견/코스닥] 성도이엔지 하이테크/종합건설/가스&케미칼 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809931&mode=view |
+| 2024-11-18 | [추천채용/공통][강소] 케이엔유 수입화장품 마케팅BM 채용형인턴 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809930&mode=view |
+| 2024-11-18 | [추천채용/공통][강소][서류패스] 이케이주식회사 대규모 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809929&mode=view |
+| 2024-11-15 | [추천채용/공통][대기업/한화계열사] 한화모멘텀 스마트팩토리 솔루션 SW개발 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809928&mode=view |
+| 2024-11-11 | [현장실습] 국립생물자원관 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809927&mode=view |
+| 2024-11-11 | [추천채용/공통][강소/연봉5천](주)이카운트 ERP Backend 기능개발 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809926&mode=view |
+| 2024-11-11 | [추천채용/공통][중견/외감][서류패스] 한국하우톤 R&D, 기술직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809925&mode=view |
+| 2024-11-11 | [추천채용/공통][강소][서류패스] (주)송월 대리점마케팅 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809924&mode=view |
+| 2024-11-11 | [추천채용/공통][중견/코스피] (주)신흥 기술영업, 서비스기술 등 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809923&mode=view |
+| 2024-11-11 | [추천채용/공통][공공기관] 대한주택건설협회 사무직7급 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809922&mode=view |
+| 2024-11-11 | [추천채용/공통][대기업/한화계열사] 한화로보틱스 로봇개발, SW개발 등 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809921&mode=view |
+| 2024-11-07 | [추천채용/공통][중견기업/코스닥] KINX  국내영업, 인프라운영관리 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809920&mode=view |
+| 2024-11-05 | [추천채용/공통][대기업/한진계열사] 에어코리아 탑승수속 및 출입국 서비스 지원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809919&mode=view |
+| 2024-11-05 | [추천채용/공통][외국계] 키사이트테크놀로지스코리아 기술영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809918&mode=view |
+| 2024-11-05 | [추천채용/공통][대기업/코스피] 대원강업 연구개발, 생산/품질, 영업 등 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809917&mode=view |
+| 2024-10-31 | [현장실습] 펄어비스 PA아트센터 현장실습생 모집 설명회 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809916&mode=view |
+| 2024-10-31 | [현장실습] 동계현장실습_비상교육 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809915&mode=view |
+| 2024-10-31 | [추천채용/공통][강소기업][서류패스] 에프엠커뮤니케이션즈 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809914&mode=view |
+| 2024-10-31 | [추천채용/공통][강소기업] 서린컴퍼니(라운드랩) 글로벌 마케터 채용형인턴십 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809913&mode=view |
+| 2024-10-31 | [추천채용/공통][중견/코스피][서류패스] 한국단자공업 연구, 품질, 생산, 관리 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809912&mode=view |
+| 2024-10-29 | [추천채용/공통][연구기관] 한국섬유소재연구원 행정직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809911&mode=view |
+| 2024-10-29 | [추천채용/공통][중견/업계1위][서류패스]스탠다드인터내셔널 인사 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809910&mode=view |
+| 2024-10-29 | [추천채용/공통][대기업] 김장법률사무소 비서, 빌링 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809909&mode=view |
+| 2024-10-29 | [추천채용/공통][이공계] 한일프로텍 엔지니어 및 SW개발자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809908&mode=view |
+| 2024-10-29 | [추천채용/공통][강소] (주)송월 리테일마케팅팀 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809907&mode=view |
+| 2024-10-22 | 해외취업 전문가 특강 진행(하이테크 산업 동향 및 네덜란드 해외취업 특강) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809906&mode=view |
+| 2024-10-21 | [추천채용/공통][강소기업]아이버스씨앤아이 데이터모델러, 프로그램개발자, DB엔지니어 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809905&mode=view |
+| 2024-10-21 | [추천채용/공통][대기업/외감] 대원정밀공업 연구개발, 생산, 영업 등 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809904&mode=view |
+| 2024-10-18 | [취업_점프업]24년 하반기 바이오제약 HPLC 이론 및 실습 교육 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809903&mode=view |
+| 2024-10-17 | [현장실습지원센터] 샘표식품 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809902&mode=view |
+| 2024-10-15 | [공통] 중간고사 기간 세종라운지 연장 운영 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809901&mode=view |
+| 2024-10-14 | [추천채용/공통][외국계/외감][서류패스] 키엔스코리아 컨설팅세일즈 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809900&mode=view |
+| 2024-10-11 | [추천채용/공통][대기업] 이랜드월드패션 대규모 신입공채 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809899&mode=view |
+| 2024-10-11 | [추천채용/이공계][외국계(글로벌)기업] 원테크스탑 Software Architecture 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809898&mode=view |
+| 2024-10-11 | [추천채용/공통][중견/외감] 한국NSK 기술영업, 생산기술 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809897&mode=view |
+| 2024-10-11 | [추천채용/공통][강소/외감] 일신테크놀로지 생산관리 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809896&mode=view |
+| 2024-10-07 | 서울권역 대학일자리플러스센터 거버넌스 프로젝트 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809895&mode=view |
+| 2024-10-07 | [추천채용/공통][중견/업계1위][서류패스]스탠다드인터내셔널 인사 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809894&mode=view |
+| 2024-10-04 | [추천채용/이공계][중견/코스닥] 테크윙 연구소(SW개발 등) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809893&mode=view |
+| 2024-10-02 | [공통] 하반기 Job Festival 취업준비 함께하세종 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809892&mode=view |
+| 2024-09-30 | [공통]2024학년도 대학일자리플러스센터 정책 체감도 및 만족도 조사 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809891&mode=view |
+| 2024-09-30 | [추천채용/공통][이공계] 한일프로텍 차량통신제어기 엔지니어, SW개발자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809890&mode=view |
+| 2024-09-30 | [추천채용/공통][대기업/LGCNS 자회사] 비즈테크아이 SW개발, 네트워크운영 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809889&mode=view |
+| 2024-09-30 | [추천채용/공통][외국계/외감]휴고보스코리아 HR 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809888&mode=view |
+| 2024-09-30 | [추천채용/공통][연봉4,500만](주)이카운트 서비스본부 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809887&mode=view |
+| 2024-09-30 | [추천채용/공통][대기업/코스피]동원그룹 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809886&mode=view |
+| 2024-09-30 | [공통_재학생맞춤형고용서비스]어학 준비하고 점프업 수당받기 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809885&mode=view |
+| 2024-09-30 | [현장실습]2024학년도 동계 계절학기 현장실습 참가자 모집Recruitment of Field Training (Internship) participants | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809884&mode=view |
+| 2024-09-24 | [추천채용/공통][중견기업/외감] (주)신보 해외현장 및 본사지원(인사, 자금관리) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809883&mode=view |
+| 2024-09-20 | [추천채용/공통][대기업/외감] 신라HM 신라스테이 프론트, 식음, 조리 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809882&mode=view |
+| 2024-09-20 | [공통]하반기 집중취업지원 기간 운영 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809881&mode=view |
+| 2024-09-13 | [추천채용/공통][강소/업계1위] 와이즈넛 솔루션개발직, 기술영업직 등 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809880&mode=view |
+| 2024-09-13 | [추천채용/공통][중견/외감] 현대렌탈케어 회계.재무, VOC신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809879&mode=view |
+| 2024-09-13 | [추천채용/공통][전문직무/건설/업계6위]와이케이건기 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809878&mode=view |
+| 2024-09-13 | [추천채용/공통][강소/외감][서류패스] 메디테라피 글로벌마케터 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809877&mode=view |
+| 2024-09-13 | [추천채용/공통][중견/코스피] 한미약품 국내영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809876&mode=view |
+| 2024-09-09 | [추천채용/공통][중견/코스피] (주)신흥 	기술영업, 서비스기술, 상품영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809875&mode=view |
+| 2024-09-09 | [추천채용/공통][이공계] 한일프로텍 차량통신제어기 엔지니어, SW개발자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809874&mode=view |
+| 2024-09-09 | [추천채용/공통][중견/외감] 이트너스(주) 경영지원 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809873&mode=view |
+| 2024-09-04 | [추천채용/공통][증견/외감] 제이비(구 중부도시가스) 안전관리, IT 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809872&mode=view |
+| 2024-09-02 | [추천채용/공통][증견/코스피] JW중외제약 영업원(ETC), 영업원(의료기) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809871&mode=view |
+| 2024-09-02 | [추천채용/공통][중견/코스피][성장성 상위] (주)콤텍시스템 기술영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809870&mode=view |
+| 2024-09-02 | [추천채용/이공계][중견/코스닥] 테크윙 연구소(기구설계,SW개발,Vision SW) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809869&mode=view |
+| 2024-09-02 | [이벤트]2024학년도 2학기! 총장님과 함께하는 재학생 맞춤형 고용서비스 커피차 이벤트 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809868&mode=view |
+| 2024-08-28 | [추천채용/공통][외국계/바이트댄스]틱톡(TIKTOK) Quality Assurance 등 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809867&mode=view |
+| 2024-08-28 | [추천채용/공통][중견/코스닥] 유비쿼스 B2B기술영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809866&mode=view |
+| 2024-08-28 | [추천채용/공통][중견/외감] 신라철강 매입담당(포스코) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809865&mode=view |
+| 2024-08-28 | [추천채용/공통][강소/코스닥] 씨앤씨인터내셔널 국내영업, 해외영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809864&mode=view |
+| 2024-08-28 | [추천채용/공통][강소/외감] 림스코 해외팀, 유압기계 전자제어 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809863&mode=view |
+| 2024-08-28 | [추천채용/공통][중견/업계1위][서류패스]스탠다드인터내셔널 인사,재무 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809862&mode=view |
+| 2024-08-27 | [취업_고용노동부]"핵심 노동법, 이것만은 꼭 알자!" | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809861&mode=view |
+| 2024-08-21 | [현장실습지원센터] 괌PIC 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809860&mode=view |
+| 2024-08-19 | [추천채용/공통][대기업/LU유플러스자회사] 미디어로그 MVNO사업기획 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809859&mode=view |
+| 2024-08-19 | [추천채용/공통][중견/외감] SK마이크로웍스 생산 공정 관리(수원) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809858&mode=view |
+| 2024-08-12 | [공통]노동법 준수 숏폼 챌린지 영상&슬로건 공모전 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809856&mode=view |
+| 2024-08-08 | [추천채용/이공계][대기업/세아계열사] 세아네트웍스 스마트사업, 엔지니어링, 토목건축 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809855&mode=view |
+| 2024-08-07 | [추천채용/공통][중견/외감][서류패스] 나이스신용평가 기술평가 전문연구원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809854&mode=view |
+| 2024-08-07 | [추천채용/공통][대기업/외감] 한국투자저축은행 일반, 신용여신 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809853&mode=view |
+| 2024-08-07 | [추천채용/공통][중견/코스닥] 유비쿼스 B2B기술영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809852&mode=view |
+| 2024-08-07 | [추천채용/공통][대기업/외감] 오릭스캐피탈코리아 영업, 관리 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809851&mode=view |
+| 2024-08-07 | [추천채용/공통][전문직무] 한국국제전시 전시기획자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809850&mode=view |
+| 2024-08-07 | [추천채용/공통][중견/업계4위][서류패스] 푸디스트 영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809849&mode=view |
+| 2024-08-07 | [추천채용/공통] 대한주택건설협회 사무직, 전산직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809848&mode=view |
+| 2024-08-07 | [추천채용/이공계][중견/외국계] 한국아즈빌 기술영업, 엔지니어 등 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809847&mode=view |
+| 2024-07-22 | [현장실습]2024년 양자기술 관련 인턴십 프로그램 참가자(인턴사원) 모집 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809846&mode=view |
+| 2024-07-18 | [추천채용/공통][중견/4대로펌]법무법인세종 기업금융,조세 패러리걸 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809845&mode=view |
+| 2024-07-18 | 2024년 한미 대학생 연수 WEST 하반기 지원자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809844&mode=view |
+| 2024-07-16 | [추천채용/이공계][중견/코스닥] 테크윙 SW개발 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809843&mode=view |
+| 2024-07-15 | [공통] 온통청년 해외진출/국제교육 모음집 메뉴 OPEN | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809842&mode=view |
+| 2024-07-11 | [추천채용/이공계][서류패스] 지멘스인더스트리소프트웨어 채용연계인턴_기간연장 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809841&mode=view |
+| 2024-07-10 | [추천채용/공통][대기업/LU유플러스자회사] 미디어로그 정보보안 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809840&mode=view |
+| 2024-07-09 | [추천채용/이공계][중견/코스닥] 아이디스 SW연구개발 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809839&mode=view |
+| 2024-07-09 | [추천채용/공통][중견/외국계] 지멘스헬시니어스 Software Engineer 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809838&mode=view |
+| 2024-07-09 | [추천채용/이공계][중견/외국계] 지멘스헬시니어스 Ultrasound Engineer (Junior) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809837&mode=view |
+| 2024-07-09 | [추천채용/공통][강소] (주)송월 퍼포먼스마케터, 마케팅컨텐츠디자이너 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809836&mode=view |
+| 2024-07-09 | [추천채용/공통][중견/외감] 이트너스(주) 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809835&mode=view |
+| 2024-07-09 | [추천채용/이공계][중견/업계11위] 지멘스인더스트리소프트웨어 채용연계인턴 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809834&mode=view |
+| 2024-07-09 | [추천채용/공통][외국계] 다이이치지츠교 법인영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809833&mode=view |
+| 2024-07-04 | Recruitment of Field Training (Internship) participants  for the 2024 fall Semester | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809832&mode=view |
+| 2024-07-02 | [추천채용/공통][중견/코스닥] 테크윙 인사직무 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809831&mode=view |
+| 2024-07-02 | [현장실습] 2024학년도 2학기 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809830&mode=view |
+| 2024-06-27 | [추천채용/공통][중견/외국계] 지멘스헬시니어스 Software Engineer 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809829&mode=view |
+| 2024-06-27 | [추천채용/공통][중견/외국계] 지멘스헬시니어스 Ultrasound Engineer (Junior) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809828&mode=view |
+| 2024-06-26 | [추천채용/공통][대기업] 김장법률사무소 비서, 빌링, 스탭 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809827&mode=view |
+| 2024-06-25 | [세종드림블록]중간점검 간담회 자료 공유(6/25) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809826&mode=view |
+| 2024-06-24 | [추천채용/공통][중견/외감] 현대렌탈케어 회계/재무 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809825&mode=view |
+| 2024-06-24 | 인턴형 항공분야_미래내일 일경험 사업 2차 인턴참여자 모집 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809824&mode=view |
+| 2024-06-24 | [취업_점프업]한독제약 기업탐방 프로그램 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809823&mode=view |
+| 2024-06-20 | 2024년 하반기  ICT 학점연계프로젝트 인턴십 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809822&mode=view |
+| 2024-06-19 | [추천채용/공통][연봉5,000만](주)이카운트 ERP개발, Infra&Core 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809821&mode=view |
+| 2024-06-18 | [추천채용/공통][중견] 동일알루미늄 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809820&mode=view |
+| 2024-06-18 | [추천채용/공통][중소/코스닥] 씨앤씨인터내셔널 영업, 연구 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809819&mode=view |
+| 2024-06-18 | [추천채용/공통][이공계] 한일프로텍 차량통신제어기 엔지니어, SW개발자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809818&mode=view |
+| 2024-06-14 | [추천채용/공통][외국계/유니콘기업] TikTok 대규모 신입/인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809817&mode=view |
+| 2024-06-14 | [추천채용/공통] (주)대송 기업영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809816&mode=view |
+| 2024-06-14 | [추천채용/공통][대기업/LU유플러스자회사] 미디어로그 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809815&mode=view |
+| 2024-06-10 | [추천채용/공통][서류패스] (주)유 이물분석 및 유해생물 방제 연구직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809814&mode=view |
+| 2024-06-10 | [추천채용/공통][외국계] 티피링크코리아 법인영업(기업영업) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809813&mode=view |
+| 2024-06-07 | [추천채용/이공계][중견/외감]한국요꼬가와일렉트로닉스매뉴팩처링(주) 하드웨어, 펌웨어, 생산기술 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809812&mode=view |
+| 2024-06-05 | [진로_빌드업]건강보험심사평가원 기업 견학 프로그램 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809811&mode=view |
+| 2024-06-05 | [현장실습] 국립낙동강생물지원관 현장실습 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809810&mode=view |
+| 2024-06-04 | [추천채용/공통][중견/외감] SK마이크로웍스 생산 공정 관리(천안공장) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809809&mode=view |
+| 2024-06-04 | [추천채용/공통][서류패스] 메디테라피 뷰티상품기획, 소싱MD 등 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809808&mode=view |
+| 2024-06-03 | [추천채용/공통][의약바이오1위][서류패스] 한국존슨앤존슨 재무(Finance) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809807&mode=view |
+| 2024-06-03 | [추천채용/공통][중견/코스닥] 유비쿼스 B2B기술영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809806&mode=view |
+| 2024-06-03 | [추천채용/공통][중견/외감] 엠씨엠코리아 기획MD 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809805&mode=view |
+| 2024-05-30 | [취업_공통]2024년 재학생 맞춤형 고용서비스 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809804&mode=view |
+| 2024-05-30 | [추천채용/공통][중소/코스닥] 씨앤씨인터내셔널 영업, 연구, 생산관리 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809803&mode=view |
+| 2024-05-29 | [추천채용/공통][중견] 동일알루미늄 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809802&mode=view |
+| 2024-05-29 | [추천채용/공통][강소/코스닥] 포스뱅크 글로벌영업, R&D등 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809801&mode=view |
+| 2024-05-29 | [추천채용/공통][중견/코스피] 인지그룹 대규모 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809800&mode=view |
+| 2024-05-29 | [추천채용/공통][외국계/외감] 바이어스도르프코리아Hyper Sales Supervisor  채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809799&mode=view |
+| 2024-05-29 | [추천채용/공통][코스닥][서류패스] 유아이엘 CNC 공정, 아노다이징 공정 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809798&mode=view |
+| 2024-05-29 | [추천채용/공통][중견/외감] VAN 영업 담당자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809797&mode=view |
+| 2024-05-24 | [추천채용/공통][중견/외감][서류패스] 본아이에프 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809796&mode=view |
+| 2024-05-24 | [추천채용/공통][중견/외국계] 요꼬가와전기 법무, SaleEngineer 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809795&mode=view |
+| 2024-05-24 | [추천채용/공통][대기업/코스피] CJ제일제당(BIO사업 미국지사) 회계 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809794&mode=view |
+| 2024-05-21 | [추천채용/공통][중견/외감] 아성다이소, 아성HMP 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809793&mode=view |
+| 2024-05-21 | [추천채용/공통][중견/외감] 이트너스(주) 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809792&mode=view |
+| 2024-05-21 | [추천채용/공통][중견/외감] 농심NDS 영업지원 인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809791&mode=view |
+| 2024-05-14 | [추천채용/공통][중소] KOROT(인바디그룹 자회사) 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809790&mode=view |
+| 2024-05-14 | [추천채용/공통][중견/코스피] (주)신흥 기술영업, 서비스기술 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809789&mode=view |
+| 2024-05-14 | [추천채용/공통][중견/코스피] 조선내화 대규모 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809788&mode=view |
+| 2024-05-14 | [추천채용/공통][중소/외감] 일신테크놀로지 영업, 기획 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809787&mode=view |
+| 2024-05-13 | [추천채용/공통][대기업/삼성계열사] 스테코 대규모 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809786&mode=view |
+| 2024-05-13 | [추천채용/이공계][외국계] 브룩스 인스트루먼트코리아 Application Engineer 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809785&mode=view |
+| 2024-05-13 | [추천채용/공통][외국계/외감] 키엔스코리아 컨설팅세일즈 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809784&mode=view |
+| 2024-05-10 | [현장실습] 한국항공우주연구원 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809783&mode=view |
+| 2024-05-10 | [현장실습]국립생물자원관 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809782&mode=view |
+| 2024-05-10 | [추천채용/이공계][강소기업] 한일프로텍 차량통신제어기(ECU) 검증엔지니어 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809781&mode=view |
+| 2024-05-08 | [추천채용/공통][대기업/코스피] CJ제일제당(BIO사업 미국지사) 회계 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809780&mode=view |
+| 2024-05-08 | [진로_빌드업]기아자동차 화성 기업 견학 프로그램 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809779&mode=view |
+| 2024-04-29 | [현장실습]웨스틴 조선호텔 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809778&mode=view |
+| 2024-04-29 | [추천채용/공통][중견/외감][서류패스] 동희그룹 대규모 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809777&mode=view |
+| 2024-04-29 | [추천채용/공통][중견/외감] 현대렌탈케어 교육팀 채용형인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809776&mode=view |
+| 2024-04-26 | [취업_공통]2024년 재학생 맞춤형 고용서비스 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809775&mode=view |
+| 2024-04-25 | [현장실습]더플라자호텔 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809774&mode=view |
+| 2024-04-25 | [인턴십] 롯데괌호텔 (학점인정과정 아님) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809773&mode=view |
+| 2024-04-25 | [현장실습] PA아트센터 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809772&mode=view |
+| 2024-04-25 | [현장실습] 샘표식품 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809771&mode=view |
+| 2024-04-23 | [추천채용/이공계][중견/외국계] 한국아즈빌 기술영업, 자동제어 등 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809770&mode=view |
+| 2024-04-23 | [추천채용/공통][중견] 성주디앤디 Special Project 디자이너(계약직) 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809769&mode=view |
+| 2024-04-23 | [추천채용/공통][중견/코스피] 화천기계 영업,개발,제어 등 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809768&mode=view |
+| 2024-04-23 | [추천채용/공통][중견/외감] 에이에스이코리아 Customer Service, Finance 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809767&mode=view |
+| 2024-04-19 | (기간연장)2024학년도 진로동아리 [세종드림블럭] 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809766&mode=view |
+| 2024-04-17 | ([추천채용/공통][중견/외감] SK마이크로웍스 설비엔지니어(UT/천안공장) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809765&mode=view |
+| 2024-04-16 | [추천채용/공통][대기업] 동원그룹 대규모 신입공채 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809764&mode=view |
+| 2024-04-16 | [추천채용/공통][중견] 동일알루미늄 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809763&mode=view |
+| 2024-04-15 | [추천채용/이공계][중견/업계1위] 한국요꼬가와전기 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809762&mode=view |
+| 2024-04-15 | [추천채용/공통][대기업/서류패스] 이랜드리테일 대규모 신입공채 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809761&mode=view |
+| 2024-04-08 | [추천채용/공통][중견/외감] SK마이크로웍스 설비엔지니어 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809760&mode=view |
+| 2024-04-05 | [추천채용/공통][중소] 브랜드유니버스 Sports Marketing팀 인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809759&mode=view |
+| 2024-04-05 | [추천채용/공통][중견] 신성통상(주) 생산담당 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809758&mode=view |
+| 2024-04-05 | [추천채용/공통][중견] 이트너스(주) 복리후생, 총무일반, GHD, 보안, 영업 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809757&mode=view |
+| 2024-04-05 | [추천채용/이공계][중견/외국계] 한국아즈빌(주) BA영업팀 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809756&mode=view |
+| 2024-04-05 | [추천채용/공통][강소] 케이엔유 수입마케팅BM 채용전환형인턴 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809755&mode=view |
+| 2024-04-05 | [추천채용/공통][강소] (주)송월 리테일마케팅 신입 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809754&mode=view |
+| 2024-04-05 | [추천채용/공통][코스닥] 모두투어네트워크 영업,상품,지원 채용전환형인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809753&mode=view |
+| 2024-04-05 | Recruitment of Field Training (Internship) participants for the 2024 Summer Semester | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809752&mode=view |
+| 2024-04-05 | [현장실습] 2024학년도 하계 현장실습 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809751&mode=view |
+| 2024-04-01 | [추천채용/공통][외국계/바이트댄스]틱톡(TIKTOK) Global Business Solutions(Beauty마케팅) 체험형인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809750&mode=view |
+| 2024-04-01 | [추천채용/공통][대기업] 김장법률사무소 비서, 빌링 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809749&mode=view |
+| 2024-03-29 | [추천채용/공통][중견/코스닥] 에이디테크놀로지 반도체 설계 엔지니어 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809748&mode=view |
+| 2024-03-29 | [추천채용/공통][대기업] (주)에이플러스에셋어드바이저 수수료관리 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809747&mode=view |
+| 2024-03-26 | [추천채용/공통][대기업] 에스지씨솔루션(주) 국내영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809746&mode=view |
+| 2024-03-20 | [추천채용/공통][외국계/바이트댄스]틱톡(TIKTOK) Quality Assurance 등 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809745&mode=view |
+| 2024-03-19 | [추천채용/상경계열][중견] 법무법인율촌 회계팀 채용연계인턴 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809744&mode=view |
+| 2024-03-18 | [추천채용/공통][강소/코스닥] 케이아이엔엑스(KINX) 신입공채 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809743&mode=view |
+| 2024-03-18 | [추천채용/공통][대기업] 이랜드월드 패션 대규모 신입공채 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809742&mode=view |
+| 2024-03-18 | [추천채용/공통][중견] 동희홀딩스(동희그룹) 해외영업 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809741&mode=view |
+| 2024-03-15 | [추천채용/공통][중견/코스피] 넥센 영업팀(수출) 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809740&mode=view |
+| 2024-03-15 | [추천채용/이공계][강소기업] 한일프로텍 차량통신제어기(ECU) 검증엔지니어 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809739&mode=view |
+| 2024-03-12 | [추천채용/공통][중견/외국계] 한국존슨앤드존슨메디칼 영업직 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809738&mode=view |
+| 2024-03-12 | [취업/공통]2024 상반기 거점형 특화프로그램 모집 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809737&mode=view |
+| 2024-03-12 | [채용행사/이공계][삼성/대기업/업계1위]삼성SDI 채용상담회(3/13) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809736&mode=view |
+| 2024-03-08 | [추천채용/공통][중견/코스피] (주)신흥 기술영업, 서비스기술, 홍보 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809735&mode=view |
+| 2024-03-08 | [추천채용/공통][대기업] (주)에어코리아 공항서비스직 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809734&mode=view |
+| 2024-03-08 | 2024학년도 하반기 ICT 글로벌인턴십 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809733&mode=view |
+| 2024-03-06 | [추천채용/공통][연구기관] 한국섬유소재연구원 인사, 회계 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809732&mode=view |
+| 2024-03-05 | [추천채용/이공계][중견/업계11위] 지멘스인더스트리소프트웨어 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809731&mode=view |
+| 2024-03-05 | [추천채용/공통][코스닥/연봉4,000] 라온시큐어 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809730&mode=view |
+| 2024-02-29 | [추천채용/이공계][중견/업계4위] 쌍용건설 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809729&mode=view |
+| 2024-02-28 | [추천채용/공통][강소기업]와디즈 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809728&mode=view |
+| 2024-02-28 | [추천채용/공통][외국계/바이트댄스]틱톡(TIKTOK) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809727&mode=view |
+| 2024-02-27 | [채용행사/이공계][중견/코스닥]쎄트렉아이 채용상담회&런치설명회(3/8) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809726&mode=view |
+| 2024-02-26 | [채용행사/이공계][LIG그룹/중견/업계1위]LIG넥스원 채용상담회(3/7) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809725&mode=view |
+| 2024-02-23 | [추천채용][전문직무] 케이더블유이코리아 통번역 비서(일본어) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809724&mode=view |
+| 2024-02-22 | [추천채용/공통][중견/외감] SK마이크로웍스/SK마이크로웍스솔루션즈 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809723&mode=view |
+| 2024-02-22 | [취업]2024 상반기 한·미 대학생 연수(WEST) 참가자 모집 공고 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809722&mode=view |
+| 2024-02-19 | [추천채용/호관대][대기업/업계7위] (주)이랜드파크 호텔리어 전환형인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809721&mode=view |
+| 2024-02-15 | [추천채용/공통][중견/업계2위/코스피]화천기계 채용형인턴십 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809720&mode=view |
+| 2024-02-14 | [추천채용/공통][코스닥/업계8위] KOROT ((주)인바디_혈압계사업파트) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809719&mode=view |
+| 2024-02-13 | [추천채용/공통][중소/코스닥] 로보티즈 해외영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809718&mode=view |
+| 2024-02-13 | [추천채용/소융대][연봉4750만](주)이카운트 시스템관리자(SA) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809717&mode=view |
+| 2024-02-07 | [추천채용/공통][중견/업계2위] 엔피씨주식회사 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809716&mode=view |
+| 2024-02-05 | [추천채용/공통][중견/업계2위]시몬스 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809715&mode=view |
+| 2024-02-02 | [추천채용/공통][중견/업계2위]현대렌탈케어 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809714&mode=view |
+| 2024-02-02 | [추천채용/공통][중견/연봉5000만]조선내화(주) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809713&mode=view |
+| 2024-01-31 | [추천채용/이공계]SNF Korea(구 OCI 계열사) 본사 기술영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809712&mode=view |
+| 2024-01-31 | [추천채용/소융대][연봉4750만](주)이카운트 운영본부 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809711&mode=view |
+| 2024-01-29 | [추천채용/공통][중견/코스피](주)신흥 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809710&mode=view |
+| 2024-01-26 | [추천채용/공통][대기업/업계1위]쿠팡 정규직 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809709&mode=view |
+| 2024-01-26 | [추천채용/이공계][중견/외국계]프라이스워터하우스쿠퍼스컨설팅(PTS) 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809708&mode=view |
+| 2024-01-23 | [추천채용/이공계][중견/업계1위] 희성피엠텍 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809707&mode=view |
+| 2024-01-23 | ICT 학점연계프로젝트인턴십 참여학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809706&mode=view |
+| 2024-01-22 | [추천채용/공통][중견/업계3위]오티스엘리베이터코리아 신규영업 및 대리점관리 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809705&mode=view |
+| 2024-01-19 | [추천채용/이공계][중견/업계9위] 에이에스이코리아 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809704&mode=view |
+| 2024-01-19 | [교육안내] SK쉴더스 클라우드 기반 스마트 융합보안 과정 채용연계형 교육생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809703&mode=view |
+| 2024-01-19 | [추천채용/이공계][중견/업계9위]JB주식회사(구 중부도시가스) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809702&mode=view |
+| 2024-01-18 | [추천채용/이공계][중견/외국계]한국아즈빌 기술영업 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809701&mode=view |
+| 2024-01-18 | [추천채용/공통] 미앤미메디컬그룹((주)지에스에이) 마케팅 경영지원 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809700&mode=view |
+| 2024-01-17 | [추천채용/건축/디자인][중견] (주)한샘 리하우스사업본부 홈 인테리어 디자이너 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809699&mode=view |
+| 2024-01-17 | [추천채용/이공계][중견/코스닥](주)테크윙 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809698&mode=view |
+| 2024-01-16 | [추천채용] 2024년 지역인재 7급 수습직원 선발시험 추천자 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809697&mode=view |
+| 2024-01-16 | [추천채용/호관대][전문직무] 오마이호텔앤코 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809696&mode=view |
+| 2024-01-16 | [추천채용/공통][중견/코스닥]아이크래프트 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809695&mode=view |
+| 2024-01-15 | [추천채용/공통][외국계/삼성전자협력사]히로세코리아 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809694&mode=view |
+| 2024-01-11 | [추천채용/공통][외국계/바이트댄스]틱톡(TIKTOK) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809693&mode=view |
+| 2024-01-11 | [추천채용/공통][중견](주)LIG시스템 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809692&mode=view |
+| 2024-01-11 | [추천채용/이공계][중견/업계1위] 한국요꼬가와전기 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809691&mode=view |
+| 2024-01-10 | [추천채용][서류패스](주)이데아코즈(안나수이, 아벤느 등) 마케팅 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809690&mode=view |
+| 2024-01-09 | [추천채용/공통][중견/업계7위/2차전지]동일알루미늄(주) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809689&mode=view |
+| 2024-01-08 | [추천채용/공통][외국계/중견]시큐리타스코리아 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809688&mode=view |
+| 2024-01-08 | [추천채용/공통][전문직무/강소]이트너스 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809687&mode=view |
+| 2024-01-03 | [기업탐방] 스마일게이트홀딩스 기업탐방(1/18) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809686&mode=view |
+| 2024-01-03 | 2024년도 1학기 현장실습학기제 신청 안내 (field training for spring semester) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809685&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2024년
+
+초안 ID: career-2024', '2024년에 게시된 진로·취업 공지 268건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024년 진로·취업 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '학교생활');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2024년 학과 공지 모음', '# 2024년 학과 공지
+
+2024년에 게시된 학과 공지 16건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2024-11-21 | 지능형미디어 연구실 학부생 연구원 모집 공고 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24974&mode=view |
+| 2024-11-04 | [KOCCA] 2024 게임콘텐츠 제작지원 이용자평가 이용자 모집 협조 요청의 건 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24973&mode=view |
+| 2024-10-02 | 채용홍보(SPC그룹) | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24972&mode=view |
+| 2024-09-30 | 채용홍보(두산건설) | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24971&mode=view |
+| 2024-09-27 | 채용홍보((주)웹젠) | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24970&mode=view |
+| 2024-09-06 | 2025학년도부터 콘텐츠소프트웨어학과로 개편됩니다. | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24969&mode=view |
+| 2024-08-29 | [2024-2] 학습공동체(전공심화, 창의학습) | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24968&mode=view |
+| 2024-08-21 | HD현대 24년 하반기 AI 부문 신입 공채 채용정보 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24967&mode=view |
+| 2024-08-20 | [한국자동차연구원]별정직(계약직) 채용공고 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24966&mode=view |
+| 2024-06-13 | 제 4회 KOPIS 빅데이터 공모전 참가자 모집 (~7.11) | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24965&mode=view |
+| 2024-06-10 | 연구보조원(학부생) 구인 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24964&mode=view |
+| 2024-06-10 | EY AI+X 스쿨 교육생 모집 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24963&mode=view |
+| 2024-06-04 | 2024 상반기 현대자동차 계약학과 모집 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24962&mode=view |
+| 2024-05-29 | «한국인터넷교육방송» SPEC UP! 온라인 강좌 100% 전액지원 프로모션 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24961&mode=view |
+| 2024-05-20 | <2024년 SW중심대학 K-SW스퀘어 가을 프로그램 개최> | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24960&mode=view |
+| 2024-04-22 | 2024학년도 하계 계절학기 개설 희망 교과목 수요 조사 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24959&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2024년
+
+초안 ID: department-2024', '2024년에 게시된 학과 공지 16건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024년 학과 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '현장실습');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2024년 현장실습 공지 모음', '# 2024년 현장실습 공지
+
+2024년에 게시된 현장실습 공지 29건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2024-12-19 | [현장실습] ICT 글로벌 과정 참여학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809949&mode=view |
+| 2024-11-27 | [추천채용/공통][강소] 리얼데이타랩스 컨설팅/UX 채용형인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809938&mode=view |
+| 2024-11-27 | [추천채용/공통][강소] 라라스윗 온라인마케팅 채용형인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809937&mode=view |
+| 2024-11-11 | [현장실습] 국립생물자원관 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809927&mode=view |
+| 2024-10-31 | [현장실습] 펄어비스 PA아트센터 현장실습생 모집 설명회 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809916&mode=view |
+| 2024-10-31 | [현장실습] 동계현장실습_비상교육 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809915&mode=view |
+| 2024-10-31 | [추천채용/공통][강소기업] 서린컴퍼니(라운드랩) 글로벌 마케터 채용형인턴십 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809913&mode=view |
+| 2024-10-17 | [현장실습지원센터] 샘표식품 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809902&mode=view |
+| 2024-09-30 | [현장실습]2024학년도 동계 계절학기 현장실습 참가자 모집Recruitment of Field Training (Internship) participants | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809884&mode=view |
+| 2024-08-21 | [현장실습지원센터] 괌PIC 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809860&mode=view |
+| 2024-07-22 | [현장실습]2024년 양자기술 관련 인턴십 프로그램 참가자(인턴사원) 모집 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809846&mode=view |
+| 2024-07-02 | [현장실습] 2024학년도 2학기 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809830&mode=view |
+| 2024-06-20 | 2024년 하반기  ICT 학점연계프로젝트 인턴십 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809822&mode=view |
+| 2024-06-05 | [현장실습] 국립낙동강생물지원관 현장실습 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809810&mode=view |
+| 2024-05-21 | [추천채용/공통][중견/외감] 농심NDS 영업지원 인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809791&mode=view |
+| 2024-05-10 | [현장실습] 한국항공우주연구원 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809783&mode=view |
+| 2024-05-10 | [현장실습]국립생물자원관 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809782&mode=view |
+| 2024-04-29 | [현장실습]웨스틴 조선호텔 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809778&mode=view |
+| 2024-04-29 | [추천채용/공통][중견/외감] 현대렌탈케어 교육팀 채용형인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809776&mode=view |
+| 2024-04-25 | [현장실습]더플라자호텔 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809774&mode=view |
+| 2024-04-25 | [인턴십] 롯데괌호텔 (학점인정과정 아님) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809773&mode=view |
+| 2024-04-25 | [현장실습] PA아트센터 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809772&mode=view |
+| 2024-04-25 | [현장실습] 샘표식품 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809771&mode=view |
+| 2024-04-05 | [추천채용/공통][중소] 브랜드유니버스 Sports Marketing팀 인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809759&mode=view |
+| 2024-04-05 | [현장실습] 2024학년도 하계 현장실습 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809751&mode=view |
+| 2024-03-08 | 2024학년도 하반기 ICT 글로벌인턴십 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809733&mode=view |
+| 2024-02-15 | [추천채용/공통][중견/업계2위/코스피]화천기계 채용형인턴십 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809720&mode=view |
+| 2024-01-23 | ICT 학점연계프로젝트인턴십 참여학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809706&mode=view |
+| 2024-01-03 | 2024년도 1학기 현장실습학기제 신청 안내 (field training for spring semester) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809685&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2024년
+
+초안 ID: field-practice-2024', '2024년에 게시된 현장실습 공지 29건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024년 현장실습 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2024-1 소프트웨어학과 강의시간표', '# 2024-1 소프트웨어학과 강의시간표
+
+2024-1 학기의 소프트웨어학과 및 콘텐츠소프트웨어학과 개설 강좌 31개를 정리한 초안입니다. 다른 학기의 정보는 포함하지 않았습니다.
+
+| 학수번호 | 분반 | 교과목명 | 이수구분 | 학점 | 교수 | 강의시간 | 강의실 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 009952 | 001 | 자료구조및실습 | 전공필수 | 3.0 | 최준연 | 월 15:00~17:00, 월 17:00~19:00 | 센B114,센B111 |
+| 009952 | 002 | 자료구조및실습 | 전공필수 | 3.0 | 최준연 | 수 15:00~17:00, 수 17:00~19:00 | 센B114,센B111 |
+| 009992 | 001 | 문제해결및실습:C++ | 전공필수 | 3.0 | 박상일 | 화 목 12:00~13:30 | 센B112 |
+| 009992 | 002 | 문제해결및실습:C++ | 전공필수 | 3.0 | 박상일 | 화 목 13:30~15:00 | 센B112 |
+| 005619 | 001 | 멀티미디어프로그래밍 | 전공선택 | 3.0 | 박상일 | 화 목 15:00~16:30 | 센B112 |
+| 009959 | 001 | 확률통계및프로그래밍 | 전공선택 | 3.0 | - | 월 수 09:00~10:30 | 센B111 |
+| 009959 | 002 | 확률통계및프로그래밍 | 전공선택 | 3.0 | - | 월 수 10:30~12:00 | 센B111 |
+| 010206 | 001 | 일반물리및시뮬레이션 | 전공선택 | 3.0 | 송오영 | 월 수 12:00~13:30 | 센B112 |
+| 010206 | 002 | 일반물리및시뮬레이션 | 전공선택 | 3.0 | 송오영 | 월 수 13:30~15:00 | 센B112 |
+| 004310 | 001 | 운영체제 | 전공필수 | 3.0 | 김청원 | 월 수 09:00~10:30 | 센B114 |
+| 004310 | 002 | 운영체제 | 전공필수 | 3.0 | 김청원 | 월 수 10:30~12:00 | 센B114 |
+| 007219 | 001 | 데이터베이스 | 전공필수 | 3.0 | 변재욱 | 화 목 10:30~12:00 | 센B111 |
+| 007219 | 002 | 데이터베이스 | 전공필수 | 3.0 | 변재욱 | 화 목 12:00~13:30 | 센B111 |
+| 009957 | 001 | 오픈소스SW개론 | 전공필수 | 3.0 | 이은상 | 화 목 15:00~16:30 | 센B111 |
+| 009957 | 002 | 오픈소스SW개론 | 전공필수 | 3.0 | 이은상 | 화 목 16:30~18:00 | 센B111 |
+| 004102 | 001 | 수치해석 | 전공선택 | 3.0 | - | 월 수 13:30~15:00 | 센B114 |
+| 009960 | 001 | Capstone디자인(산학협력프로젝트) | 전공필수 | 6.0 | 권순일 | 금 13:30~19:30 | 센B112 |
+| 006208 | 001 | 가상현실 | 전공선택 | 3.0 | 이종원 | 화 목 12:00~13:30 | 센B114 |
+| 010000 | 001 | 기계학습 | 전공선택 | 3.0 | 권순일 | 월 수 15:00~16:30 | 센B112 |
+| 010111 | 001 | 졸업연구및진로1 | 전공선택 | 1.0 | 최준연 | 목 18:00~19:00 | 센B114 |
+| 010111 | 002 | 졸업연구및진로1 | 전공선택 | 1.0 | 김청원 | 목 18:00~19:00 | 센B114 |
+| 010111 | 003 | 졸업연구및진로1 | 전공선택 | 1.0 | 박상일 | 목 18:00~19:00 | 센B114 |
+| 010111 | 004 | 졸업연구및진로1 | 전공선택 | 1.0 | 백성욱 | 목 18:00~19:00 | 센B114 |
+| 010111 | 005 | 졸업연구및진로1 | 전공선택 | 1.0 | 변재욱 | 목 18:00~19:00 | 센B114 |
+| 010111 | 006 | 졸업연구및진로1 | 전공선택 | 1.0 | 이종원 | 목 18:00~19:00 | 센B114 |
+| 010111 | 007 | 졸업연구및진로1 | 전공선택 | 1.0 | 이은상 | 목 18:00~19:00 | 센B114 |
+| 010111 | 008 | 졸업연구및진로1 | 전공선택 | 1.0 | 권순일 | 목 18:00~19:00 | 센B114 |
+| 010111 | 009 | 졸업연구및진로1 | 전공선택 | 1.0 | 송오영 | 목 18:00~19:00 | 센B114 |
+| 007330 | 001 | 확률및통계 | 전공기초 | 3.0 | 이은상 | 월 수 12:00~13:30 | 센B114 |
+| 009912 | 001 | C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 수 13:30~15:30 | 센B111 |
+| 009912 | 002 | C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 수 16:30~18:30 | 센B112 |
+
+## 출처
+- 세종대학교 2024-1 강의시간표: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805695&mode=view
+- 실제 수강신청 전 학사정보시스템에서 변경 여부를 다시 확인해야 합니다.
+
+초안 ID: course-schedule-2024-1', '2024-1 소프트웨어학과 개설 강좌 31개와 교수·시간·강의실 정보', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024-1 소프트웨어학과 강의시간표');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2024-2 소프트웨어학과 강의시간표', '# 2024-2 소프트웨어학과 강의시간표
+
+2024-2 학기의 소프트웨어학과 및 콘텐츠소프트웨어학과 개설 강좌 34개를 정리한 초안입니다. 다른 학기의 정보는 포함하지 않았습니다.
+
+| 학수번호 | 분반 | 교과목명 | 이수구분 | 학점 | 교수 | 강의시간 | 강의실 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 003278 | 001 | 컴퓨터구조 | 전공필수 | 3.0 | 이경호 | 월 수 12:00~13:30 | 센B114 |
+| 003278 | 002 | 컴퓨터구조 | 전공필수 | 3.0 | 이경호 | 월 수 13:30~15:00 | 센B114 |
+| 009954 | 001 | 알고리즘및실습 | 전공필수 | 3.0 | 송오영 | 월 16:30~18:30 | 센B111 |
+| 009954 | 002 | 알고리즘및실습 | 전공필수 | 3.0 | 송오영 | 수 16:30~18:30 | 센B111 |
+| 009993 | 001 | SW설계기초(산학프로젝트입문) | 전공필수 | 3.0 | 정승화 | 화 목 15:00~16:30 | 센B111 |
+| 009993 | 002 | SW설계기초(산학프로젝트입문) | 전공필수 | 3.0 | 정승화 | 화 목 16:30~18:00 | 센B111 |
+| 009955 | 001 | 이산수학및프로그래밍 | 전공선택 | 3.0 | 이은상 | 월 수 10:30~12:00 | 센B112 |
+| 009955 | 002 | 이산수학및프로그래밍 | 전공선택 | 3.0 | 이은상 | 월 수 12:00~13:30 | 센B112 |
+| 009956 | 001 | 문제해결및실습:JAVA | 전공선택 | 3.0 | 박상일 | 월 수 13:30~15:00 | 센B111 |
+| 009956 | 002 | 문제해결및실습:JAVA | 전공선택 | 3.0 | 박상일 | 월 수 15:00~16:30 | 센B111 |
+| 009961 | 001 | 선형대수및프로그래밍 | 전공선택 | 3.0 | 이종원 | 화 목 12:00~13:30 | 센B114 |
+| 009961 | 002 | 선형대수및프로그래밍 | 전공선택 | 3.0 | 이종원 | 화 목 13:30~15:00 | 센B114 |
+| 001769 | 001 | 소프트웨어공학 | 전공선택 | 3.0 | 이경호 | 화 목 09:00~10:30 | 센B114 |
+| 003281 | 001 | 컴퓨터그래픽스 | 전공선택 | 3.0 | 박상일 | 월 수 12:00~13:30 | 센B111 |
+| 005910 | 001 | 데이터베이스프로그래밍 | 전공선택 | 3.0 | 변재욱 | 화 목 10:30~12:00 | 센B112 |
+| 011175 | 001 | 음성오디오처리 | 전공선택 | 3.0 | 권순일 | 화 목 15:00~16:30 | 센B112 |
+| 009960 | 001 | Capstone디자인(산학협력프로젝트) | 전공필수 | 6.0 | 권순일 | 금 13:30~19:30 | 센B112 |
+| 002505 | 001 | 인공지능 | 전공선택 | 3.0 | 이은상 | 화 목 15:00~16:30 | 센B114 |
+| 009973 | 001 | 소프트웨어특강2 | 전공선택 | 3.0 | 최준연 | 화 16:30~19:30 | 센B114 |
+| 010112 | 001 | 졸업연구및진로2 | 전공선택 | 1.0 | 최준연 | 목 18:00~19:00 | 센B111 |
+| 010112 | 002 | 졸업연구및진로2 | 전공선택 | 1.0 | 송오영 | 목 18:00~19:00 | 센B111 |
+| 010112 | 003 | 졸업연구및진로2 | 전공선택 | 1.0 | 박상일 | 목 18:00~19:00 | 센B111 |
+| 010112 | 004 | 졸업연구및진로2 | 전공선택 | 1.0 | 백성욱 | 목 18:00~19:00 | 센B111 |
+| 010112 | 005 | 졸업연구및진로2 | 전공선택 | 1.0 | 변재욱 | 목 18:00~19:00 | 센B111 |
+| 010112 | 006 | 졸업연구및진로2 | 전공선택 | 1.0 | 이종원 | 목 18:00~19:00 | 센B111 |
+| 010112 | 007 | 졸업연구및진로2 | 전공선택 | 1.0 | 이은상 | 목 18:00~19:00 | 센B111 |
+| 010112 | 008 | 졸업연구및진로2 | 전공선택 | 1.0 | 권순일 | 목 18:00~19:00 | 센B111 |
+| 011839 | 001 | 세종인을위한전공탐색 | 공통교양필수 | 1.0 | 박상일 | 월 18:00~19:00 | 집302 |
+| 011839 | 002 | 세종인을위한전공탐색 | 공통교양필수 | 1.0 | 최준연 | 월 18:00~19:00 | 집302 |
+| 000304 | 001 | 공업수학1 | 전공기초 | 3.0 | Al-antari Mugahed Ali Shawqi | 화 목 09:00~10:30 | 센B111 |
+| 000304 | 002 | 공업수학1 | 전공기초 | 3.0 | Al-antari Mugahed Ali Shawqi | 화 목 10:30~12:00 | 센B111 |
+| 001725 | 001 | 선형대수 | 전공기초 | 3.0 | 이종원 | 월 수 15:00~16:30 | 센B114 |
+| 009913 | 001 | 고급C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 목 13:00~15:00 | 센B112 |
+| 009913 | 002 | 고급C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 금 16:30~18:30 | 센B111 |
+
+## 출처
+- 세종대학교 2024-2 강의시간표: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805814&mode=view
+- 실제 수강신청 전 학사정보시스템에서 변경 여부를 다시 확인해야 합니다.
+
+초안 ID: course-schedule-2024-2', '2024-2 소프트웨어학과 개설 강좌 34개와 교수·시간·강의실 정보', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024-2 소프트웨어학과 강의시간표');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025년 소프트웨어학과 교과과정', '# 2025년 소프트웨어학과 교과과정
+
+2025년 교과과정 76개를 정리한 초안입니다. 교육과정 연도와 실제 수강 학기는 다를 수 있으므로 본인의 입학년도 기준 교과과정을 확인해야 합니다.
+
+| 학년 | 교과목명 | 이수구분 | 학점/이론/실습 |
+| --- | --- | --- | --- |
+| 0 | 창업과기업가정신1 | 공필 | 1.0 / 1 / 0 |
+| 0 | 문제해결을위한글쓰기와발표 | 공필 | 3.0 / 3 / 0 |
+| 0 | 서양철학:쟁점과토론 | 공필 | 3.0 / 3 / 0 |
+| 0 | 취창업과진로설계 | 공필 | 1.0 / 1 / 0 |
+| 0 | 우주자연인간 | 공필 | 1.0 / 1 / 0 |
+| 0 | 대학영어 | 공필 | 2.0 / 2 / 1 |
+| 0 | 세종인을위한진로설계 | 공필 | 1.0 / 1 / 0 |
+| 0 | 세종인을위한전공탐색 | 공필 | 1.0 / 0 / 1 |
+| 0 | 한국현대사 | 균필 | 3.0 / 3 / 0 |
+| 0 | 동서양의사상과윤리 | 균필 | 3.0 / 3 / 0 |
+| 0 | 성서와기독교 | 균필 | 3.0 / 3 / 0 |
+| 0 | 세계사 | 균필 | 3.0 / 3 / 0 |
+| 0 | 경영학 | 균필 | 3.0 / 3 / 0 |
+| 0 | 경제학 | 균필 | 3.0 / 3 / 0 |
+| 0 | 미디어빅뱅과방송 | 균필 | 3.0 / 3 / 0 |
+| 0 | 현대사회와법 | 균필 | 3.0 / 3 / 0 |
+| 0 | 융합예술의이해 | 균필 | 3.0 / 3 / 0 |
+| 0 | 컴퓨터게임과메타버스 | 균필 | 3.0 / 3 / 0 |
+| 0 | 한국의문화와한류 | 균필 | 3.0 / 3 / 0 |
+| 0 | 현대예술의이해 | 균필 | 3.0 / 3 / 0 |
+| 1 | 미적분학1 | 기필 | 3.0 / 3 / 1 |
+| 1 | 고급프로그래밍활용 | 기필 | 3.0 / 2 / 1 |
+| 1 | 확률및통계 | 전기 | 3.0 / 3 / 0 |
+| 1 | C프로그래밍및실습 | 전기 | 3.0 / 2 / 2 |
+| 1 | 인공지능과빅데이터 | 기필 | 3.0 / 2 / 1 |
+| 1 | 공업수학1 | 전기 | 3.0 / 3 / 0 |
+| 1 | 선형대수 | 전기 | 3.0 / 3 / 0 |
+| 1 | 고급C프로그래밍및실습 | 전기 | 4.0 / 3 / 2 |
+| 2 | 자료구조및실습 | 전필 | 3.0 / 2 / 2 |
+| 2 | 객체지향프로그래밍:C++ | 전필 | 3.0 / 3 / 0 |
+| 2 | 윈도우프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 일반물리및시뮬레이션 | 전선 | 3.0 / 3 / 0 |
+| 2 | 디지털이미지프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 응용수치해석및시각화 | 전선 | 3.0 / 3 / 0 |
+| 2 | SW설계기초(산학프로젝트입문) | 전필 | 3.0 / 3 / 0 |
+| 2 | 알고리즘및실습 | 전필 | 3.0 / 2 / 2 |
+| 2 | 실시간컴퓨터그래픽스 | 전필 | 3.0 / 3 / 0 |
+| 2 | 컴퓨터구조 | 전선 | 3.0 / 3 / 0 |
+| 2 | 이산수학및프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 객체지향프로그래밍:JAVA | 전선 | 3.0 / 3 / 0 |
+| 3 | 데이터베이스 | 전필 | 3.0 / 3 / 0 |
+| 3 | 오픈소스SW개론 | 전필 | 3.0 / 3 / 0 |
+| 3 | 운영체제 | 전선 | 3.0 / 3 / 0 |
+| 3 | 모바일프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 실세계모델링및렌더링 | 전선 | 3.0 / 3 / 0 |
+| 3 | 연구실인턴쉽1 | 전선 | 3.0 / 3 / 0 |
+| 3 | 최신기술콜로키움1 | 전선 | 1.0 / 1 / 0 |
+| 3 | 객체지향XR프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 머신러닝 | 전선 | 3.0 / 3 / 0 |
+| 3 | 딥러닝개론 | 전필 | 3.0 / 3 / 0 |
+| 3 | 컴퓨터네트워크 | 전선 | 3.0 / 3 / 0 |
+| 3 | 데이터베이스프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 컴퓨터애니메이션 | 전선 | 3.0 / 3 / 0 |
+| 3 | 음성오디오처리 | 전선 | 3.0 / 3 / 0 |
+| 3 | XR엔진개론 | 전선 | 3.0 / 3 / 0 |
+| 3 | 연구실인턴쉽2 | 전선 | 3.0 / 3 / 0 |
+| 3 | 최신기술콜로키움2 | 전선 | 1.0 / 1 / 0 |
+| 3 | 웹기반프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 4 | Capstone디자인(산학협력프로젝트) | 전필 | 6.0 / 0 / 6 |
+| 4 | SW-AI종합설계 | 전필 | 1.0 / 1 / 0 |
+| 4 | 가상현실 | 전선 | 3.0 / 3 / 0 |
+| 4 | 소프트웨어특강1 | 전선 | 3.0 / 3 / 0 |
+| 4 | 인턴쉽1 | 전선 | 3.0 / 3 / 0 |
+| 4 | 졸업연구및진로1 | 전선 | 1.0 / 3 / 0 |
+| 4 | 생성형AI | 전선 | 3.0 / 3 / 0 |
+| 4 | UI/UX디자인개론 | 전선 | 3.0 / 3 / 0 |
+| 4 | 최신기술콜로키움3 | 전선 | 1.0 / 1 / 0 |
+| 4 | 컴퓨터비전및실습 | 전선 | 3.0 / 3 / 0 |
+| 4 | 소프트웨어특강2 | 전선 | 3.0 / 3 / 0 |
+| 4 | 인턴쉽2 | 전선 | 3.0 / 3 / 0 |
+| 4 | HCI | 전선 | 3.0 / 3 / 0 |
+| 4 | 증강현실 | 전선 | 3.0 / 3 / 0 |
+| 4 | 메타버스시스템 | 전선 | 1.0 / 3 / 0 |
+| 4 | 디지털트윈 | 전선 | 3.0 / 3 / 0 |
+| 4 | 게임인공지능 | 전선 | 3.0 / 3 / 0 |
+| 4 | 최신기술콜로키움4 | 전선 | 1.0 / 1 / 0 |
+
+## 2024년 대비 변경
+- 추가: Capstone디자인(산학협력프로젝트) (전필, 6.0 / 0 / 6), HCI (전선, 3.0 / 3 / 0), SW-AI종합설계 (전필, 1.0 / 1 / 0), UI/UX디자인개론 (전선, 3.0 / 3 / 0), XR엔진개론 (전선, 3.0 / 3 / 0), 객체지향XR프로그래밍 (전선, 3.0 / 3 / 0), 객체지향프로그래밍:C++ (전필, 3.0 / 3 / 0), 객체지향프로그래밍:JAVA (전선, 3.0 / 3 / 0), 게임인공지능 (전선, 3.0 / 3 / 0), 고급C프로그래밍및실습 (전기, 4.0 / 3 / 2), 데이터베이스 (전필, 3.0 / 3 / 0), 디지털이미지프로그래밍 (전선, 3.0 / 3 / 0), 디지털트윈 (전선, 3.0 / 3 / 0), 딥러닝개론 (전필, 3.0 / 3 / 0), 머신러닝 (전선, 3.0 / 3 / 0), 메타버스시스템 (전선, 1.0 / 3 / 0), 모바일프로그래밍 (전선, 3.0 / 3 / 0), 생성형AI (전선, 3.0 / 3 / 0), 실세계모델링및렌더링 (전선, 3.0 / 3 / 0), 실시간컴퓨터그래픽스 (전필, 3.0 / 3 / 0), 연구실인턴쉽1 (전선, 3.0 / 3 / 0), 연구실인턴쉽2 (전선, 3.0 / 3 / 0), 운영체제 (전선, 3.0 / 3 / 0), 웹기반프로그래밍 (전선, 3.0 / 3 / 0), 윈도우프로그래밍 (전선, 3.0 / 3 / 0), 응용수치해석및시각화 (전선, 3.0 / 3 / 0), 인턴쉽1 (전선, 3.0 / 3 / 0), 인턴쉽2 (전선, 3.0 / 3 / 0), 졸업연구및진로1 (전선, 1.0 / 3 / 0), 최신기술콜로키움1 (전선, 1.0 / 1 / 0), 최신기술콜로키움2 (전선, 1.0 / 1 / 0), 최신기술콜로키움3 (전선, 1.0 / 1 / 0), 최신기술콜로키움4 (전선, 1.0 / 1 / 0), 컴퓨터구조 (전선, 3.0 / 3 / 0), 컴퓨터비전및실습 (전선, 3.0 / 3 / 0)
+- 제외: Capstone디자인(산학협력프로젝트) (전필, 6.0 / 3 / 3), HCI개론 (전선, 3.0 / 3 / 0), K-MOOC:멀티미디어 (전선, 3.0 / 3 / 0), 게임프로그래밍 (전선, 3.0 / 3 / 0), 고급C프로그래밍및실습 (전기, 3.0 / 2 / 2), 고급데이터베이스 (전선, 3.0 / 3 / 0), 기계학습 (전선, 3.0 / 3 / 0), 데이터공학 (전선, 3.0 / 3 / 0), 데이터베이스 (전필, 3.0 / 2 / 1), 멀티미디어프로그래밍 (전선, 3.0 / 2 / 1), 문제해결및실습:C++ (전필, 3.0 / 3 / 0), 문제해결및실습:JAVA (전선, 3.0 / 3 / 0), 소프트웨어공학 (전선, 3.0 / 3 / 0), 소프트웨어교육1 (전선, 3.0 / 3 / 0), 소프트웨어교육2 (전선, 3.0 / 3 / 0), 수치해석 (전선, 3.0 / 3 / 0), 앱프로그래밍 (전선, 3.0 / 3 / 0), 영상처리 (전선, 3.0 / 3 / 0), 오픈소스SW공학 (전선, 3.0 / 3 / 0), 운영체제 (전필, 3.0 / 3 / 0), 웹프로그래밍 (전선, 3.0 / 3 / 0), 윈도우즈프로그래밍 (전선, 3.0 / 3 / 0), 음성인식 (전선, 3.0 / 3 / 0), 인공지능 (전선, 3.0 / 3 / 0), 인턴쉽1 (전선, 3.0 / 1 / 2), 인턴쉽2 (전선, 3.0 / 1 / 2), 졸업연구및진로1 (전선, 1.0 / 0 / 1), 졸업연구및진로2 (전선, 1.0 / 0 / 1), 지능형시스템 (전선, 3.0 / 3 / 0), 창의SW융합노마드 (전선, 3.0 / 3 / 0), 컴퓨터구조 (전필, 3.0 / 3 / 0), 컴퓨터그래픽스 (전선, 3.0 / 2 / 1), 컴퓨터비전시스템 (전선, 3.0 / 3 / 0), 통계학개론 (전선, 3.0 / 3 / 0), 특허와창업 (전선, 3.0 / 3 / 0), 패턴인식 (전선, 3.0 / 3 / 0)
+
+## 출처
+- 세종대학교 학사정보에서 내려받은 해당 연도 교과과정 목록
+
+초안 ID: software-curriculum-2025', '2025년 적용 교과과정 76개와 전년도 대비 변경 사항', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025년 소프트웨어학과 교과과정');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '인증제도');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025년 TOSC 공지 모음', '# 2025년 TOSC 공지
+
+2025년에 게시된 TOSC 공지 8건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2025-11-07 | [고사장 안내] 제14회 SW코딩역량평가 TOSC 고사장 (시험일: 2025년 11월 08일 요일) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/56 |
+| 2025-11-03 | 제14회 SW코딩역량평가 인증시험 TOSC 안내 (2025년 11월 8일 시행) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/55 |
+| 2025-08-20 | [고사장 안내] 제13회 SW코딩역량평가 TOSC 고사장 (시험일: 2025년 8월 23일 토요일) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/53 |
+| 2025-07-29 | 제13회 SW코딩역량평가 인증시험 TOSC 안내 (2025년 8월 23일 시행) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/52 |
+| 2025-05-29 | [고사장 안내] 제12회 SW코딩역량평가 TOSC 고사장 (시험일: 2025년 5월 31일 토요일) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/50 |
+| 2025-04-22 | 제12회 SW코딩역량평가 인증시험 TOSC 안내 (2025년 5월 31일 시행) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/47 |
+| 2025-03-26 | [고사장 안내] 제11회 SW코딩역량평가 TOSC 고사장 (시험일: 2025년 3월 29일 토요일) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/46 |
+| 2025-03-06 | 제11회 SW코딩역량평가 인증시험 TOSC 안내 (2025년 3월 29일 시행) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/45 |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2025년
+
+초안 ID: tosc-2025', '2025년에 게시된 TOSC 공지 8건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025년 TOSC 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '장학·지원');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025년 장학 공지 모음', '# 2025년 장학 공지
+
+2025년에 게시된 장학 공지 42건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2025-12-23 | 2026년 1학기 「청년창업농장학금」 장학생 선발 공고 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=861296&mode=view |
+| 2025-12-04 | 2025-2 에델바이스Ⅱ(교외)장학금 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=860433&mode=view |
+| 2025-11-26 | 2026-1 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=860017&mode=view |
+| 2025-11-25 | 2025-2 학생회관복지장학금 장학생 선발결과 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=859949&mode=view |
+| 2025-11-17 | 2026-1학기 국가근로 장학생 1차 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=859501&mode=view |
+| 2025-11-11 | 2025-2 성적향상장학금 선발결과 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=859190&mode=view |
+| 2025-11-05 | 2025-2학기 국가근로장학 동계방학 집중근로 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=858949&mode=view |
+| 2025-11-03 | 2025-2 예술체육비전 재학중우수자 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=858781&mode=view |
+| 2025-11-03 | 2025-2 특기장학금 선발결과 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=858780&mode=view |
+| 2025-11-03 | 2025-2 인문100년 일시지원 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=858779&mode=view |
+| 2025-10-30 | 2025-2 국가장학금 및 에델바이스Ⅱ 지급안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=858649&mode=view |
+| 2025-10-20 | 2026학년도 한국지도자육성장학재단 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=858079&mode=view |
+| 2025-10-15 | 2025-2 성적향상장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=857819&mode=view |
+| 2025-09-26 | 2026학년도 미래인재육성재단 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=857170&mode=view |
+| 2025-09-04 | 2025-2 희망사다리Ⅱ유형(고졸후학습지원) 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=855812&mode=view |
+| 2025-09-03 | 2025학년도 2학기 대학생 청소년교육지원사업 장학생 모집 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=855703&mode=view |
+| 2025-08-29 | 2025 푸른등대 한국수력원자력 K-원전 신규장학생 선발안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=855524&mode=view |
+| 2025-08-25 | 2025-2 어학우수장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=855191&mode=view |
+| 2025-08-25 | 2025-2 특기장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=855190&mode=view |
+| 2025-08-25 | 2025-2 교내장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=855189&mode=view |
+| 2025-08-14 | 2025-2 주거안정지원장학금 2차 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=854731&mode=view |
+| 2025-08-11 | 2025-2 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 신청안내(2차) | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=854573&mode=view |
+| 2025-08-11 | 2025-2 국가장학금 및 에델바이스Ⅱ 선발결과 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=854563&mode=view |
+| 2025-07-31 | 2025-2학기 국가근로 장학생 2차 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=853929&mode=view |
+| 2025-07-22 | 2025-2 푸른등대 기부장학사업 신규장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=853360&mode=view |
+| 2025-05-23 | 2025-2 주거안정지원장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810937&mode=view |
+| 2025-05-23 | 2025-2 국가장학금 및 에델바이스Ⅱ_1차 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810936&mode=view |
+| 2025-05-12 | 2025-1 주거안정지원장학금 지급일정안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810932&mode=view |
+| 2025-04-23 | 2025학년도 하이트진로 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810931&mode=view |
+| 2025-04-15 | 2025 국가이공계 재학중우수자(2년지원) 장학생 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810929&mode=view |
+| 2025-04-14 | 2025-1 국가장학금 및 에델바이스Ⅱ 지급안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810928&mode=view |
+| 2025-04-07 | 2025 푸른등대 삼성기부장학금 신규장학생 선발안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810927&mode=view |
+| 2025-03-25 | 2025 예술체육비전 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810926&mode=view |
+| 2025-03-25 | 2025 인문100년 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810925&mode=view |
+| 2025-03-10 | 2025년 유한재단 결손 및 다문화 가정 대학생 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810924&mode=view |
+| 2025-03-04 | 2025-1 희망사다리Ⅱ유형(고졸후학습지원) 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810923&mode=view |
+| 2025-03-04 | 2025-1 희망사다리Ⅰ유형(중소기업취업연계) 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810922&mode=view |
+| 2025-02-07 | 2025-1 국가장학금 및 에델바이스Ⅱ 선발결과 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810917&mode=view |
+| 2025-02-03 | 2025-1 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 2차 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810915&mode=view |
+| 2025-01-31 | 2025-1 주거안정지원장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810914&mode=view |
+| 2025-01-20 | 2025학년도 신라문화장학재단 장학생 공개선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810913&mode=view |
+| 2025-01-13 | 2025학년도 정수장학회 장학생 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=810912&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2025년
+
+초안 ID: scholarship-2025', '2025년에 게시된 장학 공지 42건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025년 장학 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '진로·취업');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025년 진로·취업 공지 모음', '# 2025년 진로·취업 공지
+
+2025년에 게시된 진로·취업 공지 136건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2025-12-01 | [추천채용/공통][중견 기업] 우미건설 개발영업, PM, 사업기획, 회계, 건축, 전기 등 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=860246&mode=view |
+| 2025-07-24 | [추천채용/공통][중견기업] 한라엔컴  골재사업 기술지원직 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=853552&mode=view |
+| 2025-07-22 | [추천채용/공통][강소기업][서류패스] 코하이젠 운영관리, 인프라 구축, 전기설비 유지보수직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=853399&mode=view |
+| 2025-07-22 | [추천채용/공통][강소기업] 유니테크 2차전지분야 B2B 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=853398&mode=view |
+| 2025-07-22 | [추천채용/공통][강소기업] 유니테크 구매직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=853396&mode=view |
+| 2025-07-22 | [추천채용/공통][중견기업] 신보 건설법무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=853395&mode=view |
+| 2025-07-22 | [추천채용/공통][중견기업] 신보 회계, 원가관리 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=853394&mode=view |
+| 2025-07-16 | [추천채용/공통][중견기업] 조선내화, CR홀딩스 설비관리, 기술솔루션, 재무회계 등 신입 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=853072&mode=view |
+| 2025-07-14 | [추천채용/공통] [중견기업] 로지스올 SCM 영업 및 영업관리 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=852950&mode=view |
+| 2025-07-14 | [추천채용/공통] [중견기업] 이트너스 E-ON 직무캠프 채용형 인턴십 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=852947&mode=view |
+| 2025-07-10 | [추천채용/공통][중견기업] SK마이크로웍스 인사 기획/운영 직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810084&mode=view |
+| 2025-07-09 | [추천채용/공통][대기업·계열사·자회사] 하만커넥티드서비시즈인크 재무팀 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810082&mode=view |
+| 2025-07-08 | [추천채용/공통][삼성전자 협력사] 엠이케이 품질보증팀 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810081&mode=view |
+| 2025-07-08 | Recruitment of Field Training (Internship) participants  for the 2025 Fall Semester | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810080&mode=view |
+| 2025-07-08 | [현장실습] 2025학년도 2학기 현장실습학기제 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810079&mode=view |
+| 2025-07-07 | [추천채용/공통][강소기업] 너디스타 서버 프로그래머 정규직 전환형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810078&mode=view |
+| 2025-07-07 | [추천채용/공통][중견기업] (주)현대렌탈케어 법인영업 정규직 전환형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810077&mode=view |
+| 2025-07-03 | [추천채용/공통][대기업·계열사·자회사] 하만커넥티드서비시즈인크 총무직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810076&mode=view |
+| 2025-06-27 | [추천채용/공통][강소기업] 콘텐츠브릿지 Cloud 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810073&mode=view |
+| 2025-06-27 | [추천채용/공통][강소기업] 콘텐츠브릿지 Cloud 엔지니어 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810072&mode=view |
+| 2025-06-24 | [현장실습]2025년 ICT인턴십 하반기 국내과정 학점 비연계 트랙 실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810071&mode=view |
+| 2025-06-24 | [추천채용/공통][중견기업] BS한양 건축공사 직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810070&mode=view |
+| 2025-06-20 | [추천채용/공통][중견기업] 한국아즈빌(주) BA SVC 영업팀 채용 연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810069&mode=view |
+| 2025-06-20 | [추천채용/공통][외국계]바이어스도르프코리아 니베아 부서 마케팅 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810068&mode=view |
+| 2025-06-20 | [현장실습]2025년 ICT 학점연계 프로젝트 인턴십 사업 하반기 국내과정 학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810067&mode=view |
+| 2025-06-19 | [추천채용/공통][강소기업]마티니아이오 영상 디자이너, 퍼포먼스 마케터, B2B 마케터, CRM 마케터, 그로스 마케터 전환형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810066&mode=view |
+| 2025-06-17 | [추천채용/공통][강소기업]앳홈 뷰티 브랜드 톰(THOME) 3개월 정규직 전환형 마케팅 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810065&mode=view |
+| 2025-06-16 | [추천채용/공통][강소기업]주식회사 패치베이 보안 컨설턴트 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810064&mode=view |
+| 2025-06-16 | [청년고용정책]고용노동부 "미래내일일경험사업" 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810063&mode=view |
+| 2025-06-16 | [공통]미래세대*국민WE원회 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810062&mode=view |
+| 2025-06-16 | [공통]청년대상 교육과정(KDT, 국가기간전략산업직종훈련,일반직종훈련) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810061&mode=view |
+| 2025-06-16 | [공통] 삼성 청년 SW 아카데미(SSAFY) 14기 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810060&mode=view |
+| 2025-06-13 | [추천채용/공통][중견기업] (주)현대렌탈케어 기술지원 직무 정규직 전환형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810059&mode=view |
+| 2025-06-13 | [추천채용/공통][삼성전자 협력사/중견기업](주)이엠텍 기구개발 직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810058&mode=view |
+| 2025-06-13 | [추천채용/공통][중견기업] 제일약품(주) ETC 영업 신입사원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810057&mode=view |
+| 2025-06-12 | [추천채용/공통][서류패스, 중견기업] 본아이에프 영업관리(SM), 가맹영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810056&mode=view |
+| 2025-06-11 | [추천채용/공통][중견기업] (주)보령 영업직(MR) 신입 공채 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810055&mode=view |
+| 2025-06-11 | [추천채용/공통][강소기업] 이카운트 서비스 본부 신입사원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810054&mode=view |
+| 2025-06-10 | [추천채용/공통][서류패스, 강소기업] 스탠다드 인터내셔널 마케팅 MD, NPD, 구매 직무 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810053&mode=view |
+| 2025-06-10 | [추천채용/공통][서류패스, 강소기업] 메디테라피 글로벌 MD, 상품기획 BM 채용연계형 인턴십 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810052&mode=view |
+| 2025-06-09 | [현장실습]2025년 서울 청년 예비인턴 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810051&mode=view |
+| 2025-06-09 | [추천채용/공통][대기업·계열사·자회사] 투썸 플레이스 법무직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810050&mode=view |
+| 2025-06-05 | [추천채용/공통][강소기업] 인터엑스 10개 직무 채용 연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810049&mode=view |
+| 2025-06-05 | [채용행사]Career in Japn 2025 KOREA | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810048&mode=view |
+| 2025-05-30 | [추천채용/공통][서류패스, 강소기업] 스킨 이데아 마케팅 기획, 상품 기획, 디자인 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810047&mode=view |
+| 2025-05-29 | [추천채용/공통][서류패스, 강소기업] 코하이젠 사업개발, 운영관리, 연구개발 등 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810046&mode=view |
+| 2025-05-28 | [추천채용/공통][중견기업] BS 한양 건축공사 직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810045&mode=view |
+| 2025-05-27 | [추천채용/공통][중견기업] 한국 아즈빌 사업기획팀 신입 채용 (채용 연계형 인턴쉽) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810044&mode=view |
+| 2025-05-22 | [현장실습] 무하유 콘텐츠마케터 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810043&mode=view |
+| 2025-05-20 | [추천채용/공통][서류패스, 중견기업] 키에스 코리아 컨설팅 세일즈 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810042&mode=view |
+| 2025-05-20 | [추천채용/공통][서류패스, 강소기업] 씨앤씨 인터내셔널 연구개발, 국내/해외 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810041&mode=view |
+| 2025-05-20 | [현장실습] 국립생물자원관 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810040&mode=view |
+| 2025-05-19 | [현장실습] 파괴연구소 콘텐츠에디터 현장실습_사전과제 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810039&mode=view |
+| 2025-05-19 | [현장실습]국립낙동강생물자원관 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810038&mode=view |
+| 2025-05-15 | [추천채용/공통][중견기업] ASE KOREA CS직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810037&mode=view |
+| 2025-05-15 | [현장실습] [(주)윈스테크넷]현장실습생 채용(하계 + 2학기 = 총 6개월) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810036&mode=view |
+| 2025-05-14 | [추천채용/공통][강소기업] 인터엑스 법무지원 채용 연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810035&mode=view |
+| 2025-05-13 | [추천채용/공통][강소기업: 서류패스] 스탠다드 인터내셔널 마케팅 MD, NPD, QC, 영업직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810034&mode=view |
+| 2025-05-13 | [추천채용/공통][중견기업] SK마이크로웍스 HR 기획/운영 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810033&mode=view |
+| 2025-05-09 | [추천채용/공통][대기업·계열사·자회사] 김앤장법률사무소 비서, 빌링, 스탭 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810032&mode=view |
+| 2025-05-09 | [현장실습] 비상교육 하계현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810031&mode=view |
+| 2025-05-08 | [추천채용/공통][중견기업] ASE Korea Global Sales, CS 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810030&mode=view |
+| 2025-04-28 | [추천채용/공통][중견기업]동희그룹 연구개발(샤시/전동화 PART), 생산관리, 품질관리 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810029&mode=view |
+| 2025-04-25 | [공통] 5월 현직자 취업준비콘서트_인천국제공항공사, 넷마블 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810028&mode=view |
+| 2025-04-25 | [추천채용/공통][중견기업] 이트너스 HR캠프(복리후생, 급여)/Global(GHD,릴로케이션)/총무ㆍ보안(총무일반,정보보호) 채용형 인턴십 진행 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810027&mode=view |
+| 2025-04-23 | [현장실습] 펄어비스/펄어비스 아트센터 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810026&mode=view |
+| 2025-04-22 | [추천채용/공통][중견기업] (주)한양 건축공사/설계/BIM/전기공사직무 신입사원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810025&mode=view |
+| 2025-04-21 | [현장실습] 조선호텔앤리조트 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810024&mode=view |
+| 2025-04-21 | [현장실습] 샘표식품 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810023&mode=view |
+| 2025-04-21 | [추천채용/공통][대기업·계열사·자회사] 서류패스: 파크로쉬 조리부, 식음부 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810022&mode=view |
+| 2025-04-21 | [추천채용/공통][대기업·계열사·자회사] 서류패스: 오크밸리 조리부, 식음부 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810021&mode=view |
+| 2025-04-21 | [공통]2025년 중견기업 일자리 박람회 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810020&mode=view |
+| 2025-04-17 | [추천채용/공통][강소기업] 원앤원 주식회사 마케팅, 인사총무, 법무감사 등 채용연계형 인턴 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810019&mode=view |
+| 2025-04-14 | [추천채용/공통][대기업·계열사·자회사] 서류패스: 쿠팡이츠서비스(유) 광고 영업 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810018&mode=view |
+| 2025-04-14 | [추천채용/공통][대기업·계열사·자회사] 동원그룹 영업, 물류, 건축직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810017&mode=view |
+| 2025-04-14 | [추천채용/이공계][강소기업] 서류패스: 유니테크 화학 연구개발직무 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810016&mode=view |
+| 2025-04-10 | [추천채용/공통][강소기업] (주)벡터컴 커뮤니케이션 기획(AE), 디지털 마케팅 등 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810015&mode=view |
+| 2025-04-08 | [추천채용/공통][강소기업] 한국국제전시 전시 박람회 기획자 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810014&mode=view |
+| 2025-04-08 | [추천채용/공통][강소기업] 서류 패스: (주)스탠다드 인터내셔널 QC, NPD, 영업직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810013&mode=view |
+| 2025-04-08 | [추천채용/공통][강소기업] 서류 패스: 스킨이데아 상품기획/디자인/마케팅/사무행정/영업 등 채용 연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810012&mode=view |
+| 2025-04-08 | [현장실습] 한국항공우주연구원 대학생 우주분야 현장교육_접수기간 연장 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810011&mode=view |
+| 2025-04-08 | [추천채용/공통][중견기업]KINX 재무회계 / 국내영업 / 해외사업 / IT 기술 컨설팅 / 콘텐츠 마케팅 / 네트워크 엔지니어/ 인프라운영관리(전기/기계, 소방) 채용 연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810010&mode=view |
+| 2025-04-04 | [추천채용/공통][대기업·계열사·자회사] 서류패스: 쿠팡이츠서비스(유) 일본 영업직 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810009&mode=view |
+| 2025-04-02 | [추천채용/공통][강소기업] 일신 테크놀로지 생산기술, 품질, 기획, 영업직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810008&mode=view |
+| 2025-04-02 | [추천채용/공통][중견기업] 제일약품(주) ETC 영업직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810007&mode=view |
+| 2025-04-01 | Recruitment of Field Training (Internship) participants  for the 2025 Summer Semester | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810006&mode=view |
+| 2025-04-01 | [현장실습]2025하계 현장실습 참가자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810005&mode=view |
+| 2025-03-28 | [추천채용/공통][강소기업](주)모두투어 네트워크 영업, 상품, 지원부문 신입사원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810004&mode=view |
+| 2025-03-27 | [추천채용/공통][중견기업](주)서연 최고경영진 신입비서 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810003&mode=view |
+| 2025-03-26 | [추천채용/공통][중견기업] (주)한양 건축공사/설계/BIM/전기공사직무 신입사원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810002&mode=view |
+| 2025-03-20 | [추천채용/공통][중견기업] 한국아즈빌(주) IAP 영업지원직 신입사원 채용 (채용 연계형 인턴쉽) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810001&mode=view |
+| 2025-03-19 | [추천채용/공통][중견기업] 한샘 홈퍼니싱 영업직 SC 신입사원 채용 (채용 연계형 인턴쉽) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810000&mode=view |
+| 2025-03-19 | [추천채용/공통][강소기업] 더보스톤컨설팅그룹 한국지점 Executive Assistant 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809999&mode=view |
+| 2025-03-18 | [추천채용/공통][중견기업](주)신흥 기술영업, 서비스기술, 일반관리(해외사업) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809998&mode=view |
+| 2025-03-17 | [추천채용/이공계] [중견기업] 에이디테크놀로지 반도체 설계, 펌웨어 엔지니어 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809997&mode=view |
+| 2025-03-17 | [채용행사]2025 대한민국 채용박람회 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809996&mode=view |
+| 2025-03-17 | [채용행사]PTKOREA 채용설명회_0325 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809995&mode=view |
+| 2025-03-14 | [채용행사]에이디테크놀로지 채용설명회_0320 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809994&mode=view |
+| 2025-03-13 | 2025학년도 변리사 준비반 실원 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809993&mode=view |
+| 2025-03-13 | 2025학년도 공무원고시반 실원 모집 공고 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809992&mode=view |
+| 2025-03-12 | [추천채용/이공계][중견기업] (주)아이디스 소프트웨어 개발자 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809991&mode=view |
+| 2025-03-12 | 2025학년도 1학기 언론고시반 실원 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809990&mode=view |
+| 2025-03-11 | 2025학년도 공인회계사/세무사 준비반 실원 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809989&mode=view |
+| 2025-03-10 | [추천채용/이공계][중견기업] (주)희성촉매 전산 사무직, 연구개발 사무직 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809987&mode=view |
+| 2025-03-10 | [추천채용/이공계] [중견기업] ASE KOREA IT B2B, Process Engineer 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809986&mode=view |
+| 2025-03-10 | [채용행사]현대건설 채용상담회_0313 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809985&mode=view |
+| 2025-03-10 | [채용행사]삼성에스원 채용상담회_0311 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809984&mode=view |
+| 2025-03-07 | [현장실습]2025년 하반기 ICT 학점연계 프로젝트 인턴십 글로벌과정 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809983&mode=view |
+| 2025-03-06 | [추천채용/공통][중견기업] BS한양 회계팀 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809982&mode=view |
+| 2025-03-05 | [추천채용/이공계][중견기업] SK마이크로웍스 품질관리 QA 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809980&mode=view |
+| 2025-03-04 | [현장실습]괌PIC (Pacific Island Club Guam)  현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809979&mode=view |
+| 2025-02-28 | [추천채용/공통][강소기업]한국국제전시 전시 기획자 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809978&mode=view |
+| 2025-02-28 | [추천채용/공통][강소기업](주)창광이앤씨 R&D 연구원 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809977&mode=view |
+| 2025-02-28 | [추천채용/공통][대기업·계열사·자회사] 파라다이스 세가사미 인사직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809976&mode=view |
+| 2025-02-25 | [추천채용/공통][삼성협력사/중견/업계2위]엠이케이 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809975&mode=view |
+| 2025-02-25 | [추천채용/공통][중견/코스닥] 테크윙 인사팀 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809974&mode=view |
+| 2025-02-21 | [추천채용/공통][강소] 라라스윗 온라인마케팅 채용형인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809973&mode=view |
+| 2025-02-21 | [추천채용/공통][중견/외감] 에이에스이코리아 IT MEST MEST, TPM 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809972&mode=view |
+| 2025-02-06 | [추천채용/공통][강소] (주)송월 리테일마케팅팀 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809971&mode=view |
+| 2025-02-05 | [추천채용/공통][강소/연봉5천] 이카운트 DA(Data Architect), SA(System Administrator) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809970&mode=view |
+| 2025-02-05 | [추천채용/이공계][중견기업/외감] 크나우프석고보드 엔지니어 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809969&mode=view |
+| 2025-02-05 | [추천채용/공통][중견기업/외감] 한국경제신문 아그로플러스 인턴기자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809968&mode=view |
+| 2025-02-03 | [추천채용/공통][대기업/외감] 쿠팡이츠 해외사업AM(일본) 채용_기간연장 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809967&mode=view |
+| 2025-01-31 | [추천채용/공통][중견/코스피] 제일약품 ETC영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809966&mode=view |
+| 2025-01-31 | [추천채용/공통][대기업/외감] 쿠팡이츠 해외사업AM(일본) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809965&mode=view |
+| 2025-01-24 | [추천채용/공통][대기업/외감] 오릭스캐피탈코리아 자금팀 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809964&mode=view |
+| 2025-01-24 | [추천채용/이공계][외국계/삼성전자협력사]히로세코리아 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809963&mode=view |
+| 2025-01-23 | [추천채용/공통][글로벌기업] Sands China Macau 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809962&mode=view |
+| 2025-01-23 | [추천채용/공통][대기업/OCI계열사] 에스지씨솔루션(주) 본사 패키지 영업 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809961&mode=view |
+| 2025-01-20 | [현장실습] 2025학년도 상반기 ICT 인턴십 참여학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809960&mode=view |
+| 2025-01-16 | [추천채용/공통][중견/외감] 에이에스이코리아 IT MEST MEST, TPM 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809959&mode=view |
+| 2025-01-16 | [추천채용/공통][중견/업계2위]오티스엘리베이터코리아 영업담당자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809958&mode=view |
+| 2025-01-08 | [현장실습] 2025-1 현장실습생 모집 (Recruitment of Field Training (Internship) participants) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809957&mode=view |
+| 2025-01-07 | [추천채용] 2025년 지역인재 7급 수습직원 선발시험 추천자 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809956&mode=view |
+| 2025-01-06 | [추천채용/공통][중견/외국계] 한국요꼬가와전기 엔지니어, 기술영업, 경영지원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809955&mode=view |
+| 2025-01-06 | [추천채용/공통][대기업/한진계열사] 에어코리아 탑승수속 및 출입국 서비스 지원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809954&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2025년
+
+초안 ID: career-2025', '2025년에 게시된 진로·취업 공지 136건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025년 진로·취업 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '프로젝트');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025년 SW중심대학사업단 공지 모음', '# 2025년 SW중심대학사업단 공지
+
+2025년에 게시된 SW중심대학사업단 공지 9건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2025-12-30 | 2025 세종 그리디콘(Sejong Greedy Conference) | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3444&mode=view |
+| 2025-11-22 | 제1회 인턴리턴: 기업인턴십 성과공유회 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3443&mode=view |
+| 2025-11-14 | 세종 AI Challenge 2025F 개최 안내 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3442&mode=view |
+| 2025-11-14 | 2025년도 2학기 최신기술 콜로키움 특강 안내 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3441&mode=view |
+| 2025-11-14 | 2025년도 1학기 최신기술콜로키움 특강 안내 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3440&mode=view |
+| 2025-11-14 | 2025 SW인재페스티벌 안내 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3439&mode=view |
+| 2025-11-14 | 2025년 제 12회 세종대학교 SW ·AI 해커톤 개최 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3438&mode=view |
+| 2025-11-14 | 세종 AI Challege 2025S 참가자 모집 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3437&mode=view |
+| 2025-11-14 | SW중심대학 2025년 창업 네트워킹 데이 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3436&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2025년
+
+초안 ID: sw-program-2025', '2025년에 게시된 SW중심대학사업단 공지 9건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025년 SW중심대학사업단 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '학교생활');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025년 학과 공지 모음', '# 2025년 학과 공지
+
+2025년에 게시된 학과 공지 13건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2025-10-15 | 법정 안전교육 미 이수자 성적열람 제한 안내 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24987&mode=view |
+| 2025-09-04 | 연구실 안전교육 자료 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24986&mode=view |
+| 2025-07-09 | 2025학년도 1학기 AI 마이크로디그리 인증 업데이트 안내 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24985&mode=view |
+| 2025-06-30 | [콘텐츠소프트웨어학과 실습실 관리 조교 모집] - 마감 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24984&mode=view |
+| 2025-06-27 | [분실물 안내] 기후동행카드 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24983&mode=view |
+| 2025-06-19 | SJSU 해외연수학생 모집 [접수 23일 오후 5시까지 연장] | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24982&mode=view |
+| 2025-05-09 | 2025 ACPC (AWS x Codetree) 전국 대학생 프로그래밍 경진대회 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24981&mode=view |
+| 2025-04-02 | [현대차 정몽구 재단] ''2025 현대차 정몽구 스칼러십 장학생'' 모집 안내 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24980&mode=view |
+| 2025-03-07 | [콘텐츠소프트웨어학과] 수강 여석 관련 공지사항 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24979&mode=view |
+| 2025-03-07 | [공학교육센터] 소프트웨어학과 공학인증 안내 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24978&mode=view |
+| 2025-03-07 | [교양코딩실] ★25학번★ <컴퓨터사고기반기초코딩>, <SW기초코딩>, <고급프로그래밍활용> 수강신청 관련 안내 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24977&mode=view |
+| 2025-01-14 | [교양코딩실] 인력풀 추가 모집 공고 | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24976&mode=view |
+| 2025-01-03 | 채용홍보(Standard Chartered Bank Korea) | https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24975&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2025년
+
+초안 ID: department-2025', '2025년에 게시된 학과 공지 13건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025년 학과 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '현장실습');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025년 현장실습 공지 모음', '# 2025년 현장실습 공지
+
+2025년에 게시된 현장실습 공지 23건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2025-07-14 | [추천채용/공통] [중견기업] 이트너스 E-ON 직무캠프 채용형 인턴십 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=852947&mode=view |
+| 2025-07-08 | [현장실습] 2025학년도 2학기 현장실습학기제 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810079&mode=view |
+| 2025-06-24 | [현장실습]2025년 ICT인턴십 하반기 국내과정 학점 비연계 트랙 실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810071&mode=view |
+| 2025-06-20 | [현장실습]2025년 ICT 학점연계 프로젝트 인턴십 사업 하반기 국내과정 학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810067&mode=view |
+| 2025-06-10 | [추천채용/공통][서류패스, 강소기업] 메디테라피 글로벌 MD, 상품기획 BM 채용연계형 인턴십 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810052&mode=view |
+| 2025-06-09 | [현장실습]2025년 서울 청년 예비인턴 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810051&mode=view |
+| 2025-05-22 | [현장실습] 무하유 콘텐츠마케터 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810043&mode=view |
+| 2025-05-20 | [현장실습] 국립생물자원관 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810040&mode=view |
+| 2025-05-19 | [현장실습] 파괴연구소 콘텐츠에디터 현장실습_사전과제 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810039&mode=view |
+| 2025-05-19 | [현장실습]국립낙동강생물자원관 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810038&mode=view |
+| 2025-05-15 | [현장실습] [(주)윈스테크넷]현장실습생 채용(하계 + 2학기 = 총 6개월) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810036&mode=view |
+| 2025-05-09 | [현장실습] 비상교육 하계현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810031&mode=view |
+| 2025-04-25 | [추천채용/공통][중견기업] 이트너스 HR캠프(복리후생, 급여)/Global(GHD,릴로케이션)/총무ㆍ보안(총무일반,정보보호) 채용형 인턴십 진행 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810027&mode=view |
+| 2025-04-23 | [현장실습] 펄어비스/펄어비스 아트센터 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810026&mode=view |
+| 2025-04-21 | [현장실습] 조선호텔앤리조트 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810024&mode=view |
+| 2025-04-21 | [현장실습] 샘표식품 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810023&mode=view |
+| 2025-04-08 | [현장실습] 한국항공우주연구원 대학생 우주분야 현장교육_접수기간 연장 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810011&mode=view |
+| 2025-04-01 | [현장실습]2025하계 현장실습 참가자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=810005&mode=view |
+| 2025-03-07 | [현장실습]2025년 하반기 ICT 학점연계 프로젝트 인턴십 글로벌과정 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809983&mode=view |
+| 2025-03-04 | [현장실습]괌PIC (Pacific Island Club Guam)  현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809979&mode=view |
+| 2025-02-21 | [추천채용/공통][강소] 라라스윗 온라인마케팅 채용형인턴십 추천채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809973&mode=view |
+| 2025-01-20 | [현장실습] 2025학년도 상반기 ICT 인턴십 참여학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809960&mode=view |
+| 2025-01-08 | [현장실습] 2025-1 현장실습생 모집 (Recruitment of Field Training (Internship) participants) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=809957&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2025년
+
+초안 ID: field-practice-2025', '2025년에 게시된 현장실습 공지 23건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025년 현장실습 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025-1 소프트웨어학과 강의시간표', '# 2025-1 소프트웨어학과 강의시간표
+
+2025-1 학기의 소프트웨어학과 및 콘텐츠소프트웨어학과 개설 강좌 35개를 정리한 초안입니다. 다른 학기의 정보는 포함하지 않았습니다.
+
+| 학수번호 | 분반 | 교과목명 | 이수구분 | 학점 | 교수 | 강의시간 | 강의실 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 004310 | 001 | 운영체제 | 전공필수 | 3.0 | 정승화 | 월 수 10:30~12:00 | 센B114 |
+| 004310 | 002 | 운영체제 | 전공필수 | 3.0 | 정승화 | 월 수 12:00~13:30 | 센B114 |
+| 007219 | 001 | 데이터베이스 | 전공필수 | 3.0 | 변재욱 | 화 목 10:30~12:00 | 센B112 |
+| 007219 | 002 | 데이터베이스 | 전공필수 | 3.0 | 변재욱 | 화 목 12:00~13:30 | 센B112 |
+| 009957 | 001 | 오픈소스SW개론 | 전공필수 | 3.0 | 이은상 | 월 수 15:00~16:30 | 센B112 |
+| 009957 | 002 | 오픈소스SW개론 | 전공필수 | 3.0 | 이은상 | 월 수 16:30~18:00 | 센B112 |
+| 006476 | 001 | 게임프로그래밍 | 전공선택 | 3.0 | 정승화 | 월 수 15:00~16:30 | 센B111 |
+| 011911 | 001 | 연구실인턴쉽1 | 전공선택 | 3.0 | 최준연 | 화 16:30~19:30 | 센B114 |
+| 011921 | 001 | 최신기술콜로키움1 | 전공선택 | 1.0 | 이은상 | 목 16:30~17:30 | 학대공연장 |
+| 009960 | 001 | Capstone디자인(산학협력프로젝트) | 전공필수 | 6.0 | 권순일 | 금 13:30~19:30 | 센B112 |
+| 006208 | 001 | 가상현실 | 전공선택 | 3.0 | 이종원 | 화 목 12:00~13:30 | 센B114 |
+| 010000 | 001 | 기계학습 | 전공선택 | 3.0 | 권순일 | 화 목 15:00~16:30 | 센B112 |
+| 010111 | 001 | 졸업연구및진로1 | 전공선택 | 1.0 | 박상일 | 화 18:00~19:00 | 호203 |
+| 010111 | 002 | 졸업연구및진로1 | 전공선택 | 1.0 | 최준연 | 화 18:00~19:00 | 호203 |
+| 010111 | 003 | 졸업연구및진로1 | 전공선택 | 1.0 | 백성욱 | 화 18:00~19:00 | 호203 |
+| 010111 | 004 | 졸업연구및진로1 | 전공선택 | 1.0 | 변재욱 | 화 18:00~19:00 | 호203 |
+| 010111 | 005 | 졸업연구및진로1 | 전공선택 | 1.0 | 이종원 | 화 18:00~19:00 | 호203 |
+| 010111 | 006 | 졸업연구및진로1 | 전공선택 | 1.0 | 이은상 | 화 18:00~19:00 | 호203 |
+| 010111 | 007 | 졸업연구및진로1 | 전공선택 | 1.0 | 권순일 | 화 18:00~19:00 | 호203 |
+| 010111 | 008 | 졸업연구및진로1 | 전공선택 | 1.0 | 송오영 | 화 18:00~19:00 | 호203 |
+| 010111 | 009 | 졸업연구및진로1 | 전공선택 | 1.0 | 정승화 | 화 18:00~19:00 | 호203 |
+| 011904 | 001 | 생성형AI | 전공선택 | 3.0 | 백경준 | 화 목 13:30~15:00 | 센B112 |
+| 011924 | 001 | 최신기술콜로키움3 | 전공선택 | 1.0 | 이은상 | 목 16:30~17:30 | 학대공연장 |
+| 009952 | 001 | 자료구조및실습 | 전공필수 | 3.0 | 최준연 | 월 15:00~17:00, 월 17:00~19:00 | 센B114, 센B111 |
+| 009952 | 002 | 자료구조및실습 | 전공필수 | 3.0 | 최준연 | 수 15:00~17:00, 수 17:00~19:00 | 센B114, 센B111 |
+| 009992 | 001 | 문제해결및실습:C++ | 전공필수 | 3.0 | 박상일 | 화 목 12:00~13:30 | 센B111 |
+| 009992 | 002 | 문제해결및실습:C++ | 전공필수 | 3.0 | 박상일 | 화 목 13:30~15:00 | 센B111 |
+| 005619 | 001 | 멀티미디어프로그래밍 | 전공선택 | 3.0 | 박상일 | 화 목 15:00~16:30 | 센B111 |
+| 010206 | 001 | 일반물리및시뮬레이션 | 전공선택 | 3.0 | 송오영 | 월 수 12:00~13:30 | 센B111 |
+| 010206 | 002 | 일반물리및시뮬레이션 | 전공선택 | 3.0 | 송오영 | 월 수 13:30~15:00 | 센B111 |
+| 011614 | 001 | 세종인을위한진로설계 | 공통교양필수 | 1.0 | 하진용 | 화 10:30~12:00, 목 19:00~20:00 | 대양홀강당, 호203 |
+| 011614 | 002 | 세종인을위한진로설계 | 공통교양필수 | 1.0 | 하진용 | 화 10:30~12:00, 목 19:00~20:00 | 대양홀강당, 센B114 |
+| 007330 | 001 | 확률및통계 | 전공기초 | 3.0 | 백경준 | 월 수 13:30~15:00 | 호203 |
+| 009912 | 001 | C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 목 13:30~15:30 | 호203 |
+| 009912 | 002 | C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 금 16:30~18:30 | 호203 |
+
+## 출처
+- 세종대학교 2025-1 강의시간표: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805910&mode=view
+- 실제 수강신청 전 학사정보시스템에서 변경 여부를 다시 확인해야 합니다.
+
+초안 ID: course-schedule-2025-1', '2025-1 소프트웨어학과 개설 강좌 35개와 교수·시간·강의실 정보', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025-1 소프트웨어학과 강의시간표');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2025-2 소프트웨어학과 강의시간표', '# 2025-2 소프트웨어학과 강의시간표
+
+2025-2 학기의 소프트웨어학과 및 콘텐츠소프트웨어학과 개설 강좌 38개를 정리한 초안입니다. 다른 학기의 정보는 포함하지 않았습니다.
+
+| 학수번호 | 분반 | 교과목명 | 이수구분 | 학점 | 교수 | 강의시간 | 강의실 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 003281 | 001 | 컴퓨터그래픽스 | 전공선택 | 3.0 | 박상일 | 화 목 13:30~15:00 | 센B111 |
+| 005910 | 001 | 데이터베이스프로그래밍 | 전공선택 | 3.0 | 변재욱 | 화 목 10:30~12:00 | 센B112 |
+| 011175 | 001 | 음성오디오처리 | 전공선택 | 3.0 | 권순일 | 화 목 15:00~16:30 | 센B112 |
+| 011912 | 001 | 연구실인턴쉽2 | 전공선택 | 3.0 | 최준연 | 화 목 09:00~10:30 | 센B114 |
+| 011923 | 001 | 최신기술콜로키움2 | 전공선택 | 1.0 | 변재욱 | 목 16:30~17:30 | 학대공연장 |
+| P00037 | 001 | 현장실습1 | 전공선택 | 3.0 | 하진용 | - | - |
+| P00038 | 001 | 현장실습2 | 전공선택 | 3.0 | 하진용 | - | - |
+| P00043 | 001 | 현장실습7 | 전공선택 | 6.0 | 하진용 | - | - |
+| 009960 | 001 | Capstone디자인(산학협력프로젝트) | 전공필수 | 6.0 | 권순일 | 금 13:30~19:30 | 센B112 |
+| 002505 | 001 | 인공지능 | 전공선택 | 3.0 | 이은상 | 월 수 16:30~18:00 | 센B114 |
+| 010001 | 001 | 증강현실 | 전공선택 | 3.0 | 이종원 | 월 수 15:00~16:30 | 센B114 |
+| 010112 | 001 | 졸업연구및진로2 | 전공선택 | 1.0 | 최준연 | 목 18:00~19:00 | 호203 |
+| 010112 | 002 | 졸업연구및진로2 | 전공선택 | 1.0 | 권순일 | 목 18:00~19:00 | 호203 |
+| 010112 | 003 | 졸업연구및진로2 | 전공선택 | 1.0 | 박상일 | 목 18:00~19:00 | 호203 |
+| 010112 | 004 | 졸업연구및진로2 | 전공선택 | 1.0 | 백성욱 | 목 18:00~19:00 | 호203 |
+| 010112 | 005 | 졸업연구및진로2 | 전공선택 | 1.0 | 변재욱 | 목 18:00~19:00 | 호203 |
+| 010112 | 006 | 졸업연구및진로2 | 전공선택 | 1.0 | 송오영 | 목 18:00~19:00 | 호203 |
+| 010112 | 007 | 졸업연구및진로2 | 전공선택 | 1.0 | 이종원 | 목 18:00~19:00 | 호203 |
+| 010112 | 008 | 졸업연구및진로2 | 전공선택 | 1.0 | 이은상 | 목 18:00~19:00 | 호203 |
+| 010112 | 009 | 졸업연구및진로2 | 전공선택 | 1.0 | 정승화 | 목 18:00~19:00 | 호203 |
+| 011926 | 001 | 최신기술콜로키움4 | 전공선택 | 1.0 | 변재욱 | 목 16:30~17:30 | 학대공연장 |
+| 003278 | 001 | 컴퓨터구조 | 전공필수 | 3.0 | 백경준 | 월 수 12:00~13:30 | 센B114 |
+| 003278 | 002 | 컴퓨터구조 | 전공필수 | 3.0 | 백경준 | 월 수 13:30~15:00 | 센B114 |
+| 009954 | 001 | 알고리즘및실습 | 전공필수 | 3.0 | 송오영 | 월 16:30~18:30 | 센B111 |
+| 009954 | 002 | 알고리즘및실습 | 전공필수 | 3.0 | 송오영 | 수 16:30~18:30 | 센B111 |
+| 009993 | 001 | SW설계기초(산학프로젝트입문) | 전공필수 | 3.0 | 정승화 | 화 목 15:00~16:30 | 센B111 |
+| 009993 | 002 | SW설계기초(산학프로젝트입문) | 전공필수 | 3.0 | 정승화 | 화 목 16:30~18:00 | 센B111 |
+| 009955 | 001 | 이산수학및프로그래밍 | 전공선택 | 3.0 | 이은상 | 월 수 10:30~12:00 | 센B112 |
+| 009955 | 002 | 이산수학및프로그래밍 | 전공선택 | 3.0 | 이은상 | 월 수 12:00~13:30 | 센B112 |
+| 009956 | 001 | 문제해결및실습:JAVA | 전공선택 | 3.0 | 박상일 | 화 목 12:00~13:30 | 센B111 |
+| 011839 | 001 | 세종인을위한전공탐색 | 공통교양필수 | 1.0 | 권순일 | 목 19:00~20:00 | 센B112 |
+| 011839 | 002 | 세종인을위한전공탐색 | 공통교양필수 | 1.0 | 변재욱 | 목 19:00~20:00 | 센B111 |
+| 000304 | 001 | 공업수학1 | 전공기초 | 3.0 | 알안타리무가헤드알리샤우퀴 | 월 수 09:00~10:30 | 센B111 |
+| 000304 | 002 | 공업수학1 | 전공기초 | 3.0 | 알안타리무가헤드알리샤우퀴 | 월 수 10:30~12:00 | 센B111 |
+| 001725 | 001 | 선형대수 | 전공기초 | 3.0 | 이종원 | 화 목 12:00~13:30 | 센B114 |
+| 001725 | 002 | 선형대수 | 전공기초 | 3.0 | 이종원 | 화 목 13:30~15:00 | 센B114 |
+| 009913 | 001 | 고급C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 수 13:30~15:30 | 센B112 |
+| 009913 | 002 | 고급C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 수 16:30~18:30 | 센B112 |
+
+## 출처
+- 세종대학교 2025-2 강의시간표: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=853683&mode=view
+- 실제 수강신청 전 학사정보시스템에서 변경 여부를 다시 확인해야 합니다.
+
+초안 ID: course-schedule-2025-2', '2025-2 소프트웨어학과 개설 강좌 38개와 교수·시간·강의실 정보', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2025-2 소프트웨어학과 강의시간표');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2026년 소프트웨어학과 교과과정', '# 2026년 소프트웨어학과 교과과정
+
+2026년 교과과정 76개를 정리한 초안입니다. 교육과정 연도와 실제 수강 학기는 다를 수 있으므로 본인의 입학년도 기준 교과과정을 확인해야 합니다.
+
+| 학년 | 교과목명 | 이수구분 | 학점/이론/실습 |
+| --- | --- | --- | --- |
+| 0 | 한국현대사 | 균필 | 3.0 / 3 / 0 |
+| 0 | 동서양의사상과윤리 | 균필 | 3.0 / 3 / 0 |
+| 0 | 성서와기독교 | 균필 | 3.0 / 3 / 0 |
+| 0 | 세계사 | 균필 | 3.0 / 3 / 0 |
+| 0 | 경영학 | 균필 | 3.0 / 3 / 0 |
+| 0 | 경제학 | 균필 | 3.0 / 3 / 0 |
+| 0 | 미디어빅뱅과방송 | 균필 | 3.0 / 3 / 0 |
+| 0 | 현대사회와법 | 균필 | 3.0 / 3 / 0 |
+| 0 | 융합예술의이해 | 균필 | 3.0 / 3 / 0 |
+| 0 | 컴퓨터게임과메타버스 | 균필 | 3.0 / 3 / 0 |
+| 0 | 한국의문화와한류 | 균필 | 3.0 / 3 / 0 |
+| 0 | 현대예술의이해 | 균필 | 3.0 / 3 / 0 |
+| 1 | 세종인을위한진로설계 | 공필 | 1.0 / 1 / 0 |
+| 1 | 비판적사고와창의적글쓰기 | 공필 | 3.0 / 3 / 0 |
+| 1 | 미적분학1 | 기필 | 3.0 / 3 / 1 |
+| 1 | 고급프로그래밍활용 | 기필 | 3.0 / 2 / 1 |
+| 1 | 확률및통계 | 전기 | 3.0 / 3 / 0 |
+| 1 | C프로그래밍및실습 | 전기 | 3.0 / 2 / 2 |
+| 1 | 서양철학:쟁점과토론 | 공필 | 3.0 / 3 / 0 |
+| 1 | 대학영어 | 공필 | 2.0 / 2 / 1 |
+| 1 | 세종인을위한전공탐색 | 공필 | 1.0 / 0 / 1 |
+| 1 | 인공지능과빅데이터 | 기필 | 3.0 / 2 / 1 |
+| 1 | 공업수학1 | 전기 | 3.0 / 3 / 0 |
+| 1 | 선형대수 | 전기 | 3.0 / 3 / 0 |
+| 1 | 고급C프로그래밍및실습 | 전기 | 3.0 / 2 / 2 |
+| 2 | 자료구조및실습 | 전필 | 3.0 / 2 / 2 |
+| 2 | 객체지향프로그래밍:C++ | 전필 | 3.0 / 3 / 0 |
+| 2 | 윈도우프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 일반물리및시뮬레이션 | 전선 | 3.0 / 3 / 0 |
+| 2 | 디지털이미지프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 응용수치해석및시각화 | 전선 | 3.0 / 3 / 0 |
+| 2 | SW설계기초(산학프로젝트입문) | 전필 | 3.0 / 3 / 0 |
+| 2 | 알고리즘및실습 | 전필 | 3.0 / 2 / 2 |
+| 2 | 실시간컴퓨터그래픽스 | 전필 | 3.0 / 3 / 0 |
+| 2 | 컴퓨터구조 | 전선 | 3.0 / 3 / 0 |
+| 2 | 이산수학및프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 2 | 객체지향프로그래밍:JAVA | 전선 | 3.0 / 3 / 0 |
+| 3 | 데이터베이스 | 전필 | 3.0 / 3 / 0 |
+| 3 | 오픈소스SW개론 | 전필 | 3.0 / 3 / 0 |
+| 3 | 운영체제 | 전선 | 3.0 / 3 / 0 |
+| 3 | 모바일프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 실세계모델링및렌더링 | 전선 | 3.0 / 3 / 0 |
+| 3 | 최신기술콜로키움1 | 전선 | 1.0 / 1 / 0 |
+| 3 | 객체지향XR프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 머신러닝 | 전선 | 3.0 / 3 / 0 |
+| 3 | 연구실인턴십1 | 전선 | 3.0 / 0 / 3 |
+| 3 | 딥러닝개론 | 전필 | 3.0 / 3 / 0 |
+| 3 | 컴퓨터네트워크 | 전선 | 3.0 / 3 / 0 |
+| 3 | 데이터베이스프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 컴퓨터애니메이션 | 전선 | 3.0 / 3 / 0 |
+| 3 | 음성오디오처리 | 전선 | 3.0 / 3 / 0 |
+| 3 | XR엔진개론 | 전선 | 3.0 / 3 / 0 |
+| 3 | 최신기술콜로키움2 | 전선 | 1.0 / 1 / 0 |
+| 3 | 웹기반프로그래밍 | 전선 | 3.0 / 3 / 0 |
+| 3 | 연구실인턴십2 | 전선 | 3.0 / 0 / 3 |
+| 4 | Capstone디자인(산학협력프로젝트) | 전필 | 6.0 / 0 / 6 |
+| 4 | SW-AI종합설계 | 전필 | 1.0 / 1 / 0 |
+| 4 | 가상현실 | 전선 | 3.0 / 3 / 0 |
+| 4 | 소프트웨어특강1 | 전선 | 3.0 / 3 / 0 |
+| 4 | 인턴쉽1 | 전선 | 3.0 / 3 / 0 |
+| 4 | 졸업연구및진로1 | 전선 | 1.0 / 3 / 0 |
+| 4 | 생성형AI | 전선 | 3.0 / 3 / 0 |
+| 4 | UI/UX디자인개론 | 전선 | 3.0 / 3 / 0 |
+| 4 | 최신기술콜로키움3 | 전선 | 1.0 / 1 / 0 |
+| 4 | 컴퓨터비전및실습 | 전선 | 3.0 / 3 / 0 |
+| 4 | 연구실인턴십3 | 전선 | 3.0 / 3 / 0 |
+| 4 | 소프트웨어특강2 | 전선 | 3.0 / 3 / 0 |
+| 4 | 인턴쉽2 | 전선 | 3.0 / 3 / 0 |
+| 4 | HCI | 전선 | 3.0 / 3 / 0 |
+| 4 | 증강현실 | 전선 | 3.0 / 3 / 0 |
+| 4 | 졸업연구및진로2 | 전선 | 1.0 / 0 / 1 |
+| 4 | 메타버스시스템 | 전선 | 1.0 / 3 / 0 |
+| 4 | 디지털트윈 | 전선 | 3.0 / 3 / 0 |
+| 4 | 게임인공지능 | 전선 | 3.0 / 3 / 0 |
+| 4 | 최신기술콜로키움4 | 전선 | 1.0 / 1 / 0 |
+| 4 | 연구실인턴십4 | 전선 | 3.0 / 0 / 3 |
+
+## 2025년 대비 변경
+- 추가: 고급C프로그래밍및실습 (전기, 3.0 / 2 / 2), 비판적사고와창의적글쓰기 (공필, 3.0 / 3 / 0), 연구실인턴십1 (전선, 3.0 / 0 / 3), 연구실인턴십2 (전선, 3.0 / 0 / 3), 연구실인턴십3 (전선, 3.0 / 3 / 0), 연구실인턴십4 (전선, 3.0 / 0 / 3), 졸업연구및진로2 (전선, 1.0 / 0 / 1)
+- 제외: 고급C프로그래밍및실습 (전기, 4.0 / 3 / 2), 문제해결을위한글쓰기와발표 (공필, 3.0 / 3 / 0), 연구실인턴쉽1 (전선, 3.0 / 3 / 0), 연구실인턴쉽2 (전선, 3.0 / 3 / 0), 우주자연인간 (공필, 1.0 / 1 / 0), 창업과기업가정신1 (공필, 1.0 / 1 / 0), 취창업과진로설계 (공필, 1.0 / 1 / 0)
+
+## 출처
+- 세종대학교 학사정보에서 내려받은 해당 연도 교과과정 목록
+
+초안 ID: software-curriculum-2026', '2026년 적용 교과과정 76개와 전년도 대비 변경 사항', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2026년 소프트웨어학과 교과과정');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '인증제도');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2026년 TOSC 공지 모음', '# 2026년 TOSC 공지
+
+2026년에 게시된 TOSC 공지 7건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2026-05-28 | [고사장 안내] 제16회 SW코딩역량평가 인증시험 고사장 (시험일: 2026년 5월 30일 토요일) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/64 |
+| 2026-05-26 | [접수기간 연장] 제16회 SW코딩역량평가 인증시험 TOSC 안내 (2026년 5월 30일 시행) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/63 |
+| 2026-05-11 | TOSC 기출문제집 출간 및 활용 안내 | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/62 |
+| 2026-04-27 | 제16회 SW코딩역량평가 인증시험 TOSC 안내 (2026년 5월 30일 시행) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/61 |
+| 2026-03-25 | [고사장 안내] 제15회 SW코딩역량평가 인증시험 고사장 (시험일: 2026년 3월 28일 토요일) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/60 |
+| 2026-03-05 | 제15회 SW코딩역량평가 인증시험 TOSC 안내 (2026년 3월 28일 시행) | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/59 |
+| 2026-02-02 | [시험 일정 안내] 2026년 SW코딩역량평가(TOSC) 인증 시험 일정 | https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/58 |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2026년
+
+초안 ID: tosc-2026', '2026년에 게시된 TOSC 공지 7건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2026년 TOSC 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '장학·지원');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2026년 장학 공지 모음', '# 2026년 장학 공지
+
+2026년에 게시된 장학 공지 26건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2026-06-11 | 2026-2 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=886502&mode=view |
+| 2026-06-09 | 2026-1 기숙지원장학금 선발결과 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=886382&mode=view |
+| 2026-06-01 | 2026-1 학생회관복지장학금 장학생 선발결과 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=886190&mode=view |
+| 2026-06-01 | 2026-2 주거안정지원장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=886181&mode=view |
+| 2026-05-11 | 2026 국가이공계 재학중우수자(2년지원) 장학생 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=866982&mode=view |
+| 2026-05-11 | 2026-1 성적향상장학금 선발결과 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=866974&mode=view |
+| 2026-05-06 | 2026-1 햇빛장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=866780&mode=view |
+| 2026-04-27 | 2026-1 국가장학금 및 에델바이스Ⅱ 지급안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=866601&mode=view |
+| 2026-04-20 | 2026-1 성적향상장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=866189&mode=view |
+| 2026-03-27 | 2026 푸른등대 삼성기부장학금 신규장학생 선발안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=865237&mode=view |
+| 2026-03-11 | 2026학년도 1학기 대학생 청소년교육지원사업 장학생 모집 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=864383&mode=view |
+| 2026-03-06 | 2026-1 희망사다리Ⅱ유형(고졸후학습지원) 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=864192&mode=view |
+| 2026-03-06 | 2026-1 희망사다리Ⅰ유형(중소기업취업연계) 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=864186&mode=view |
+| 2026-03-06 | 2026 예술체육비전 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=864174&mode=view |
+| 2026-03-06 | 2026 인문100년 장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=864172&mode=view |
+| 2026-03-06 | 2026학년도 1학기  유한재단 장학금 신청 안내(결손 및 다문화 가정 대상) | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=864169&mode=view |
+| 2026-03-06 | 2026-1 푸른등대 기부장학사업 신규장학생 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=864162&mode=view |
+| 2026-03-04 | 2026-1 주거안정지원장학금 2차 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=863975&mode=view |
+| 2026-02-23 | 2026-1 어학우수장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=863798&mode=view |
+| 2026-02-23 | 2026-1 특기장학금 신청안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=863797&mode=view |
+| 2026-02-23 | 2026-1 교내장학금 신청안내 (신입생,재학생) | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=863795&mode=view |
+| 2026-02-20 | 2026-1 국가장학금(Ⅰ,Ⅱ) 및 에델바이스Ⅱ 신청안내(2차) | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=863745&mode=view |
+| 2026-02-09 | 2026-1 국가장학금 및 에델바이스Ⅱ 선발결과 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=863286&mode=view |
+| 2026-01-23 | 2025-2 에델바이스Ⅱ ‘추가’지급 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=862558&mode=view |
+| 2026-01-20 | 2026학년도 신라문화장학재단 장학생 공개선발 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=862431&mode=view |
+| 2026-01-06 | 2026학년도 정수장학회 장학금 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice7.do?articleNo=861807&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2026년
+
+초안 ID: scholarship-2026', '2026년에 게시된 장학 공지 26건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2026년 장학 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '진로·취업');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2026년 진로·취업 공지 모음', '# 2026년 진로·취업 공지
+
+2026년에 게시된 진로·취업 공지 106건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2026-07-28 | [현장실습] 서울영커리언스 캠프 2026 가을학기 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890993&mode=view |
+| 2026-07-27 | [현장실습] 서울영커리언스 챌린지 실무형 직무혁신 성과 팀 공모전 가을학기 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890994&mode=view |
+| 2026-07-21 | [추천채용/이공계][중견기업] 에어퍼스트 프로세스 엔지니어, 품질기술 엔지니어, 기계 엔지니어 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890704&mode=view |
+| 2026-07-14 | [현장실습] 한국투자증권 2학기 대학 연계 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890530&mode=view |
+| 2026-07-13 | [수정][현장실습] 2026학년도 2학기 현장실습학기제 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890466&mode=view |
+| 2026-07-10 | [추천채용/공통][대기업·계열사·자회사] ㈜이랜드파크 서비스 인턴 30기 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890422&mode=view |
+| 2026-06-26 | [해외인턴] 2026 하반기 한·미 대학생 연수(WEST) 참가자 모집 공고 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=887113&mode=view |
+| 2026-06-26 | [현장실습] BGF리테일 2026년 하반기 IT직군 취업연계인턴십(현장실습생) 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=887096&mode=view |
+| 2026-06-18 | [추천채용] 자주 묻는 질문(FAQ) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886747&mode=view |
+| 2026-06-18 | [현장실습] 2026학년도 2학기 ICT 학점연계 프로젝트 국내과정 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886745&mode=view |
+| 2026-06-17 | [세종대 교내 행정인력 채용 정보 안내] | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886659&mode=view |
+| 2026-06-15 | [추천채용/공통][중견기업] 법무법인(유)광장 송무부 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886593&mode=view |
+| 2026-06-10 | [추천채용/공통][중견기업] (주)현대렌탈케어 B2B 영업 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886447&mode=view |
+| 2026-06-04 | [추천채용/이공계][중견기업][서류패스] 다쏘시스템코리아 Software R&D Engineer 체험형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886259&mode=view |
+| 2026-05-28 | [추천채용/이공계][중견기업] 한국아즈빌(주) 빌딩자동제어 영업팀 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886088&mode=view |
+| 2026-05-26 | [추천채용/인문계][강소기업][서류패스] 나인스텝컨설팅 HR, 경영관리 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885977&mode=view |
+| 2026-05-22 | [추천채용/공통][중견기업] 칼자이스(주) Data Excellence Administrator 정규직 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885914&mode=view |
+| 2026-05-22 | [추천채용/공통][중견기업] 법무법인(유) 광장 송무부 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885900&mode=view |
+| 2026-05-21 | [추천채용/공통][강소기업][서류패스] 메디테라피 상품기획 브랜드 매니저 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885803&mode=view |
+| 2026-05-19 | [추천채용/공통][강소기업] 모두싸인 아웃바운드 영업 담당자, 채널/파트너 영업 담당자, 고객성공 매니저, 브랜드 디자이너 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885755&mode=view |
+| 2026-05-19 | [추천채용/공통][강소기업][서류패스] 에프엠커뮤니케이션즈 프로모션 기획 및 실행 부문 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885747&mode=view |
+| 2026-05-18 | [추천채용/공통][중견기업] 아남전자(주) 회로팀, 기획팀, 해외영업팀 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885719&mode=view |
+| 2026-05-18 | [추천채용/공통][중견기업] 이트너스㈜ HR / Global / GA / BIZ 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885717&mode=view |
+| 2026-05-18 | [추천채용/공통][중견기업] 드림시큐리티 마케팅 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885715&mode=view |
+| 2026-05-18 | [추천채용/공통][강소기업][서류패스] 주식회사 유투엑스랩 경영지원본부 구매직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885714&mode=view |
+| 2026-05-18 | [추천채용/공통][강소기업][서류패스] 주식회사 유투엑스랩 임상시험사업본부 팀원 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885713&mode=view |
+| 2026-05-18 | [추천채용/공통][중견기업][서류패스] 삼화왕관(주) 생산관리, 국내영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885712&mode=view |
+| 2026-05-14 | [추천채용/공통][중견기업] 오티스엘리베이터코리아 승강기 유지보수 영업사원 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=885589&mode=view |
+| 2026-05-08 | [추천채용/공통][중견 기업] 칼자이스 Data Excellence Administrator 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866921&mode=view |
+| 2026-05-08 | [현장실습]2026학년도 하계 계절학기 현장실습 참가자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866920&mode=view |
+| 2026-05-08 | [추천채용/인문계][중견 기업][삼성전자 협력사] 엠이케이 재무팀 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866902&mode=view |
+| 2026-05-06 | [추천채용/공통][강소기업] 토스 인슈런스 주식회사 Privacy Operations Specialist 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866846&mode=view |
+| 2026-04-30 | [추천채용/공통][강소기업][서류패스] 주식회사 에스엠비 테크니컬 라이터 신입/경력직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866704&mode=view |
+| 2026-04-30 | [추천채용/공통][강소기업] TPA Korea 법인영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866702&mode=view |
+| 2026-04-30 | [추천채용/공통][중견기업] 이화다이아몬드공업(주) 기술개발, 국내/해외 기술영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866698&mode=view |
+| 2026-04-24 | [추천채용/공통][중견기업][서류패스](주)케이더블유이코리아 총무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866522&mode=view |
+| 2026-04-24 | [추천채용/이공계][중견기업] 오티스엘리베이터코리아 설치현장 환경안전 담당자 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866515&mode=view |
+| 2026-04-21 | [추천채용/이공계][중견기업] 로체시스템즈(주) 기술영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866308&mode=view |
+| 2026-04-17 | [추천채용/공통][강소기업][서류패스] 스탠다드 인터내셔널 인사지원, NPD 직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866104&mode=view |
+| 2026-04-16 | [추천채용/공통][중견기업][서류패스] 한미약품(주) 병의원 영업(MR) 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866078&mode=view |
+| 2026-04-14 | [추천채용/공통][강소기업] 주식회사 에스엠비 테크니컬 라이터 신입/경력직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865956&mode=view |
+| 2026-04-13 | [추천채용/공통][중견기업] 한국로슈진단 영업직 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865865&mode=view |
+| 2026-04-09 | [추천채용/이공계][대기업·계열사·자회사] 오릭스캐피탈코리아 인프라/솔루션 운영 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865711&mode=view |
+| 2026-04-08 | [추천채용/이공계][대기업·계열사·자회사] 미디어로그 소프트웨어 개발자 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865683&mode=view |
+| 2026-04-08 | [추천채용/공통][해외기업][서류패스] 네조트 시스템 개발 엔지니어 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865625&mode=view |
+| 2026-04-07 | [추천채용/공통][강소기업] 니혼카미펄프상사 코리아 해외영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865624&mode=view |
+| 2026-04-06 | [추천채용/공통][중견기업] 오토닉스 경영기획, 상품기획, 재무회계 등 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865583&mode=view |
+| 2026-04-06 | [추천채용/이공계][중견기업] (주)아이디스 SW 연구개발, HW 연구개발, 기구개발 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865578&mode=view |
+| 2026-04-06 | [추천채용/공통][중견기업][서류패스] 키엔스 코리아 컨설팅 세일즈 신입 채용 첨부파일 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865571&mode=view |
+| 2026-04-02 | [추천채용/공통][중견기업] 아즈빌 구매직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865460&mode=view |
+| 2026-04-02 | [추천채용/공통][중견기업] 현대렌탈케어 B2B 영업직무 정규직 전환형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865457&mode=view |
+| 2026-03-30 | [추천채용/공통][강소기업] 스킨 이데아 상품기획 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865305&mode=view |
+| 2026-03-30 | [추천채용/공통][중견기업] KINX 해외사업/인사/시스템 운영 엔지니어/인프라 운영관리(전기/기계, 소방) 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865302&mode=view |
+| 2026-03-30 | [추천채용/공통][대기업·계열사·자회사] 김장법률사무소 비서, 빌링 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865284&mode=view |
+| 2026-03-27 | [추천채용/공통][중견기업] 코스맥스 그룹 2026년 신입사원 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865221&mode=view |
+| 2026-03-27 | [추천채용/공통][중견기업] 법무법인 광장 총무신 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865195&mode=view |
+| 2026-03-26 | [현장실습]괌PIC (Pacific Island Club Guam) 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865167&mode=view |
+| 2026-03-25 | [현장실습]2026 하반기 ICT 학점연계 인턴십 프로젝트 글로벌 과정 참여학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865116&mode=view |
+| 2026-03-25 | [추천채용/공통][중견기업] 서한그룹 7개 계열사 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865089&mode=view |
+| 2026-03-25 | [추천채용/공통][중견기업]아즈빌 공정자동제어 IAP 영업지원 엔지니어링 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865050&mode=view |
+| 2026-03-24 | [추천채용/공통][중견기업] 건일제약 사업개발팀(BD) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865021&mode=view |
+| 2026-03-19 | [추천채용/이공계][중견기업][서류패스] 에이디테크놀로지 반도체 설계 엔지니어, 펌웨어 설계 엔지니어 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864809&mode=view |
+| 2026-03-18 | [추천채용/공통][중견기업]법무법인 태평양 송무, 비서, 홍보, 재무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864783&mode=view |
+| 2026-03-17 | [추천채용/공통][중견기업][서류패스] 한샘 리하우스 디자이너 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864704&mode=view |
+| 2026-03-17 | [추천채용/공통][외국계] 바이어스도르프 니베아 브랜드 마케팅 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864682&mode=view |
+| 2026-03-13 | [추천채용/공통][해외기업][서류패스] 일본기업 타마딕 기계 설계, 전기/전자 설계, 생산 기술,S/W 개발 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864555&mode=view |
+| 2026-03-11 | [추천채용/공통][중견기업]로지스올 SCM 영업 및 영업관리 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864438&mode=view |
+| 2026-03-10 | [추천채용/공통][강소기업] 피앤피시큐어 소프트웨어 연구개발, 솔루션 기술, Vision 엔지니어 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864323&mode=view |
+| 2026-03-09 | [추천채용/공통][중견기업][서류패스] 화승케미칼 재무팀 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864260&mode=view |
+| 2026-03-04 | [추천채용/공통][대기업·계열사·자회사] 삼성SDS 자회사, 시큐아이 소프트웨어 개발, 시그니처 개발, 테스트 자동화 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864042&mode=view |
+| 2026-03-04 | [추천채용/공통][외국계]바이어스도르프코리아 유세린 브랜드 마케팅 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=864036&mode=view |
+| 2026-03-03 | [추천채용/공통][해외기업][서류패스] 일본기업 미즈노 철강소 기계/기술, 전장/제어 설계 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863952&mode=view |
+| 2026-03-03 | [추천채용/공통][강소기업] 케이엔유 수입 화장품 Brand manager assistant 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863948&mode=view |
+| 2026-02-24 | [추천채용/공통][강소기업] (주)모두투어 네트워크 영업/상품/지원부문 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863808&mode=view |
+| 2026-02-19 | [추천채용/공통][중견기업] (주)상상인 사업본부 Network Engineer, AI Agent 개발, HR 기획 직무 등 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863590&mode=view |
+| 2026-02-19 | [해외인턴] 2026 상반기 한·미 대학생 연수(WEST) 참가자 모집 공고 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863581&mode=view |
+| 2026-02-13 | [현장실습] 서울영커리언스 챌린지 실무형 직무혁신 성과 팀 공모전 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863551&mode=view |
+| 2026-02-13 | [현장실습] 서울영커리언스 캠프 2026 봄학기 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863549&mode=view |
+| 2026-02-13 | [추천채용/공통][강소기업] 모두 싸인 B2B 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863547&mode=view |
+| 2026-02-06 | [추천채용/공통][중견기업][서류패스] 제이비(주) 도시가스 안전관리, 비서 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863236&mode=view |
+| 2026-02-04 | [추천채용/공통][중견기업][서류패스] 한샘 리하우스 디자이너 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863134&mode=view |
+| 2026-02-04 | [추천채용/이공][중견기업][서류패스] 솔브레인(주) AI TF 체험형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863089&mode=view |
+| 2026-02-03 | [추천채용/공통][중견기업] 한국 아즈빌 빌딩자동제어 영업직무 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863052&mode=view |
+| 2026-01-30 | [추천채용/공통][중견기업] 오픈베이스 Account manager(Sales), Solution Architect(네트워크, 보안, Cloud), System Architect 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862920&mode=view |
+| 2026-01-30 | [추천채용/공통][외국계]바이어스도르프코리아 세일즈 인턴(체험형) 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862917&mode=view |
+| 2026-01-28 | [추천채용/공통][중견기업] (주)신흥 기술영업, 연구개발, 상품영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862801&mode=view |
+| 2026-01-26 | [추천채용/공통][중견기업] 이트너스 2026년 2차 E-ON 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862620&mode=view |
+| 2026-01-22 | [현장실습] 2026학년도 1학기 ‘ICT’ 학점연계 프로젝트 인턴십 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862505&mode=view |
+| 2026-01-16 | [추천채용/이공계][대기업·계열사·자회사] 미디어로그 NMS 백엔드/프론트엔드 신입 개발자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862577&mode=view |
+| 2026-01-16 | [추천채용/공통][중견기업] 현대렌탈케어 B2B 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862429&mode=view |
+| 2026-01-16 | [추천채용/공통][중견기업] BS한양 회계팀 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862427&mode=view |
+| 2026-01-16 | [추천채용/공통][중견기업] (주)유비쿼스 R&D, 기술영업, 해외소싱 채용연계형 인턴십 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862310&mode=view |
+| 2026-01-16 | [추천채용/공통][외국계] 헤일리온 코리아 OTC(일반 의약품) 체험형 마케팅 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862308&mode=view |
+| 2026-01-16 | [추천채용/공통][강소기업] 스타 법무법인 경영기획팀 총무직 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862302&mode=view |
+| 2026-01-15 | [추천채용/이공계][강소기업] 일신테크놀로지 생산기술, 품질 직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862213&mode=view |
+| 2026-01-15 | [추천채용/공통][강소기업] 에프엠커뮤니케이션즈 프로모션(ATL/BTL) 기획, 실행 직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862212&mode=view |
+| 2026-01-13 | [일반채용] 광진구선거관리위원회 행정보조 사무직 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862126&mode=view |
+| 2026-01-08 | [추천채용/공통][강소기업] 모두싸인  B2B 영업 담당자, 고객 성공 매니저 채용 전환형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862088&mode=view |
+| 2026-01-08 | [추천채용/공통][강소기업] 스킨 이데아 디자인, 상품기획팀/마케팅 기획팀/국내 영업팀/해외영업팀 채용연계형 인턴 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861981&mode=view |
+| 2026-01-08 | [추천채용/공통][중견기업] 제일약품 ETC 영업 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861980&mode=view |
+| 2026-01-07 | [추천채용/공통][대기업·계열사·자회사] 파라다이스 세가사미 인사직무 신입 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861889&mode=view |
+| 2026-01-07 | [추천채용/공통][강소기업][서류패스] 대한경제신문사 신입 기자 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861887&mode=view |
+| 2026-01-06 | [추천채용] 2026년 지역인재 7급 수습직원 선발시험 추천자 선발 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861839&mode=view |
+| 2026-01-06 | Recruitment of Field Training (Internship) participants for the 2026 Spring Semester | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861794&mode=view |
+| 2026-01-06 | [현장실습] 2026학년도 1학기 현장실습학기제 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861793&mode=view |
+| 2026-01-06 | [현장실습] 2026학년도 1학기 ‘서울영커리언스’ 인턴십 참여자 모집_기한연장(23일 13:00까지) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861791&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2026년
+
+초안 ID: career-2026', '2026년에 게시된 진로·취업 공지 106건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2026년 진로·취업 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '프로젝트');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2026년 SW중심대학사업단 공지 모음', '# 2026년 SW중심대학사업단 공지
+
+2026년에 게시된 SW중심대학사업단 공지 15건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2026-07-24 | [SW중심대학] 2026년 1학기 생성형AI활용 융합 콘텐츠 공모전  수상자 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=51019&mode=view |
+| 2026-07-07 | [타기관 홍보] 2026년 2학기 AI학업장려 학자금 대출 안내 (~26. 11. 17.(화), 18시), 온라인 신청) | https://sw.sejong.ac.kr/sw/notice.do?articleNo=50713&mode=view |
+| 2026-06-26 | [SW중심대학] 2026년 1학기 세종대학교 창의 SW 기초설계 경진대회 수상 목록 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=50604&mode=view |
+| 2026-06-24 | [산학협력] SW중심대학 2026년 프리인턴십 캠프 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=50592&mode=view |
+| 2026-06-10 | [SW중심대학] 2026년 1학기 세종대학교 AI·SW중심대학  창의 SW 기초설계 경진대회 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=8159&mode=view |
+| 2026-06-10 | [SW중심대학] 2026년 1학기 생성형AI활용 융합 콘텐츠 공모전 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=8158&mode=view |
+| 2026-05-27 | ★추가 모집★[해외연수] 2026년 San Jose State University 해외연수 프로그램 신청 안내 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=4040&mode=view |
+| 2026-04-30 | [TOSC]제16회 SW코딩역량평가(TOSC) 인증시험 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3847&mode=view |
+| 2026-04-30 | [해외연수] 2026년 University of Southern California 해외연수 프로그램 신청 안내 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3846&mode=view |
+| 2026-04-22 | [AI·SW중심대학협의회] 2026 AI·SW중심대학 디지털 경진대회 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3822&mode=view |
+| 2026-04-10 | [산학협력] SW중심대학 2026 세종 창업 아이디어리그 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3580&mode=view |
+| 2026-04-08 | [TOPCIT] 제25회 TOPCIT 정기평가 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3577&mode=view |
+| 2026-04-03 | [TOPCIT] 제25회 TOPCIT 정기평가 (세종대학교 단체접수) | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3571&mode=view |
+| 2026-03-19 | [TOSC] 제15회 SW코딩역량평가(TOSC) 인증시험 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3549&mode=view |
+| 2026-03-10 | [sw중심대학협의회] 2026 SW중심대학 전국 및 교내 에세이 공모전 | https://sw.sejong.ac.kr/sw/notice.do?articleNo=3537&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2026년
+
+초안 ID: sw-program-2026', '2026년에 게시된 SW중심대학사업단 공지 15건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2026년 SW중심대학사업단 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '현장실습');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2026년 현장실습 공지 모음', '# 2026년 현장실습 공지
+
+2026년에 게시된 현장실습 공지 15건의 색인입니다. 다른 연도의 공지는 포함하지 않았으며, 신청 기한과 자격은 반드시 원문에서 확인해야 합니다.
+
+| 게시일 | 제목 | 원문 |
+| --- | --- | --- |
+| 2026-07-28 | [현장실습] 서울영커리언스 캠프 2026 가을학기 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890993&mode=view |
+| 2026-07-27 | [현장실습] 서울영커리언스 챌린지 실무형 직무혁신 성과 팀 공모전 가을학기 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890994&mode=view |
+| 2026-07-14 | [현장실습] 한국투자증권 2학기 대학 연계 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890530&mode=view |
+| 2026-07-13 | [수정][현장실습] 2026학년도 2학기 현장실습학기제 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=890466&mode=view |
+| 2026-06-26 | [현장실습] BGF리테일 2026년 하반기 IT직군 취업연계인턴십(현장실습생) 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=887096&mode=view |
+| 2026-06-18 | [현장실습] 2026학년도 2학기 ICT 학점연계 프로젝트 국내과정 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886745&mode=view |
+| 2026-05-08 | [현장실습]2026학년도 하계 계절학기 현장실습 참가자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=866920&mode=view |
+| 2026-03-26 | [현장실습]괌PIC (Pacific Island Club Guam) 현장실습생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865167&mode=view |
+| 2026-03-25 | [현장실습]2026 하반기 ICT 학점연계 인턴십 프로젝트 글로벌 과정 참여학생 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=865116&mode=view |
+| 2026-02-13 | [현장실습] 서울영커리언스 챌린지 실무형 직무혁신 성과 팀 공모전 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863551&mode=view |
+| 2026-02-13 | [현장실습] 서울영커리언스 캠프 2026 봄학기 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=863549&mode=view |
+| 2026-01-22 | [현장실습] 2026학년도 1학기 ‘ICT’ 학점연계 프로젝트 인턴십 참여자 모집 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862505&mode=view |
+| 2026-01-16 | [추천채용/공통][중견기업] (주)유비쿼스 R&D, 기술영업, 해외소싱 채용연계형 인턴십 채용 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=862310&mode=view |
+| 2026-01-06 | [현장실습] 2026학년도 1학기 현장실습학기제 신청 안내 | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861793&mode=view |
+| 2026-01-06 | [현장실습] 2026학년도 1학기 ‘서울영커리언스’ 인턴십 참여자 모집_기한연장(23일 13:00까지) | https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=861791&mode=view |
+
+## 출처
+- 각 항목의 공식 게시판 원문 링크
+- 집계 연도: 2026년
+
+초안 ID: field-practice-2026', '2026년에 게시된 현장실습 공지 15건의 날짜별 공식 원문 색인', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2026년 현장실습 공지 모음');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2026-1 소프트웨어학과 강의시간표', '# 2026-1 소프트웨어학과 강의시간표
+
+2026-1 학기의 소프트웨어학과 및 콘텐츠소프트웨어학과 개설 강좌 35개를 정리한 초안입니다. 다른 학기의 정보는 포함하지 않았습니다.
+
+| 학수번호 | 분반 | 교과목명 | 이수구분 | 학점 | 교수 | 강의시간 | 강의실 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| P00048 | 001 | 현장실습12 | 전공선택 | 12.0 | 하진용 | - | - |
+| 009960 | 001 | Capstone디자인(산학협력프로젝트) | 전공필수 | 6.0 | 권순일 | 금 13:30~19:30 | 센B112 |
+| 006208 | 001 | 가상현실 | 전공선택 | 3.0 | 이종원 | 화 목 12:00~13:30 | 센B114 |
+| 010000 | 001 | 기계학습 | 전공선택 | 3.0 | 권순일 | 화 목 15:00~16:30 | 센B112 |
+| 010111 | 001 | 졸업연구및진로1 | 전공선택 | 1.0 | 권순일 | 화 18:00~19:00 | 센B114 |
+| 010111 | 002 | 졸업연구및진로1 | 전공선택 | 1.0 | 최준연 | 화 18:00~19:00 | 센B114 |
+| 010111 | 003 | 졸업연구및진로1 | 전공선택 | 1.0 | 박상일 | 화 18:00~19:00 | 센B114 |
+| 010111 | 004 | 졸업연구및진로1 | 전공선택 | 1.0 | 백성욱 | 화 18:00~19:00 | 센B114 |
+| 010111 | 005 | 졸업연구및진로1 | 전공선택 | 1.0 | 송오영 | 화 18:00~19:00 | 센B114 |
+| 010111 | 006 | 졸업연구및진로1 | 전공선택 | 1.0 | 이종원 | 화 18:00~19:00 | 센B114 |
+| 010111 | 007 | 졸업연구및진로1 | 전공선택 | 1.0 | 이은상 | 화 18:00~19:00 | 센B114 |
+| 010111 | 008 | 졸업연구및진로1 | 전공선택 | 1.0 | 정승화 | 화 18:00~19:00 | 센B114 |
+| 010111 | 009 | 졸업연구및진로1 | 전공선택 | 1.0 | 백경준 | 화 18:00~19:00 | 센B114 |
+| 011904 | 001 | 생성형AI | 전공선택 | 3.0 | 백경준 | 금 09:00~12:00 | 센B112 |
+| 011924 | 001 | 최신기술콜로키움3 | 전공선택 | 1.0 | 백경준 | 목 16:30~17:30 | 학대공연장 |
+| 012165 | 001 | 연구실인턴십3 | 전공선택 | 3.0 | 최준연 | 화 목 09:00~10:30 | 센B114 |
+| 004310 | 001 | 운영체제 | 전공필수 | 3.0 | 정승화 | 월 수 10:30~12:00 | 센B114 |
+| 004310 | 002 | 운영체제 | 전공필수 | 3.0 | 정승화 | 월 수 12:00~13:30 | 센B114 |
+| 007219 | 001 | 데이터베이스 | 전공필수 | 3.0 | 황치곤 | 화 목 10:30~12:00 | 센B112 |
+| 007219 | 002 | 데이터베이스 | 전공필수 | 3.0 | 황치곤 | 화 목 12:00~13:30 | 센B112 |
+| 009957 | 001 | 오픈소스SW개론 | 전공필수 | 3.0 | 이은상 | 월 수 15:00~16:30 | 센B112 |
+| 009957 | 002 | 오픈소스SW개론 | 전공필수 | 3.0 | 이은상 | 월 수 16:30~18:00 | 센B112 |
+| 011921 | 001 | 최신기술콜로키움1 | 전공선택 | 1.0 | 백경준 | 목 16:30~17:30 | 학대공연장 |
+| 011614 | 001 | 세종인을위한진로설계 | 공통교양필수 | 1.0 | 하진용 | 화 10:30~12:00, 목 19:00~20:00 | 대양홀강당, 센B112 |
+| 011614 | 002 | 세종인을위한진로설계 | 공통교양필수 | 1.0 | 하진용 | 화 10:30~12:00, 목 19:00~20:00 | 대양홀강당, 센B111 |
+| 007330 | 001 | 확률및통계 | 전공기초 | 3.0 | 백경준 | 화 목 13:30~15:00 | 호203 |
+| 009912 | 001 | C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 수 13:30~15:30 | 호203 |
+| 009912 | 002 | C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 수 16:30~18:30 | 호203 |
+| 011488 | 001 | 자료구조및실습 | 전공필수 | 3.0 | 최준연 | 월 15:00~17:00, 월 17:00~19:00 | 센B114, 센B111 |
+| 011488 | 002 | 자료구조및실습 | 전공필수 | 3.0 | 최준연 | 수 15:00~17:00, 수 17:00~19:00 | 센B114, 센B111 |
+| 012009 | 001 | 객체지향프로그래밍:C++ | 전공필수 | 3.0 | 박상일 | 화 목 12:00~13:30 | 센B111 |
+| 012009 | 002 | 객체지향프로그래밍:C++ | 전공필수 | 3.0 | 박상일 | 화 목 13:30~15:00 | 센B111 |
+| 010206 | 001 | 일반물리및시뮬레이션 | 전공선택 | 3.0 | 송오영 | 월 수 12:00~13:30 | 센B111 |
+| 010206 | 002 | 일반물리및시뮬레이션 | 전공선택 | 3.0 | 송오영 | 월 수 13:30~15:00 | 센B111 |
+| 012012 | 001 | 디지털이미지프로그래밍 | 전공선택 | 3.0 | 박상일 | 화 목 15:00~16:30 | 센B111 |
+
+## 출처
+- 세종대학교 2026-1 강의시간표: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=863048&mode=view
+- 실제 수강신청 전 학사정보시스템에서 변경 여부를 다시 확인해야 합니다.
+
+초안 ID: course-schedule-2026-1', '2026-1 소프트웨어학과 개설 강좌 35개와 교수·시간·강의실 정보', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2026-1 소프트웨어학과 강의시간표');
+
+SET @category_id = (SELECT id FROM categories WHERE name = '교과목');
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @category_id, @source_author_id,        '2026-2 소프트웨어학과 강의시간표', '# 2026-2 소프트웨어학과 강의시간표
+
+2026-2 학기의 소프트웨어학과 및 콘텐츠소프트웨어학과 개설 강좌 33개를 정리한 초안입니다. 다른 학기의 정보는 포함하지 않았습니다.
+
+| 학수번호 | 분반 | 교과목명 | 이수구분 | 학점 | 교수 | 강의시간 | 강의실 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 009960 | 001 | Capstone디자인(산학협력프로젝트) | 전공필수 | 6.0 | 권순일 | 금 13:30~19:30 | 센B112 |
+| 002505 | 001 | 인공지능 | 전공선택 | 3.0 | 이은상 | 월 수 16:30~18:00 | 센B114 |
+| 006134 | 001 | HCI개론 | 전공선택 | 3.0 | - | 화 목 15:00~16:30 | 호203 |
+| 010112 | 001 | 졸업연구및진로2 | 전공선택 | 1.0 | 최준연 | 목 18:00~19:00 | 센B111 |
+| 010112 | 002 | 졸업연구및진로2 | 전공선택 | 1.0 | 권순일 | 목 18:00~19:00 | 센B111 |
+| 010112 | 003 | 졸업연구및진로2 | 전공선택 | 1.0 | 박상일 | 목 18:00~19:00 | 센B111 |
+| 010112 | 004 | 졸업연구및진로2 | 전공선택 | 1.0 | 백성욱 | 목 18:00~19:00 | 센B111 |
+| 010112 | 005 | 졸업연구및진로2 | 전공선택 | 1.0 | 송오영 | 목 18:00~19:00 | 센B111 |
+| 010112 | 006 | 졸업연구및진로2 | 전공선택 | 1.0 | - | 목 18:00~19:00 | 센B111 |
+| 010112 | 007 | 졸업연구및진로2 | 전공선택 | 1.0 | 이은상 | 목 18:00~19:00 | 센B111 |
+| 010112 | 008 | 졸업연구및진로2 | 전공선택 | 1.0 | 정승화 | 목 18:00~19:00 | 센B111 |
+| 010112 | 009 | 졸업연구및진로2 | 전공선택 | 1.0 | 백경준 | 목 18:00~19:00 | 센B111 |
+| 011926 | 001 | 최신기술콜로키움4 | 전공선택 | 1.0 | 한동일 | 목 16:30~17:30 | 학대공연장 |
+| 012166 | 001 | 연구실인턴십4 | 전공선택 | 3.0 | 최준연 | 화 목 09:00~10:30 | 센B114 |
+| 003281 | 001 | 컴퓨터그래픽스 | 전공선택 | 3.0 | 박상일 | 화 목 15:00~16:30 | 센B111 |
+| 010084 | 001 | 오픈소스SW공학 | 전공선택 | 3.0 | - | 화 목 13:30~15:00 | 호203 |
+| 011923 | 001 | 최신기술콜로키움2 | 전공선택 | 1.0 | 한동일 | 목 16:30~17:30 | 학대공연장 |
+| 011839 | 001 | 세종인을위한전공탐색 | 공통교양필수 | 1.0 | 권순일 | 목 19:00~20:00 | 센B112 |
+| 011839 | 002 | 세종인을위한전공탐색 | 공통교양필수 | 1.0 | 이은상 | 목 19:00~20:00 | 센B111 |
+| 000304 | 001 | 공업수학1 | 전공기초 | 3.0 | 백경준 | 월 수 09:00~10:30 | 센B111 |
+| 000304 | 002 | 공업수학1 | 전공기초 | 3.0 | 백경준 | 월 수 10:30~12:00 | 센B111 |
+| 001725 | 001 | 선형대수 | 전공기초 | 3.0 | 백경준 | 화 목 12:00~13:30 | 센B114 |
+| 001725 | 002 | 선형대수 | 전공기초 | 3.0 | 백경준 | 화 목 13:30~15:00 | 센B114 |
+| 009913 | 001 | 고급C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 월 13:00~15:00 | 호203 |
+| 009913 | 002 | 고급C프로그래밍및실습 | 전공기초 | 3.0 | 김천식 | 월 16:00~18:00 | 호203 |
+| 009993 | 001 | SW설계기초(산학프로젝트입문) | 전공필수 | 3.0 | 정승화 | 화 목 15:00~16:30 | 센B112 |
+| 009993 | 002 | SW설계기초(산학프로젝트입문) | 전공필수 | 3.0 | 정승화 | 화 목 16:30~18:00 | 센B112 |
+| 011495 | 001 | 알고리즘및실습 | 전공필수 | 3.0 | 송오영 | 금 10:00~12:00 | 센B111 |
+| 011495 | 002 | 알고리즘및실습 | 전공필수 | 3.0 | 송오영 | 금 13:00~15:00 | 센B111 |
+| 012013 | 001 | 실시간컴퓨터그래픽스 | 전공필수 | 3.0 | 박상일 | 화 목 12:00~13:30 | 센B111 |
+| 012013 | 002 | 실시간컴퓨터그래픽스 | 전공필수 | 3.0 | 박상일 | 화 목 13:30~15:00 | 센B111 |
+| 009955 | 001 | 이산수학및프로그래밍 | 전공선택 | 3.0 | 이은상 | 월 수 10:30~12:00 | 센B112 |
+| 009955 | 002 | 이산수학및프로그래밍 | 전공선택 | 3.0 | 이은상 | 월 수 12:00~13:30 | 센B112 |
+
+## 출처
+- 세종대학교 2026-2 강의시간표: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=891086&mode=view
+- 실제 수강신청 전 학사정보시스템에서 변경 여부를 다시 확인해야 합니다.
+
+초안 ID: course-schedule-2026-2', '2026-2 소프트웨어학과 개설 강좌 33개와 교수·시간·강의실 정보', 'DRAFT'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2026-2 소프트웨어학과 강의시간표');
+
