@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -71,6 +72,34 @@ class WikiPostServiceTest {
     }
 
     @Test
+    void doesNotEnqueueVectorUpsertWhenDraftIsCreated() {
+        WikiPostDto.CreateRequest request = new WikiPostDto.CreateRequest();
+        ReflectionTestUtils.setField(request, "categoryId", 2L);
+        ReflectionTestUtils.setField(request, "title", "검토 중인 위키");
+        ReflectionTestUtils.setField(request, "content", "초안 내용");
+        ReflectionTestUtils.setField(request, "status", WikiPostStatus.DRAFT);
+        when(userRepository.findById(1L)).thenReturn(Optional.of(author));
+        when(categoryRepository.findById(2L)).thenReturn(Optional.of(category));
+        when(wikiPostRepository.save(any(WikiPost.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
+
+        wikiPostService.createWikiPost(1L, request);
+
+        verifyNoInteractions(vectorSyncService);
+    }
+
+    @Test
+    void publicListOnlyRequestsApprovedWikiPosts() {
+        when(wikiPostRepository.findAllByStatusOrderByCreatedAtDesc(WikiPostStatus.APPROVED))
+                .thenReturn(List.of());
+
+        wikiPostService.getWikiPosts();
+
+        verify(wikiPostRepository).findAllByStatusOrderByCreatedAtDesc(WikiPostStatus.APPROVED);
+        verify(wikiPostRepository, never()).findAllByOrderByCreatedAtDesc();
+    }
+
+    @Test
     void enqueuesVectorUpsertWhenWikiIsUpdated() {
         WikiPost wikiPost = wikiPost(7L);
         WikiPostDto.UpdateRequest request = new WikiPostDto.UpdateRequest();
@@ -84,6 +113,23 @@ class WikiPostServiceTest {
         wikiPostService.updateWikiPost(7L, 1L, request);
 
         verify(vectorSyncService).enqueueUpsert(wikiPost);
+    }
+
+    @Test
+    void enqueuesVectorDeleteWhenApprovedWikiBecomesDraft() {
+        WikiPost wikiPost = wikiPost(7L);
+        WikiPostDto.UpdateRequest request = new WikiPostDto.UpdateRequest();
+        ReflectionTestUtils.setField(request, "categoryId", 2L);
+        ReflectionTestUtils.setField(request, "title", "검토 중인 위키");
+        ReflectionTestUtils.setField(request, "content", "검토 중인 내용");
+        ReflectionTestUtils.setField(request, "status", WikiPostStatus.DRAFT);
+        when(wikiPostRepository.findById(7L)).thenReturn(Optional.of(wikiPost));
+        when(categoryRepository.findById(2L)).thenReturn(Optional.of(category));
+
+        wikiPostService.updateWikiPost(7L, 1L, request);
+
+        verify(vectorSyncService).enqueueDelete(7L);
+        verify(vectorSyncService, never()).enqueueUpsert(any(WikiPost.class));
     }
 
     @Test
