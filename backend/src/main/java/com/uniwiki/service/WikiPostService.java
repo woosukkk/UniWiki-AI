@@ -4,6 +4,7 @@ import com.uniwiki.dto.WikiPostDto;
 import com.uniwiki.entity.Category;
 import com.uniwiki.entity.User;
 import com.uniwiki.entity.WikiPost;
+import com.uniwiki.entity.WikiPostStatus;
 import com.uniwiki.repository.CategoryRepository;
 import com.uniwiki.repository.UserRepository;
 import com.uniwiki.repository.WikiPostRepository;
@@ -12,11 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WikiPostService {
+
+    private static final Pattern REFERENCE_DATE_PATTERN = Pattern.compile("^(20\\d{2})(?:-(1|2)|년)");
 
     private final WikiPostRepository wikiPostRepository;
     private final CategoryRepository categoryRepository;
@@ -42,15 +48,18 @@ public class WikiPostService {
         );
 
         WikiPost savedWikiPost = wikiPostRepository.save(wikiPost);
-        vectorSyncService.enqueueUpsert(savedWikiPost);
+        if (savedWikiPost.getStatus() == WikiPostStatus.APPROVED) {
+            vectorSyncService.enqueueUpsert(savedWikiPost);
+        }
 
         return new WikiPostDto.Response(savedWikiPost);
     }
 
     // 위키 문서 전체 조회
     public List<WikiPostDto.ListResponse> getWikiPosts() {
-        return wikiPostRepository.findAllByOrderByCreatedAtDesc()
+        return wikiPostRepository.findAllByStatusOrderByCreatedAtDesc(WikiPostStatus.APPROVED)
                 .stream()
+                .sorted(referenceDateComparator())
                 .map(WikiPostDto.ListResponse::new)
                 .toList();
     }
@@ -58,7 +67,7 @@ public class WikiPostService {
     // 위키 문서 단건 조회
     @Transactional
     public WikiPostDto.Response getWikiPost(Long wikiPostId) {
-        WikiPost wikiPost = findWikiPost(wikiPostId);
+        WikiPost wikiPost = findApprovedWikiPost(wikiPostId);
 
         wikiPost.increaseViewCount();
 
@@ -72,8 +81,9 @@ public class WikiPostService {
         findCategory(categoryId);
 
         return wikiPostRepository
-                .findByCategory_IdOrderByCreatedAtDesc(categoryId)
+                .findByCategory_IdAndStatusOrderByCreatedAtDesc(categoryId, WikiPostStatus.APPROVED)
                 .stream()
+                .sorted(referenceDateComparator())
                 .map(WikiPostDto.ListResponse::new)
                 .toList();
     }
@@ -97,6 +107,7 @@ public class WikiPostService {
             WikiPostDto.UpdateRequest request
     ) {
         WikiPost wikiPost = findWikiPost(wikiPostId);
+        boolean wasApproved = wikiPost.getStatus() == WikiPostStatus.APPROVED;
 
         validateAuthor(wikiPost, userId);
 
@@ -109,7 +120,11 @@ public class WikiPostService {
                 request.getSummary(),
                 request.getStatus()
         );
-        vectorSyncService.enqueueUpsert(wikiPost);
+        if (wikiPost.getStatus() == WikiPostStatus.APPROVED) {
+            vectorSyncService.enqueueUpsert(wikiPost);
+        } else if (wasApproved) {
+            vectorSyncService.enqueueDelete(wikiPostId);
+        }
 
         return new WikiPostDto.Response(wikiPost);
     }
@@ -135,6 +150,11 @@ public class WikiPostService {
                                 "존재하지 않는 위키 문서입니다."
                         )
                 );
+    }
+
+    private WikiPost findApprovedWikiPost(Long wikiPostId) {
+        return wikiPostRepository.findByIdAndStatus(wikiPostId, WikiPostStatus.APPROVED)
+                .orElseThrow(() -> new IllegalArgumentException("공개된 위키 문서가 아닙니다."));
     }
 
     private Category findCategory(Long categoryId) {
@@ -178,12 +198,32 @@ public class WikiPostService {
         }
         String trimmedKeyword = keyword.trim();
         return wikiPostRepository
-                .findByTitleContainingOrContentContainingOrderByCreatedAtDesc(
+                .findByStatusAndTitleContainingOrStatusAndContentContainingOrderByCreatedAtDesc(
+                    WikiPostStatus.APPROVED,
                     trimmedKeyword,
+                    WikiPostStatus.APPROVED,
                     trimmedKeyword
                  )
                 .stream()
+                  .sorted(referenceDateComparator())
                   .map(WikiPostDto.ListResponse::new)
                   .toList();
         }
+
+    private Comparator<WikiPost> referenceDateComparator() {
+        return Comparator
+                .comparingInt(this::referenceYear).reversed()
+                .thenComparing(Comparator.comparingInt(this::referenceTerm).reversed())
+                .thenComparing(WikiPost::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder()));
+    }
+
+    private int referenceYear(WikiPost wikiPost) {
+        Matcher matcher = REFERENCE_DATE_PATTERN.matcher(wikiPost.getTitle());
+        return matcher.find() ? Integer.parseInt(matcher.group(1)) : Integer.MIN_VALUE;
+    }
+
+    private int referenceTerm(WikiPost wikiPost) {
+        Matcher matcher = REFERENCE_DATE_PATTERN.matcher(wikiPost.getTitle());
+        return matcher.find() && matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
+    }
 }

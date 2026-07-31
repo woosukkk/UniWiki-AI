@@ -25,10 +25,14 @@ public class CrawlerController {
         }
 
         try {
+            int startPage = requestDto.getStartPage() != null ? requestDto.getStartPage() : 1;
+            int endPage = requestDto.getEndPage() != null ? requestDto.getEndPage() : 1;
             everytimeCrawlerService.crawlAndSave(
                     requestDto.getBoardUrl(),
                     requestDto.getTargetTable(),
-                    requestDto.getCategoryId()
+                    requestDto.getCategoryId(),
+                    startPage,
+                    endPage
             );
             return ResponseEntity.ok("크롤링 성공");
         } catch (Exception e) {
