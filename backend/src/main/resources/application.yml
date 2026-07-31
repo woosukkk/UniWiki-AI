@@ -4,6 +4,7 @@ spring:
 
   datasource:
     # 사용자 로컬 PC에 설치된 MySQL을 바라보는 설정
+
     url: ${DB_URL:jdbc:mysql://localhost:3306/uniwiki_ai?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:}

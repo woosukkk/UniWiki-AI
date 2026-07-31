@@ -29,3 +29,16 @@ Content-Type: application/json
   "email": "test@uniwiki.com",
   "password": "wrongpassword"
 }
+
+###
+
+### 에브리타임 크롤링 테스트 (자유게시판 등)
+POST http://localhost:8080/api/admin/crawl/everytime
+Content-Type: application/json
+
+{
+  "everytimeId": "smhan295@naver.com",
+  "everytimePassword": "gkstjdals@95",
+  "boardUrl": "https://everytime.kr/370441", 
+  "targetTable": "Question"
+}
