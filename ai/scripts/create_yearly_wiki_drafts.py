@@ -214,6 +214,9 @@ def render_sql(drafts: list[dict[str, Any]]) -> str:
         lines.extend(
             [
                 "SET @category_id = (SELECT id FROM categories WHERE name = " + sql_string(draft["category"]) + ");",
+                "UPDATE wiki_posts",
+                f"SET category_id = @category_id, content = {sql_string(content)}, summary = {sql_string(draft['summary'])}, updated_at = CURRENT_TIMESTAMP",
+                f"WHERE title = {sql_string(draft['title'])} AND status = 'DRAFT';",
                 "INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)",
                 "SELECT @category_id, @source_author_id, "
                 f"       {sql_string(draft['title'])}, {sql_string(content)}, {sql_string(draft['summary'])}, 'DRAFT'",
@@ -226,7 +229,15 @@ def render_sql(drafts: list[dict[str, Any]]) -> str:
 
 def build_drafts(data_root: Path) -> list[dict[str, Any]]:
     drafts = course_schedule_drafts(data_root) + curriculum_drafts(data_root) + notice_drafts(data_root)
-    return sorted(drafts, key=lambda item: (item["year"], item.get("term") or "", item["category"], item["title"]))
+    return sorted(
+        drafts,
+        key=lambda item: (
+            -item["year"],
+            -(int(item["term"].split("-")[1]) if item.get("term") else 0),
+            item["category"],
+            item["title"],
+        ),
+    )
 
 
 def main() -> int:

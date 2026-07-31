@@ -13,11 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WikiPostService {
+
+    private static final Pattern REFERENCE_DATE_PATTERN = Pattern.compile("^(20\\d{2})(?:-(1|2)|년)");
 
     private final WikiPostRepository wikiPostRepository;
     private final CategoryRepository categoryRepository;
@@ -54,6 +59,7 @@ public class WikiPostService {
     public List<WikiPostDto.ListResponse> getWikiPosts() {
         return wikiPostRepository.findAllByStatusOrderByCreatedAtDesc(WikiPostStatus.APPROVED)
                 .stream()
+                .sorted(referenceDateComparator())
                 .map(WikiPostDto.ListResponse::new)
                 .toList();
     }
@@ -77,6 +83,7 @@ public class WikiPostService {
         return wikiPostRepository
                 .findByCategory_IdAndStatusOrderByCreatedAtDesc(categoryId, WikiPostStatus.APPROVED)
                 .stream()
+                .sorted(referenceDateComparator())
                 .map(WikiPostDto.ListResponse::new)
                 .toList();
     }
@@ -198,7 +205,25 @@ public class WikiPostService {
                     trimmedKeyword
                  )
                 .stream()
+                  .sorted(referenceDateComparator())
                   .map(WikiPostDto.ListResponse::new)
                   .toList();
         }
+
+    private Comparator<WikiPost> referenceDateComparator() {
+        return Comparator
+                .comparingInt(this::referenceYear).reversed()
+                .thenComparing(Comparator.comparingInt(this::referenceTerm).reversed())
+                .thenComparing(WikiPost::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder()));
+    }
+
+    private int referenceYear(WikiPost wikiPost) {
+        Matcher matcher = REFERENCE_DATE_PATTERN.matcher(wikiPost.getTitle());
+        return matcher.find() ? Integer.parseInt(matcher.group(1)) : Integer.MIN_VALUE;
+    }
+
+    private int referenceTerm(WikiPost wikiPost) {
+        Matcher matcher = REFERENCE_DATE_PATTERN.matcher(wikiPost.getTitle());
+        return matcher.find() && matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
+    }
 }

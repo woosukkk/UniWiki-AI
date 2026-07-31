@@ -18,6 +18,9 @@ def test_drafts_are_separated_by_year_and_term():
     assert all(str(draft["year"]) in draft["title"] for draft in drafts)
     assert all(not draft["term"] or draft["term"].startswith(str(draft["year"])) for draft in drafts)
     assert len({draft["draft_id"] for draft in drafts}) == len(drafts)
+    assert [draft["year"] for draft in drafts] == sorted(
+        (draft["year"] for draft in drafts), reverse=True
+    )
     for draft in drafts:
         dated_sources = [source for source in draft["sources"] if source.get("published")]
         assert all(source["published"].startswith(str(draft["year"])) for source in dated_sources)
