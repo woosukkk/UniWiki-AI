@@ -16,6 +16,7 @@ import { QuestionListPage } from './pages/QuestionListPage.jsx';
 import { ChatbotPage } from './pages/ChatbotPage.jsx';
 import { MyPage } from './pages/MyPage.jsx';
 import { AdminPage } from './pages/AdminPage.jsx';
+import { DataVisualizationPage } from './pages/DataVisualizationPage.jsx';
 import { AdminRoute } from './routes/AdminRoute.jsx';
 import { ProtectedRoute } from './routes/ProtectedRoute.jsx';
 
@@ -622,6 +623,7 @@ function App() {
         <Route path="questions" element={<QuestionListPage />} />
         <Route path="questions/:questionId" element={<QuestionDetailPage />} />
         <Route path="chatbot" element={<ChatbotPage />} />
+        <Route path="visualization" element={<DataVisualizationPage />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
         <Route element={<ProtectedRoute />}>
