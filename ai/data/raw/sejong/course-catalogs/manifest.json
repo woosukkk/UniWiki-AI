@@ -1,0 +1,55 @@
+{
+  "sourceBoard": "https://www.sejong.ac.kr/kor/intro/notice3.do",
+  "departmentHomepage": "https://dept.sejong.ac.kr/softwaredpt/index.do",
+  "retrievedAt": "2026-07-31",
+  "catalogs": [
+    {
+      "term": "2024-1",
+      "status": "published",
+      "file": "2024-1-course-catalog.pdf",
+      "officialFileName": "2024-1 수강편람_240223.pdf",
+      "noticeUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805695&mode=view",
+      "downloadUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805695&attachNo=217071&mode=download"
+    },
+    {
+      "term": "2024-2",
+      "status": "published",
+      "file": "2024-2-course-catalog.pdf",
+      "officialFileName": "2024-2 수강편람_240905.pdf",
+      "noticeUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805814&mode=view",
+      "downloadUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805814&attachNo=217174&mode=download"
+    },
+    {
+      "term": "2025-1",
+      "status": "published",
+      "file": "2025-1-course-catalog.pdf",
+      "officialFileName": "2025-1 수강편람_250411.pdf",
+      "noticeUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805910&mode=view",
+      "downloadUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805910&attachNo=217262&mode=download"
+    },
+    {
+      "term": "2025-2",
+      "status": "published",
+      "file": "2025-2-course-catalog.pdf",
+      "officialFileName": "2025-2학기 수강편람_250804(최종).pdf",
+      "noticeUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=853683&mode=view",
+      "downloadUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=853683&attachNo=228931&mode=download"
+    },
+    {
+      "term": "2026-1",
+      "status": "published",
+      "file": "2026-1-course-catalog.pdf",
+      "officialFileName": "2026-1학기 수강편람_20260213.pdf",
+      "noticeUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=863048&mode=view",
+      "downloadUrl": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=863048&attachNo=232296&mode=download"
+    },
+    {
+      "term": "2026-2",
+      "status": "not-published-as-of-retrieved-date",
+      "file": null,
+      "officialFileName": null,
+      "noticeUrl": null,
+      "downloadUrl": null
+    }
+  ]
+}
