@@ -43,10 +43,7 @@ public class EverytimeCrawlerService {
     
     private static final Logger logger = LoggerFactory.getLogger(EverytimeCrawlerService.class);
 
-    private static final String LOGIN_URL = "https://everytime.kr/user/login";
-
-    @Transactional
-    public void crawlAndSave(String boardUrl, String targetTable, Long categoryId) {
+    public void crawlAndSave(String boardUrl, String targetTable, Long categoryId, int startPage, int endPage) {
         // 1. 셀레니움 옵션 설정 (디버깅 및 수동 로그인을 위해 창을 띄움)
         ChromeOptions options = new ChromeOptions();
         
@@ -84,59 +81,60 @@ public class EverytimeCrawlerService {
             }
 
 
-            // 4. 실제 게시판 URL로 이동
-            driver.get(boardUrl);
+            int totalCount = 0;
             
-            // 5. 자바스크립트 렌더링 대기 (글 목록 article 엘리먼트가 나타날 때까지 최대 10초 대기)
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("article > a.article")));
-            
-            // 6. 페이지가 로드되면 Jsoup으로 HTML 소스 파싱
-            Document doc = Jsoup.parse(driver.getPageSource());
-            Elements articles = doc.select("article > a.article");
-            
-            int count = 0;
-            for (Element article : articles) {
-                String title = article.select("h2").text();
-                String content = article.select("p").text();
+            for (int page = startPage; page <= endPage; page++) {
+                // 5. 실제 게시판 URL로 이동 (페이지네이션)
+                String currentUrl = boardUrl;
+                if (page > 1) {
+                    currentUrl = boardUrl + "/p/" + page;
+                }
+                driver.get(currentUrl);
+                logger.info("{} 페이지 크롤링 시작: {}", page, currentUrl);
+                
+                // 일반 게시판 파싱 로직
+                WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+                wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("article > a.article")));
+                
+                Document doc = Jsoup.parse(driver.getPageSource());
+                Elements articles = doc.select("article > a.article");
+                
+                for (Element article : articles) {
+                    String title = article.select("h2").text();
+                    String content = article.select("p").text();
 
-                if (title.isEmpty() && content.isEmpty()) {
-                    continue; // 제목도 내용도 없으면 패스
+                    if (title.isEmpty() && content.isEmpty()) continue;
+                    
+                    if (title.isEmpty()) {
+                        title = content.length() > 20 ? content.substring(0, 20) + "..." : content;
+                    }
+                    if (content.isEmpty()) {
+                        content = title;
+                    }
+
+                    if ("Question".equalsIgnoreCase(targetTable)) {
+                        Question question = new Question(botUser, title, content);
+                        questionRepository.save(question);
+                        totalCount++;
+                    } else if ("WikiPost".equalsIgnoreCase(targetTable)) {
+                        if (categoryId == null) {
+                            throw new IllegalArgumentException("WikiPost로 저장하려면 categoryId가 필수입니다.");
+                        }
+                        Category category = categoryRepository.findById(categoryId)
+                                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 ID입니다."));
+                        
+                        WikiPost wikiPost = new WikiPost(category, botUser, title, content, "에브리타임 자동 수집", WikiPostStatus.APPROVED);
+                        wikiPostRepository.save(wikiPost);
+                        totalCount++;
+                    }
                 }
                 
-                // 제목이 없으면 내용의 첫 20자를 제목으로 사용
-                if (title.isEmpty()) {
-                    title = content.length() > 20 ? content.substring(0, 20) + "..." : content;
-                }
-                if (content.isEmpty()) {
-                    content = title;
-                }
-
-                // 7. DB에 저장
-                if ("Question".equalsIgnoreCase(targetTable)) {
-                    Question question = new Question(botUser, title, content);
-                    questionRepository.save(question);
-                    count++;
-                } else if ("WikiPost".equalsIgnoreCase(targetTable)) {
-                    if (categoryId == null) {
-                        throw new IllegalArgumentException("WikiPost로 저장하려면 categoryId가 필수입니다.");
-                    }
-                    Category category = categoryRepository.findById(categoryId)
-                            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 ID입니다."));
-                    
-                    WikiPost wikiPost = new WikiPost(
-                            category, 
-                            botUser, 
-                            title, 
-                            content, 
-                            "에브리타임 자동 수집", 
-                            WikiPostStatus.APPROVED
-                    );
-                    wikiPostRepository.save(wikiPost);
-                    count++;
+                // 페이지 간 딜레이 (서버 부하 방지 및 차단 우회)
+                if (page < endPage) {
+                    Thread.sleep(2000);
                 }
             }
-            logger.info("에브리타임 셀레니움 크롤링 완료. 총 {}개의 게시물을 {} 테이블에 저장했습니다.", count, targetTable);
+            logger.info("에브리타임 셀레니움 크롤링 완료. 총 {}개의 게시물을 {} 테이블에 저장했습니다.", totalCount, targetTable);
             
         } catch (Exception e) {
             logger.error("에브리타임 셀레니움 크롤링 중 오류 발생", e);
