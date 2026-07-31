@@ -47,9 +47,13 @@ public class EverytimeCrawlerService {
 
     @Transactional
     public void crawlAndSave(String boardUrl, String targetTable, Long categoryId) {
-        // 1. 셀레니움 옵션 설정 (디버깅을 위해 창을 띄움)
+        // 1. 셀레니움 옵션 설정 (디버깅 및 수동 로그인을 위해 창을 띄움)
         ChromeOptions options = new ChromeOptions();
-        // options.addArguments("--headless=new"); // 브라우저 창 띄우기 위해 주석 처리
+        
+        // 팀원마다 각자의 PC에 개별 크롬 프로필(자동로그인 저장소)을 생성하도록 경로 지정
+        String profilePath = System.getProperty("java.io.tmpdir") + "/EverytimeChromeProfile";
+        options.addArguments("user-data-dir=" + profilePath);
+        
         options.addArguments("--disable-gpu");
         options.addArguments("--window-size=1920,1080");
         options.addArguments("--no-sandbox");
@@ -64,25 +68,21 @@ public class EverytimeCrawlerService {
             // 2. 봇 유저(작성자) 확보 (없으면 생성)
             User botUser = getOrCreateBotUser();
 
-            // 3. 쿠키 주입을 위해 먼저 에브리타임 도메인 접속
+            // 3. 에브리타임 메인 접속 (로그인 확인용)
             driver.get("https://everytime.kr");
             
-            // 쿠키 문자열 파싱 후 주입
-            if (cookieString != null && !cookieString.trim().isEmpty()) {
-                String[] cookiePairs = cookieString.split(";");
-                for (String pair : cookiePairs) {
-                    String[] parts = pair.trim().split("=", 2);
-                    if (parts.length == 2) {
-                        // 쿠키 도메인을 everytime.kr로 설정
-                        Cookie cookie = new Cookie.Builder(parts[0], parts[1])
-                                .domain(".everytime.kr")
-                                .path("/")
-                                .build();
-                        driver.manage().addCookie(cookie);
-                    }
-                }
-                logger.info("에브리타임 쿠키(Cookie) 셀레니움 주입 완료");
+            // 4. 수동 로그인 대기 (최대 60초)
+            // 우측 상단의 '내 정보(a.my)' 버튼이나 '쪽지함(a.message)' 버튼이 보이면 로그인된 것으로 간주
+            try {
+                logger.info("에브리타임 로그인 상태 확인 중... (미로그인 시 브라우저에서 직접 로그인해주세요. 60초 대기)");
+                WebDriverWait loginWait = new WebDriverWait(driver, Duration.ofSeconds(60));
+                loginWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.my, a.message")));
+                logger.info("에브리타임 로그인 확인 완료!");
+            } catch (Exception e) {
+                logger.error("60초 내에 로그인이 감지되지 않았습니다. 브라우저에서 직접 아이디/비번을 입력해 로그인해주세요.");
+                throw new RuntimeException("수동 로그인 대기 시간 초과");
             }
+
 
             // 4. 실제 게시판 URL로 이동
             driver.get(boardUrl);
