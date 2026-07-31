@@ -46,7 +46,7 @@ public class EverytimeCrawlerService {
     private static final String LOGIN_URL = "https://everytime.kr/user/login";
 
     @Transactional
-    public void crawlAndSave(String cookieString, String boardUrl, String targetTable, Long categoryId) {
+    public void crawlAndSave(String boardUrl, String targetTable, Long categoryId) {
         // 1. 셀레니움 옵션 설정 (디버깅을 위해 창을 띄움)
         ChromeOptions options = new ChromeOptions();
         // options.addArguments("--headless=new"); // 브라우저 창 띄우기 위해 주석 처리

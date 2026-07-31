@@ -16,9 +16,7 @@ public class CrawlerController {
     @PostMapping("/everytime")
     public ResponseEntity<String> crawlEverytime(@RequestBody EverytimeCrawlerRequestDto requestDto) {
         
-        if (requestDto.getEtsid() == null || requestDto.getEtsid().trim().isEmpty()) {
-            return ResponseEntity.badRequest().body("에브리타임 쿠키(etsid)는 필수입니다.");
-        }
+
         if (requestDto.getBoardUrl() == null) {
             return ResponseEntity.badRequest().body("크롤링할 게시판 URL이 필요합니다.");
         }
@@ -28,7 +26,6 @@ public class CrawlerController {
 
         try {
             everytimeCrawlerService.crawlAndSave(
-                    requestDto.getEtsid(),
                     requestDto.getBoardUrl(),
                     requestDto.getTargetTable(),
                     requestDto.getCategoryId()
