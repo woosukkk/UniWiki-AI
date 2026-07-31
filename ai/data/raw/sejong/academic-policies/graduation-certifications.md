@@ -33,7 +33,10 @@
 ## 한국어·공학교육 인증
 
 - 한국어 자격으로 입학한 외국인 학생은 원칙적으로 TOPIK 4급 이상이 필요하며 일부 학과는 별도 기준이 적용된다.
-- 공학교육인증 프로그램 시행 학과 소속 학생은 해당 학과가 정한 인증 기준을 추가로 충족해야 한다. 콘텐츠소프트웨어학과의 적용 여부는 개인 소속 프로그램을 별도로 확인한다.
+- 소프트웨어학과 공학인증 공지에 따르면 2016학년도 이후 학생은 전입생 등 예외를 제외하고 특별한 사유가 없는 한 공학인증에 참여해야 하며, 인증 요건을 충족하지 않으면 졸업할 수 없다.
+- 학과 졸업요건과 공학인증 요건은 별개다. 설계교과목은 `기초설계 → 요소설계 → 종합설계` 순서로 이수해야 설계학점이 인정된다.
+- 2022학번부터 전문교양은 지정과목을 수강해야 인정된다. 교과목은 본인 입학연도 기준, 최소이수학점은 최신 연도 기준으로 확인한다.
+- 문의: 공학교육센터(02-3408-2982, eerc@sejong.ac.kr).
 
 ## 공식 출처
 
@@ -42,3 +45,4 @@
 - 2026-1 수강편람: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=863048&attachNo=232296&mode=download
 - 교과과정 조회 개선: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=862274&mode=view
 - 졸업자가진단 안내: https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=803472&mode=view
+- 소프트웨어학과 공학인증 안내: https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24978&mode=view

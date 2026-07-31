@@ -5,12 +5,13 @@ VALUES ('official-source@local.invalid', SHA2(UUID(), 256), '세종대 공식자
 ON DUPLICATE KEY UPDATE nickname = VALUES(nickname);
 
 INSERT INTO categories (name, description)
-SELECT '인증제도', '영어, 고전독서, 소프트웨어코딩 등 졸업 인증 정보'
+SELECT '인증제도', '졸업, 공학교육, 마이크로디그리 등 인증 정보'
 WHERE NOT EXISTS (SELECT 1 FROM categories WHERE name = '인증제도');
 
 SET @source_author_id = (SELECT id FROM users WHERE email = 'official-source@local.invalid');
 SET @certification_category_id = (SELECT id FROM categories WHERE name = '인증제도');
 SET @course_category_id = (SELECT id FROM categories WHERE name = '교과목');
+SET @academic_category_id = (SELECT id FROM categories WHERE name = '학사');
 
 INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
 SELECT @certification_category_id, @source_author_id,
@@ -51,3 +52,27 @@ SELECT @course_category_id, @source_author_id,
        '2024-1부터 2026-2까지 공식 강의시간표의 포함 정보와 소프트웨어학과 검색 시 주의사항이다.',
        'APPROVED'
 WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '2024~2026 학기별 강의시간표 확인 안내');
+
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @certification_category_id, @source_author_id,
+       '소프트웨어학과 공학교육인증 이수 주의사항',
+       '소프트웨어학과 공학교육인증 공지에 따르면 2016학년도 이후 학생은 전입생 등 예외를 제외하고 특별한 사유가 없는 한 공학인증에 참여해야 하며, 인증 요건을 충족하지 않으면 졸업할 수 있다. 학과 졸업요건과 공학인증 요건은 서로 별개이므로 두 기준을 각각 확인해야 한다.\n\n설계교과목은 기초설계, 요소설계, 종합설계 순서로 수강해야 설계학점이 인정된다. 기초설계 없이 요소설계를 듣거나 요소설계 학점을 채우지 않고 종합설계를 들으면 설계학점이 인정되지 않을 수 있다. 요소설계와 종합설계를 함께 수강하다 요소설계에서 F를 받으면 두 과목을 다시 수강해야 할 수도 있다. 2022학번부터 전문교양은 지정과목만 인정된다. 교과목은 본인 입학연도 기준, 최소이수학점은 최신 연도 기준으로 확인한다.\n\n문의: 공학교육센터(02-3408-2982, eerc@sejong.ac.kr)\n공식 출처: https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24978&mode=view\n확인 기준일: 2026-07-31',
+       '소프트웨어학과 공학인증 대상, 졸업과의 관계, 설계교과목 이수 순서 및 전문교양 인정 기준이다.',
+       'APPROVED'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '소프트웨어학과 공학교육인증 이수 주의사항');
+
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @certification_category_id, @source_author_id,
+       'AI 마이크로디그리 이수증 신청 안내',
+       'AI 마이크로디그리는 지정 교과목의 이수 내역이 인증 페이지에 반영된 뒤 학생이 직접 이수증을 신청하는 방식이다. 지정 과목을 모두 수강한 학생은 세종대학교 비교과통합지원센터의 마이크로디그리 인증 페이지에서 이수 상태를 확인하고 이수증을 신청한다.\n\n신청 페이지: https://do.sejong.ac.kr/ko/certificate/microdegree/apply\n공식 출처: https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24985&mode=view\n확인 기준일: 2026-07-31',
+       '지정 과목 이수 후 AI 마이크로디그리 인증 상태를 확인하고 이수증을 신청하는 경로다.',
+       'APPROVED'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = 'AI 마이크로디그리 이수증 신청 안내');
+
+INSERT INTO wiki_posts (category_id, author_id, title, content, summary, status)
+SELECT @academic_category_id, @source_author_id,
+       '연구실 법정 안전교육과 성적열람 제한',
+       '소프트웨어학과 공지에 따르면 2025학년도 2학기부터 연구실 법정 안전교육 미이수자는 정해진 성적열람 기간에 성적 열람이 제한될 수 있다. 연구실 또는 실험·실습 활동 대상자는 학교가 안내하는 기간 내 안전교육 이수 여부를 확인하고 미수료 상태라면 교육을 완료해야 한다. 학과 게시판에는 미수료자와 재교육 희망자를 위한 교육 자료 안내가 제공된다.\n\n학생 명단과 학번은 개인정보이므로 이 문서에 저장하지 않는다. 적용 학기와 제한 기간은 매 학기 최신 공지를 확인한다.\n\n공식 출처: https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24987&mode=view\n교육 자료 안내: https://dept.sejong.ac.kr/softwaredpt/board/notice.do?articleNo=24986&mode=view\n확인 기준일: 2026-07-31',
+       '연구실 법정 안전교육 미이수 시 성적열람이 제한될 수 있다는 학과 안내와 개인정보 처리 원칙이다.',
+       'APPROVED'
+WHERE NOT EXISTS (SELECT 1 FROM wiki_posts WHERE title = '연구실 법정 안전교육과 성적열람 제한');
