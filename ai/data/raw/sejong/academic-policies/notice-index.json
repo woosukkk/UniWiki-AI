@@ -1,0 +1,15 @@
+{
+  "retrievedAt": "2026-07-31",
+  "sourceBoard": "https://www.sejong.ac.kr/kor/intro/notice3.do",
+  "notices": [
+    {"topic":"curriculum","title":"학부생 학사정보 시스템의 이수구분 및 교과과정 조회 개선 안내","articleNo":862274,"published":"2026-01-16"},
+    {"topic":"graduation-self-check","title":"졸업자가진단 안내","articleNo":803472,"published":"2013-08-16","reason":"현재 학사정보시스템 메뉴 경로의 공식 근거"},
+    {"topic":"english-certification","title":"2024-1학기 1차 영어졸업인증 신청 안내","articleNo":805714,"published":"2024"},
+    {"topic":"english-certification","title":"2024-1학기 영어졸업인증 신청 및 포기 안내","articleNo":805781,"published":"2024-06-17"},
+    {"topic":"english-certification","title":"2025-1학기 1차 영어 졸업인증 신청 안내","articleNo":805930,"published":"2025"},
+    {"topic":"english-certification","title":"2025-1학기 2차 영어 졸업인증 신청 안내","articleNo":805968,"published":"2025"},
+    {"topic":"classic-reading-certification","title":"2025학년도 1학기 고전독서졸업인증제 안내","articleNo":805959,"published":"2025"},
+    {"topic":"english-certification","title":"2025-2학기 영어졸업인증 신청 및 포기 안내","articleNo":860690,"published":"2025-12-10"}
+  ],
+  "articleUrlTemplate": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo={articleNo}&mode=view"
+}

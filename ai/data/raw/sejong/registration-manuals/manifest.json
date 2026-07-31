@@ -1,0 +1,10 @@
+{
+  "sourceBoard": "https://www.sejong.ac.kr/kor/intro/notice3.do",
+  "retrievedAt": "2026-07-31",
+  "manuals": [
+    {"year":2024,"file":"2024-registration-manual.docx","officialFileName":"2024학년도 수강신청매뉴얼.docx","articleNo":805695,"attachNo":217074},
+    {"year":2025,"file":"2025-registration-manual.docx","officialFileName":"2025학년도 수강신청매뉴얼.docx","articleNo":805910,"attachNo":217259},
+    {"year":2026,"file":"2026-registration-manual.docx","officialFileName":"2026학년도 수강신청매뉴얼.docx","articleNo":863048,"attachNo":232076}
+  ],
+  "downloadUrlTemplate": "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo={articleNo}&attachNo={attachNo}&mode=download"
+}

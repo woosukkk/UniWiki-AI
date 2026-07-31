@@ -1,0 +1,35 @@
+{
+  "sourceSystem": "Sejong University Academic Information System",
+  "sourceUrl": "https://sjpt.sejong.ac.kr/main/view/Login/doSsoLogin.do?p=",
+  "department": "소프트웨어학과(현 콘텐츠소프트웨어학과)",
+  "retrievedAt": "2026-07-31",
+  "columns": [
+    "순번",
+    "학년",
+    "개설년도",
+    "개설학기",
+    "교과목명",
+    "이수구분",
+    "학점/이론/실습"
+  ],
+  "curricula": [
+    {
+      "year": 2024,
+      "file": "software-curriculum-2024.xlsx",
+      "dataRows": 77,
+      "majorCourses": 54
+    },
+    {
+      "year": 2025,
+      "file": "software-curriculum-2025.xlsx",
+      "dataRows": 76,
+      "majorCourses": 53
+    },
+    {
+      "year": 2026,
+      "file": "software-curriculum-2026.xlsx",
+      "dataRows": 76,
+      "majorCourses": 56
+    }
+  ]
+}

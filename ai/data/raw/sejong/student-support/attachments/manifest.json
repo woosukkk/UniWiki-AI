@@ -1,0 +1,19 @@
+{
+  "sourceArticle": "https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo=886745&mode=view",
+  "retrievedAt": "2026-07-31",
+  "files": [
+    {
+      "file": "2026-2-ict-internship-student-manual.pdf",
+      "officialFileName": "(학생용) 2026년 ICT인턴십 하반기 국내과정 학생 매뉴얼(지원 및 매칭).pdf",
+      "articleNo": 886745,
+      "attachNo": 234643
+    },
+    {
+      "file": "2026-2-ict-internship-companies.xlsx",
+      "officialFileName": "붙임2. 2026년 하반기 국내과정 연수업체 리스트.xlsx",
+      "articleNo": 886745,
+      "attachNo": 234645
+    }
+  ],
+  "downloadUrlTemplate": "https://www.sejong.ac.kr/kor/intro/notice6.do?articleNo={articleNo}&attachNo={attachNo}&mode=download"
+}
