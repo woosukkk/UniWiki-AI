@@ -192,11 +192,79 @@ public class EverytimeCrawlerService {
 
             int totalCount = 0;
             
-            driver.get(lectureUrl);
-            logger.info("강의평가 크롤링 시작: {}", lectureUrl);
+            String baseUrl = lectureUrl.contains("?") ? lectureUrl.split("\\?")[0] : lectureUrl;
+            
+            // 1. 강의 정보 수집 (Base URL)
+            driver.get(baseUrl);
+            logger.info("강의 정보 크롤링 시작: {}", baseUrl);
+            
+            WebDriverWait infoWait = new WebDriverWait(driver, Duration.ofSeconds(10));
+            infoWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("section.info, header h1, div.info")));
+            
+            Document infoDoc = Jsoup.parse(driver.getPageSource());
+            String courseName = "강의명 미상";
+            String professor = "교수 미상";
+            
+            // 1. 강의명 추출
+            Element h1 = infoDoc.selectFirst("header div.navbar h1");
+            if (h1 != null) {
+                courseName = h1.text().replace(" 강의실", "").trim();
+            } else {
+                Element headH2 = infoDoc.selectFirst("div.head h2");
+                if (headH2 != null) courseName = headH2.text();
+            }
+            
+            // section.info에서 과목명 재확인
+            Elements items = infoDoc.select("section.info div.item");
+            for (Element item : items) {
+                Element label = item.selectFirst("label");
+                if (label != null && label.text().contains("과목명")) {
+                    Element a = item.selectFirst("a.link");
+                    if (a != null && !a.text().isEmpty()) {
+                        courseName = a.text().trim();
+                    } else {
+                        courseName = item.text().replace("과목명", "").trim();
+                    }
+                }
+                if (label != null && label.text().contains("교수명")) {
+                    Element multiline = item.selectFirst("div.multiline");
+                    if (multiline != null && !multiline.text().isEmpty()) {
+                        professor = multiline.text().trim();
+                    } else {
+                        professor = item.text().replace("교수명", "").trim();
+                    }
+                }
+            }
+            
+            // 예전 버전 폴백 (만약 SPA 버전이 아닐 경우)
+            if (professor.equals("교수 미상")) {
+                Element infoDiv = infoDoc.selectFirst("div.head");
+                if (infoDiv == null) infoDiv = infoDoc.selectFirst("div.info");
+                if (infoDiv != null) {
+                    Elements spans = infoDiv.select("span");
+                    for (Element span : spans) {
+                        if (span.text().contains("교수")) {
+                            professor = span.text().replace("교수", "").trim();
+                            break;
+                        }
+                    }
+                    if (professor.equals("교수 미상")) {
+                        Element p = infoDiv.selectFirst("p");
+                        if (p != null) {
+                            String[] parts = p.text().split(" ");
+                            if (parts.length > 0) professor = parts[0];
+                        }
+                    }
+                }
+            }
+            
+            // 2. 강의평가 리뷰 수집 (Review URL)
+            String reviewUrl = baseUrl + "?tab=article";
+            driver.get(reviewUrl);
+            logger.info("강의평가 리뷰 크롤링 시작: {}", reviewUrl);
             
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.info, article")));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.articles > article, div.articles > div.article, article")));
             
             Document doc = Jsoup.parse(driver.getPageSource());
             Elements articles = doc.select("div.articles > article, div.articles > div.article");
@@ -207,17 +275,6 @@ public class EverytimeCrawlerService {
             if (articles.isEmpty()) {
                 logger.warn("강의평가를 찾을 수 없습니다. 현재 페이지 DOM 일부: {}", 
                         driver.getPageSource().substring(0, Math.min(500, driver.getPageSource().length())));
-            }
-            
-            String courseName = "강의명 미상";
-            String professor = "교수 미상";
-            
-            Element infoDiv = doc.selectFirst("div.info");
-            if (infoDiv != null) {
-                Element h2 = infoDiv.selectFirst("h2");
-                if (h2 != null) courseName = h2.text();
-                Element p = infoDiv.selectFirst("p");
-                if (p != null) professor = p.text().split(" ")[0];
             }
             
             for (Element article : articles) {
