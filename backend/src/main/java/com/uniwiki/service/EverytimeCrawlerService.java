@@ -30,17 +30,14 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 @RequiredArgsConstructor
 public class EverytimeCrawlerService {
 
-    private final UserRepository userRepository;
-    private final QuestionRepository questionRepository;
-    private final WikiPostRepository wikiPostRepository;
-    private final CategoryRepository categoryRepository;
-    private final CourseEvaluationRepository courseEvaluationRepository;
+    private final com.uniwiki.repository.RawCommunityPostRepository rawCommunityPostRepository;
+    private final com.uniwiki.repository.RawLectureEvaluationRepository rawLectureEvaluationRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(EverytimeCrawlerService.class);
 
     private static final String LOGIN_URL = "https://account.everytime.kr/login";
 
-    public void crawlBoardAndSave(String boardUrl, String targetTable, Long categoryId, int startPage, int endPage) {
+    public void crawlBoardAndSave(String boardUrl, String boardType, int startPage, int endPage) {
         ChromeOptions options = new ChromeOptions();
         
         // 팀원마다 각자의 PC에 개별 크롬 프로필(자동로그인 저장소)을 생성하도록 경로 지정
@@ -62,7 +59,6 @@ public class EverytimeCrawlerService {
             WebDriverWait loginWait = new WebDriverWait(driver, Duration.ofSeconds(60));
             loginWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.my, a.message")));
 
-            User botUser = getOrCreateBotUser();
             int totalCount = 0;
             
             for (int page = startPage; page <= endPage; page++) {
@@ -83,10 +79,22 @@ public class EverytimeCrawlerService {
                 
                 Document doc = Jsoup.parse(driver.getPageSource());
                 Elements articles = doc.select("article > a.article");
+                if (articles.isEmpty()) {
+                    articles = doc.select("article");
+                }
+                
+                if (articles.isEmpty()) {
+                    logger.warn("게시물을 찾을 수 없습니다. 현재 페이지 DOM 일부: {}", 
+                            driver.getPageSource().substring(0, Math.min(500, driver.getPageSource().length())));
+                }
                 
                 for (Element article : articles) {
                     String title = article.select("h2").text();
                     String content = article.select("p").text();
+                    
+                    if (title.isEmpty() && content.isEmpty()) {
+                        content = article.text();
+                    }
 
                     if (title.isEmpty() && content.isEmpty()) continue;
                     
@@ -97,28 +105,31 @@ public class EverytimeCrawlerService {
                         content = title;
                     }
 
-                    if ("Question".equalsIgnoreCase(targetTable)) {
-                        Question question = new Question(botUser, title, content);
-                        questionRepository.save(question);
-                        totalCount++;
-                    } else if ("WikiPost".equalsIgnoreCase(targetTable)) {
-                        if (categoryId == null) {
-                            throw new IllegalArgumentException("WikiPost로 저장하려면 categoryId가 필수입니다.");
-                        }
-                        Category category = categoryRepository.findById(categoryId)
-                                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 ID입니다."));
-                        
-                        WikiPost wikiPost = new WikiPost(category, botUser, title, content, "에브리타임 자동 수집", WikiPostStatus.APPROVED);
-                        wikiPostRepository.save(wikiPost);
-                        totalCount++;
+                    int likesCount = 0;
+                    Element voteEl = article.selectFirst(".vote");
+                    if (voteEl != null && !voteEl.text().isEmpty()) {
+                        try {
+                            likesCount = Integer.parseInt(voteEl.text());
+                        } catch (NumberFormatException ignored) {}
                     }
+                    
+                    RawCommunityPost post = new RawCommunityPost(
+                            currentUrl, 
+                            boardType != null ? boardType : "알 수 없는 게시판", 
+                            title, 
+                            content, 
+                            likesCount, 
+                            "[]"
+                    );
+                    rawCommunityPostRepository.save(post);
+                    totalCount++;
                 }
                 
                 if (page < endPage) {
                     Thread.sleep(2000);
                 }
             }
-            logger.info("에브리타임 일반 게시판 크롤링 완료. 총 {}개의 게시물을 {} 테이블에 저장했습니다.", totalCount, targetTable);
+            logger.info("에브리타임 일반 게시판 크롤링 완료. 총 {}개의 원시 게시물을 저장했습니다.", totalCount);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("크롤링 중 인터럽트 발생", e);
@@ -153,7 +164,6 @@ public class EverytimeCrawlerService {
             WebDriverWait loginWait = new WebDriverWait(driver, Duration.ofSeconds(60));
             loginWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.my, a.message")));
 
-            User botUser = getOrCreateBotUser();
             int totalCount = 0;
             
             driver.get(lectureUrl);
@@ -163,9 +173,14 @@ public class EverytimeCrawlerService {
             wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.info, article")));
             
             Document doc = Jsoup.parse(driver.getPageSource());
-            Elements articles = doc.select("div.articles > article");
+            Elements articles = doc.select("div.articles > article, div.articles > div.article");
             if (articles.isEmpty()) {
-                articles = doc.select("article");
+                articles = doc.select("article, div.article");
+            }
+            
+            if (articles.isEmpty()) {
+                logger.warn("강의평가를 찾을 수 없습니다. 현재 페이지 DOM 일부: {}", 
+                        driver.getPageSource().substring(0, Math.min(500, driver.getPageSource().length())));
             }
             
             String courseName = "강의명 미상";
@@ -182,23 +197,44 @@ public class EverytimeCrawlerService {
             for (Element article : articles) {
                 String content = article.select("p.text").text();
                 if (content.isEmpty()) {
+                    content = article.select("div.text").text();
+                }
+                if (content.isEmpty()) {
                     content = article.text(); 
                 }
                 if (content.isEmpty()) continue;
                 
-                int starRating = 5;
-                Element rateEl = article.selectFirst(".rate > span.star > span.on");
-                if (rateEl != null) {
-                    String widthStyle = rateEl.attr("style"); 
-                    if (widthStyle.contains("20%")) starRating = 1;
-                    else if (widthStyle.contains("40%")) starRating = 2;
-                    else if (widthStyle.contains("60%")) starRating = 3;
+                int starRating = 0;
+                Element starEl = article.selectFirst("span.star > span.on");
+                if (starEl != null) {
+                    String widthStyle = starEl.attr("style");
+                    if (widthStyle.contains("100%")) starRating = 5;
                     else if (widthStyle.contains("80%")) starRating = 4;
-                    else if (widthStyle.contains("100%")) starRating = 5;
+                    else if (widthStyle.contains("60%")) starRating = 3;
+                    else if (widthStyle.contains("40%")) starRating = 2;
+                    else if (widthStyle.contains("20%")) starRating = 1;
                 }
                 
-                CourseEvaluation eval = new CourseEvaluation(botUser, courseName, professor, starRating, content);
-                courseEvaluationRepository.save(eval);
+                int likesCount = 0;
+                Element voteEl = article.selectFirst("li.vote");
+                if (voteEl == null) {
+                    voteEl = article.selectFirst("span.vote");
+                }
+                if (voteEl != null) {
+                    try {
+                        likesCount = Integer.parseInt(voteEl.text());
+                    } catch (NumberFormatException ignored) {}
+                }
+                
+                RawLectureEvaluation eval = new RawLectureEvaluation(
+                        lectureUrl,
+                        courseName, 
+                        professor, 
+                        starRating, 
+                        likesCount, 
+                        content
+                );
+                rawLectureEvaluationRepository.save(eval);
                 totalCount++;
             }
                 
@@ -213,16 +249,5 @@ public class EverytimeCrawlerService {
         }
     }
 
-    private User getOrCreateBotUser() {
-        return userRepository.findByEmail("everytime_bot@uniwiki.com")
-                .orElseGet(() -> {
-                    User newUser = User.builder()
-                            .email("everytime_bot@uniwiki.com")
-                            .password("1234") // 더미 비밀번호
-                            .nickname("에타크롤링봇")
-                            .role("ADMIN")
-                            .build();
-                    return userRepository.save(newUser);
-                });
-    }
+
 }
