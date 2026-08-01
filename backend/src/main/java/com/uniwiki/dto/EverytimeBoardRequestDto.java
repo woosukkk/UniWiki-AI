@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EverytimeCrawlerRequestDto {
+public class EverytimeBoardRequestDto {
 
     private String boardUrl; // e.g., https://everytime.kr/370441
     private String targetTable; // "Question" or "WikiPost"
