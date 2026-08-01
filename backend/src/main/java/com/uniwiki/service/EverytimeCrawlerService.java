@@ -37,7 +37,10 @@ public class EverytimeCrawlerService {
 
     private static final String LOGIN_URL = "https://account.everytime.kr/login";
 
-    public void crawlBoardAndSave(String boardUrl, String boardType, int startPage, int endPage) {
+    public void crawlBoardAndSave(String boardUrl, String boardType, int startPage, int endPage, 
+                                  java.util.List<String> titleKeywords, java.util.List<String> contentKeywords) {
+        logger.info("에브리타임 일반 게시판 크롤링 시작: {}", boardUrl);
+        
         ChromeOptions options = new ChromeOptions();
         
         // 팀원마다 각자의 PC에 개별 크롬 프로필(자동로그인 저장소)을 생성하도록 경로 지정
@@ -111,6 +114,29 @@ public class EverytimeCrawlerService {
                         try {
                             likesCount = Integer.parseInt(voteEl.text());
                         } catch (NumberFormatException ignored) {}
+                    }
+                    
+                    // 키워드 필터링 (OR 조건)
+                    if (titleKeywords != null && !titleKeywords.isEmpty()) {
+                        boolean match = false;
+                        for (String kw : titleKeywords) {
+                            if (title.contains(kw.trim())) {
+                                match = true;
+                                break;
+                            }
+                        }
+                        if (!match) continue; // 제목 키워드 중 하나라도 포함되지 않으면 스킵
+                    }
+                    
+                    if (contentKeywords != null && !contentKeywords.isEmpty()) {
+                        boolean match = false;
+                        for (String kw : contentKeywords) {
+                            if (content.contains(kw.trim())) {
+                                match = true;
+                                break;
+                            }
+                        }
+                        if (!match) continue; // 내용 키워드 중 하나라도 포함되지 않으면 스킵
                     }
                     
                     RawCommunityPost post = new RawCommunityPost(

@@ -30,7 +30,9 @@ public class CrawlerController {
                     requestDto.getBoardUrl(),
                     requestDto.getBoardType(),
                     startPage,
-                    endPage
+                    endPage,
+                    requestDto.getTitleKeywords(),
+                    requestDto.getContentKeywords()
             );
             return ResponseEntity.ok("게시판 원시 데이터 크롤링 성공");
         } catch (Exception e) {
