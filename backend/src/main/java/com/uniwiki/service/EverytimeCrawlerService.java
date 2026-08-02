@@ -112,13 +112,23 @@ public class EverytimeCrawlerService {
                                 .until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
                         Thread.sleep(750);
                         detailDocument = Jsoup.parse(driver.getPageSource(), sourceUrl);
-                        Element detailArticle = findDetailArticle(detailDocument, sourceUrl);
+                        String currentDetailUrl = driver.getCurrentUrl().split("\\?")[0];
+                        Element detailArticle = currentDetailUrl.equals(sourceUrl)
+                                ? findDetailArticle(detailDocument, sourceUrl) : null;
                         for (int retry = 0; detailArticle == null && retry < 3; retry++) {
                             Thread.sleep(500);
                             detailDocument = Jsoup.parse(driver.getPageSource(), sourceUrl);
-                            detailArticle = findDetailArticle(detailDocument, sourceUrl);
+                            currentDetailUrl = driver.getCurrentUrl().split("\\?")[0];
+                            if (currentDetailUrl.equals(sourceUrl)) {
+                                detailArticle = findDetailArticle(detailDocument, sourceUrl);
+                            }
                         }
-                        if (detailArticle != null) contentRoot = detailArticle;
+                        if (detailArticle != null) {
+                            contentRoot = detailArticle;
+                        } else {
+                            logger.warn("에브리타임 상세 글 불일치로 건너뜀: requested={}, current={}",
+                                    sourceUrl, driver.getCurrentUrl());
+                        }
                     }
 
                     Element titleElement = contentRoot.selectFirst(".title, h3, h1");
@@ -219,7 +229,7 @@ public class EverytimeCrawlerService {
                 exactMatch = candidate;
             }
         }
-        return exactMatch;
+        return exactMatch != null ? exactMatch : document.selectFirst("article.item");
     }
 
     private boolean isGenericArticleTitle(String title) {
