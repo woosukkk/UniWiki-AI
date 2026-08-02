@@ -24,6 +24,18 @@
 2. 백엔드 서버 실행
    - 백엔드 서버(`UniwikiApplication`)를 실행합니다.
    - 처음 실행 시 `selenium-java` 관련 라이브러리가 다운로드되므로 약간의 시간이 걸릴 수 있습니다.
+   - 일회성 수집 모드는 로컬 메모리 DB를 사용할 수 있으며, 실제 결과는 운영 import API에만 저장됩니다.
+
+   ```powershell
+   $env:DB_URL='jdbc:h2:mem:collector;MODE=MySQL;DB_CLOSE_DELAY=-1'
+   $env:DB_USERNAME='sa'
+   $env:DB_PASSWORD=''
+   $env:SPRING_DATASOURCE_DRIVER_CLASS_NAME='org.h2.Driver'
+   $env:SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT='org.hibernate.dialect.H2Dialect'
+   $env:SPRING_JPA_HIBERNATE_DDL_AUTO='create-drop'
+   $env:EVERYTIME_RUN_ON_STARTUP='true'
+   .\gradlew.bat bootRun
+   ```
 
 3. Swagger에서 API 호출
    - `http://localhost:8080/swagger-ui/index.html` 에 접속합니다.

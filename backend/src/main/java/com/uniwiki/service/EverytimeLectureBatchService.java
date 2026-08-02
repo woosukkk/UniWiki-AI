@@ -168,6 +168,7 @@ public class EverytimeLectureBatchService {
 
     private List<Candidate> searchThroughForm(WebDriver driver, String keyword) {
         List<By> selectors = List.of(
+                By.cssSelector("input[type='search']"),
                 By.cssSelector("form.search input[type='text']"),
                 By.cssSelector("input[name='keyword']"),
                 By.cssSelector("input.search"),
@@ -183,6 +184,7 @@ public class EverytimeLectureBatchService {
             input.sendKeys(keyword);
             input.sendKeys(Keys.ENTER);
             waitForPage(driver);
+            pause(1500);
             return readCandidates(driver);
         }
         return List.of();

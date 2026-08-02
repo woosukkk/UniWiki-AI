@@ -45,6 +45,12 @@ uniwiki:
     upload-url: ${EVERYTIME_UPLOAD_URL:}
     upload-token: ${EVERYTIME_UPLOAD_TOKEN:}
     import-token: ${EVERYTIME_IMPORT_TOKEN:}
+    run-on-startup: ${EVERYTIME_RUN_ON_STARTUP:false}
+    collector-terms: ${EVERYTIME_COLLECTOR_TERMS:2026-2}
+    collector-max-pairs: ${EVERYTIME_COLLECTOR_MAX_PAIRS:1}
+    collector-start-page: ${EVERYTIME_COLLECTOR_START_PAGE:1}
+    collector-end-page: ${EVERYTIME_COLLECTOR_END_PAGE:1}
+    collector-delay-ms: ${EVERYTIME_COLLECTOR_DELAY_MS:1500}
   lecture-review-workflow:
     interval-ms: ${LECTURE_REVIEW_WORKFLOW_INTERVAL_MS:10000}
     author-id: ${LECTURE_REVIEW_AUTHOR_ID:1}
