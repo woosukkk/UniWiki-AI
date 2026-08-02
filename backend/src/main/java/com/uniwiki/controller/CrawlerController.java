@@ -132,6 +132,14 @@ public class CrawlerController {
         return ResponseEntity.ok(communityPostWikiWorkflowService.resetCommunityData());
     }
 
+    @GetMapping("/everytime/community/stats")
+    public ResponseEntity<CommunityPostWikiWorkflowService.CommunityDataStats> getEverytimeCommunityStats(
+            @RequestHeader("X-Crawler-Token") String crawlerToken
+    ) {
+        requireValidImportToken(crawlerToken);
+        return ResponseEntity.ok(communityPostWikiWorkflowService.getCommunityDataStats());
+    }
+
     @PostMapping("/everytime/lecture/process")
     public ResponseEntity<LectureReviewWorkflowService.Result> processEverytimeLectures(
             @LoginUserId Long userId) {

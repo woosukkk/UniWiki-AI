@@ -73,6 +73,14 @@ public class CommunityPostWikiWorkflowService {
         return new ResetResult(wikiPosts.size(), rawPostCount);
     }
 
+    @Transactional(readOnly = true)
+    public CommunityDataStats getCommunityDataStats() {
+        long wikiPostCount = documentRepository.findAll().stream()
+                .filter(document -> document.getContentType() != EverytimeContentType.LECTURE_REVIEW)
+                .count();
+        return new CommunityDataStats(wikiPostCount, rawRepository.count());
+    }
+
     private Evaluation evaluate(RawCommunityPost raw) {
         String combined = (raw.getTitle() + " " + raw.getContent()).replaceAll("\\s+", " ").trim();
         if (combined.length() < 30) return Evaluation.rejected(0, "정보량이 부족합니다.");
@@ -160,6 +168,7 @@ public class CommunityPostWikiWorkflowService {
 
     public record Result(int processed, int accepted, int rejected) { }
     public record ResetResult(int deletedWikiPosts, long deletedRawPosts) { }
+    public record CommunityDataStats(long wikiPosts, long rawPosts) { }
     private record Evaluation(boolean accepted, int score, EverytimeContentType contentType,
                               String sanitizedContent, String reason) {
         static Evaluation accepted(int score, EverytimeContentType type, String content) {
