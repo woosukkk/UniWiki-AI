@@ -13,7 +13,7 @@ export function WikiListPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword') || '';
   const source = searchParams.get('source') || 'official';
-  const contentType = searchParams.get('type') || 'lecture-review';
+  const contentType = searchParams.get('type') || 'all';
   const categoryId = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'latest';
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
@@ -31,7 +31,9 @@ export function WikiListPage() {
         api.searchWikiPosts(
           keyword,
           source === 'everytime' ? 'EVERYTIME' : 'OFFICIAL',
-          source === 'everytime' && contentType === 'lecture-review' ? 'LECTURE_REVIEW' : null,
+          source === 'everytime' && contentType !== 'all'
+            ? contentType.replaceAll('-', '_').toUpperCase()
+            : null,
         ),
         api.getCategories(),
       ]);
@@ -97,17 +99,28 @@ export function WikiListPage() {
         >공식·학교 위키</button>
         <button
           className={source === 'everytime' ? 'active' : ''}
-          onClick={() => updateParams({ source: 'everytime', type: 'lecture-review', category: '', page: '' })}
+          onClick={() => updateParams({ source: 'everytime', type: '', category: '', page: '' })}
         >에브리타임 자료</button>
       </nav>
 
       {source === 'everytime' && (
         <nav className="wiki-content-tabs" aria-label="에브리타임 자료 분류">
-          <button
-            className={contentType === 'lecture-review' ? 'active' : ''}
-            onClick={() => updateParams({ type: 'lecture-review', page: '' })}
-          >강의평</button>
-          <span>게시판 자료는 추후 추가</span>
+          {[
+            ['all', '전체'],
+            ['lecture-review', '강의평'],
+            ['academic', '수강·학사'],
+            ['scholarship', '장학·지원'],
+            ['facilities', '시설·통학·학식'],
+            ['career', '진로·취업'],
+            ['club-event', '동아리·행사'],
+            ['school-life', '학교생활 팁'],
+          ].map(([value, label]) => (
+            <button
+              key={value}
+              className={contentType === value ? 'active' : ''}
+              onClick={() => updateParams({ type: value === 'all' ? '' : value, page: '' })}
+            >{label}</button>
+          ))}
         </nav>
       )}
 
