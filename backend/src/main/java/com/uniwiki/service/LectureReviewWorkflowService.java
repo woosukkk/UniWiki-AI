@@ -41,6 +41,7 @@ public class LectureReviewWorkflowService {
     public Result processPending() {
         List<RawLectureEvaluation> pending = rawRepository.findTop100ByIsProcessedFalseOrderByIdAsc();
         if (pending.isEmpty()) {
+            publishPendingDrafts();
             return new Result(0, 0, 0);
         }
 
@@ -62,6 +63,7 @@ public class LectureReviewWorkflowService {
             refreshDraft(raw.getCourseName(), raw.getProfessor(), category, author);
             accepted++;
         }
+        publishPendingDrafts();
         return new Result(pending.size(), accepted, rejected);
     }
 
@@ -77,17 +79,27 @@ public class LectureReviewWorkflowService {
         LectureReviewWikiDraft link = draftRepository.findByCourseNameAndProfessor(courseName, professor).orElse(null);
         if (link == null) {
             WikiPost wikiPost = wikiPostRepository.save(new WikiPost(
-                    category, author, title, content, SUMMARY, WikiPostStatus.PENDING));
+                    category, author, title, content, SUMMARY, WikiPostStatus.APPROVED));
             draftRepository.save(new LectureReviewWikiDraft(courseName, professor, wikiPost, included.size()));
+            vectorSyncService.enqueueUpsert(wikiPost);
             return;
         }
 
         WikiPost wikiPost = link.getWikiPost();
-        if (wikiPost.getStatus() == WikiPostStatus.APPROVED) {
-            vectorSyncService.enqueueDelete(wikiPost.getId());
-        }
-        wikiPost.update(category, title, content, SUMMARY, WikiPostStatus.PENDING);
+        wikiPost.update(category, title, content, SUMMARY, WikiPostStatus.APPROVED);
         link.refresh(included.size());
+        vectorSyncService.enqueueUpsert(wikiPost);
+    }
+
+    private void publishPendingDrafts() {
+        for (LectureReviewWikiDraft draft : draftRepository.findAll()) {
+            WikiPost wikiPost = draft.getWikiPost();
+            if (wikiPost.getStatus() != WikiPostStatus.PENDING) {
+                continue;
+            }
+            wikiPost.publish();
+            vectorSyncService.enqueueUpsert(wikiPost);
+        }
     }
 
     private String buildContent(

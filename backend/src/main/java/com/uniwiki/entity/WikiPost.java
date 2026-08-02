@@ -87,6 +87,10 @@ public class WikiPost {
         this.viewCount++;
     }
 
+    public void publish() {
+        this.status = WikiPostStatus.APPROVED;
+    }
+
     @PrePersist
     private void prePersist() {
         LocalDateTime now = LocalDateTime.now();

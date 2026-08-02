@@ -8,6 +8,7 @@ import com.uniwiki.entity.WikiPostStatus;
 import com.uniwiki.repository.CategoryRepository;
 import com.uniwiki.repository.UserRepository;
 import com.uniwiki.repository.WikiPostRepository;
+import com.uniwiki.repository.LectureReviewWikiDraftRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Comparator;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +28,7 @@ public class WikiPostService {
     private static final Pattern REFERENCE_DATE_PATTERN = Pattern.compile("^(20\\d{2})(?:-(1|2)|년)");
 
     private final WikiPostRepository wikiPostRepository;
+    private final LectureReviewWikiDraftRepository lectureReviewWikiDraftRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final WikiVectorSyncService vectorSyncService;
@@ -191,23 +195,49 @@ public class WikiPostService {
 
     // 제목 또는 본문으로 위키 문서 검색
     public List<WikiPostDto.ListResponse> searchWikiPosts(String keyword) {
+        return searchWikiPosts(keyword, "ALL", null);
+    }
 
-    // 검색어가 없으면 전체 문서를 반환
-        if (keyword == null || keyword.isBlank()) {
-                return getWikiPosts();
+    public List<WikiPostDto.ListResponse> searchWikiPosts(
+            String keyword,
+            String source,
+            String contentType
+    ) {
+
+        String normalizedSource = source == null ? "ALL" : source.trim().toUpperCase();
+        if (!Set.of("ALL", "OFFICIAL", "EVERYTIME").contains(normalizedSource)) {
+            throw new IllegalArgumentException("지원하지 않는 위키 출처입니다: " + source);
         }
-        String trimmedKeyword = keyword.trim();
-        return wikiPostRepository
-                .findByStatusAndTitleContainingOrStatusAndContentContainingOrderByCreatedAtDesc(
-                    WikiPostStatus.APPROVED,
-                    trimmedKeyword,
-                    WikiPostStatus.APPROVED,
-                    trimmedKeyword
-                 )
+        if (contentType != null && !contentType.isBlank()
+                && !"LECTURE_REVIEW".equalsIgnoreCase(contentType)) {
+            throw new IllegalArgumentException("지원하지 않는 에브리타임 자료 유형입니다: " + contentType);
+        }
+
+        List<WikiPost> posts;
+        if (keyword == null || keyword.isBlank()) {
+            posts = wikiPostRepository.findAllByStatusOrderByCreatedAtDesc(WikiPostStatus.APPROVED);
+        } else {
+            String trimmedKeyword = keyword.trim();
+            posts = wikiPostRepository
+                    .findByStatusAndTitleContainingOrStatusAndContentContainingOrderByCreatedAtDesc(
+                            WikiPostStatus.APPROVED,
+                            trimmedKeyword,
+                            WikiPostStatus.APPROVED,
+                            trimmedKeyword
+                    );
+        }
+
+        Set<Long> lectureReviewIds = new HashSet<>(lectureReviewWikiDraftRepository.findAllWikiPostIds());
+        return posts
                 .stream()
-                  .sorted(referenceDateComparator())
-                  .map(WikiPostDto.ListResponse::new)
-                  .toList();
+                .filter(post -> switch (normalizedSource) {
+                    case "OFFICIAL" -> !lectureReviewIds.contains(post.getId());
+                    case "EVERYTIME" -> lectureReviewIds.contains(post.getId());
+                    default -> true;
+                })
+                .sorted(referenceDateComparator())
+                .map(WikiPostDto.ListResponse::new)
+                .toList();
         }
 
     private Comparator<WikiPost> referenceDateComparator() {

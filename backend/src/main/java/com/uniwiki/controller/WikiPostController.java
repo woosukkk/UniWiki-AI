@@ -175,9 +175,11 @@ public class WikiPostController {
     @Operation(summary = "위키 문서 검색")
     @GetMapping("/search")
     public ResponseEntity<List<WikiPostDto.ListResponse>> searchWikiPosts(
-        @RequestParam(required = false) String keyword) {
+        @RequestParam(required = false) String keyword,
+        @RequestParam(defaultValue = "ALL") String source,
+        @RequestParam(required = false) String contentType) {
                 return ResponseEntity.ok(
-                        wikiPostService.searchWikiPosts(keyword)
+                        wikiPostService.searchWikiPosts(keyword, source, contentType)
                 );
         }
 }
