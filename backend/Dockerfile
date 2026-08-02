@@ -3,7 +3,7 @@ WORKDIR /workspace
 COPY gradlew gradlew
 COPY gradle gradle
 COPY build.gradle ./
-RUN chmod +x gradlew
+RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 RUN ./gradlew dependencies --no-daemon || true
 COPY src src
 RUN ./gradlew clean bootJar --no-daemon
