@@ -104,11 +104,24 @@ public class EverytimeCrawlerService {
                     sourceUrl = sourceUrl.split("\\?")[0];
                     if (!seenUrls.add(sourceUrl)) continue;
 
-                    String title = article.select("h2").text();
-                    String content = article.select("p").text();
+                    Element contentRoot = article;
+                    Document detailDocument = null;
+                    if (article.text().isBlank()) {
+                        driver.get(sourceUrl);
+                        new WebDriverWait(driver, Duration.ofSeconds(10))
+                                .until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
+                        Thread.sleep(750);
+                        detailDocument = Jsoup.parse(driver.getPageSource(), sourceUrl);
+                        Element detailArticle = detailDocument.selectFirst("article, div.article");
+                        if (detailArticle != null) contentRoot = detailArticle;
+                    }
+
+                    String title = contentRoot.select("h1, h2, h3, .title").first() == null
+                            ? "" : contentRoot.select("h1, h2, h3, .title").first().text();
+                    String content = contentRoot.select("p.text, p.medium, div.text, div.content, p").text();
                     
                     if (title.isEmpty() && content.isEmpty()) {
-                        content = article.text();
+                        content = contentRoot.text();
                     }
 
                     if (title.isEmpty() && content.isEmpty()) continue;
@@ -121,7 +134,7 @@ public class EverytimeCrawlerService {
                     }
 
                     int likesCount = 0;
-                    Element voteEl = article.selectFirst(".vote");
+                    Element voteEl = contentRoot.selectFirst(".vote");
                     if (voteEl != null && !voteEl.text().isEmpty()) {
                         try {
                             likesCount = Integer.parseInt(voteEl.text());
@@ -129,10 +142,13 @@ public class EverytimeCrawlerService {
                     }
 
                     int commentsCount = 0;
-                    Element commentEl = article.selectFirst(".comment");
+                    Element commentEl = contentRoot.selectFirst(".comment");
                     if (commentEl != null) {
                         String digits = commentEl.text().replaceAll("[^0-9]", "");
                         if (!digits.isBlank()) commentsCount = Integer.parseInt(digits);
+                    }
+                    if (commentsCount == 0 && detailDocument != null) {
+                        commentsCount = detailDocument.select("div.comments article, div.comments div.comment").size();
                     }
                     
                     // 키워드 필터링 (OR 조건)
