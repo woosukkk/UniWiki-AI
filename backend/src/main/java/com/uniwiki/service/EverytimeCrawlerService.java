@@ -113,6 +113,11 @@ public class EverytimeCrawlerService {
                         Thread.sleep(750);
                         detailDocument = Jsoup.parse(driver.getPageSource(), sourceUrl);
                         Element detailArticle = findDetailArticle(detailDocument, sourceUrl);
+                        for (int retry = 0; detailArticle == null && retry < 3; retry++) {
+                            Thread.sleep(500);
+                            detailDocument = Jsoup.parse(driver.getPageSource(), sourceUrl);
+                            detailArticle = findDetailArticle(detailDocument, sourceUrl);
+                        }
                         if (detailArticle != null) contentRoot = detailArticle;
                     }
 
@@ -214,11 +219,7 @@ public class EverytimeCrawlerService {
                 exactMatch = candidate;
             }
         }
-        if (exactMatch != null) return exactMatch;
-
-        return document.select("article > a.article, a.article").stream()
-                .max(java.util.Comparator.comparingInt(element -> element.text().length()))
-                .orElse(null);
+        return exactMatch;
     }
 
     private boolean isGenericArticleTitle(String title) {
