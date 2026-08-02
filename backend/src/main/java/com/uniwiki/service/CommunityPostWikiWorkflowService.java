@@ -77,24 +77,36 @@ public class CommunityPostWikiWorkflowService {
     }
 
     private EverytimeContentType classify(String text) {
-        if (containsAny(text, "수강", "학점", "졸업", "전공", "복수전공", "학사", "시험")) return EverytimeContentType.ACADEMIC;
-        if (containsAny(text, "장학", "지원금", "국가장학")) return EverytimeContentType.SCHOLARSHIP;
-        if (containsAny(text, "취업", "인턴", "채용", "면접", "공모전")) return EverytimeContentType.CAREER;
-        if (containsAny(text, "도서관", "학식", "기숙사", "통학", "셔틀", "시설")) return EverytimeContentType.FACILITIES;
-        if (containsAny(text, "동아리", "행사", "축제", "학생회")) return EverytimeContentType.CLUB_EVENT;
-        return EverytimeContentType.SCHOOL_LIFE;
+        EverytimeContentType bestType = EverytimeContentType.SCHOOL_LIFE;
+        int bestScore = 0;
+        for (EverytimeContentType candidate : List.of(
+                EverytimeContentType.SCHOLARSHIP,
+                EverytimeContentType.CAREER,
+                EverytimeContentType.FACILITIES,
+                EverytimeContentType.CLUB_EVENT,
+                EverytimeContentType.ACADEMIC)) {
+            int candidateScore = keywordMatchCount(candidate, text);
+            if (candidateScore > bestScore) {
+                bestType = candidate;
+                bestScore = candidateScore;
+            }
+        }
+        return bestType;
     }
 
     private int keywordScore(EverytimeContentType type, String text) {
-        int matches = switch (type) {
+        return Math.min(45, keywordMatchCount(type, text) * 15);
+    }
+
+    private int keywordMatchCount(EverytimeContentType type, String text) {
+        return switch (type) {
             case ACADEMIC -> countMatches(text, "수강", "학점", "졸업", "전공", "학사", "시험");
             case SCHOLARSHIP -> countMatches(text, "장학", "지원금", "신청", "서류");
-            case CAREER -> countMatches(text, "취업", "인턴", "채용", "면접", "공모전");
+            case CAREER -> countMatches(text, "취업", "진로", "인턴", "채용", "면접", "자소서", "포트폴리오", "현장실습", "공모전");
             case FACILITIES -> countMatches(text, "도서관", "학식", "기숙사", "통학", "셔틀", "시설");
-            case CLUB_EVENT -> countMatches(text, "동아리", "행사", "축제", "학생회");
+            case CLUB_EVENT -> countMatches(text, "동아리", "학회", "소모임", "모집", "행사", "축제", "학생회");
             default -> countMatches(text, "학교", "학생", "이용", "신청", "방법", "정보");
         };
-        return Math.min(45, matches * 15);
     }
 
     private void publish(RawCommunityPost raw) {

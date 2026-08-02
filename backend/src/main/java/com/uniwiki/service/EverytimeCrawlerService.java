@@ -112,12 +112,12 @@ public class EverytimeCrawlerService {
                                 .until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
                         Thread.sleep(750);
                         detailDocument = Jsoup.parse(driver.getPageSource(), sourceUrl);
-                        Element detailArticle = detailDocument.selectFirst("article, div.article");
+                        Element detailArticle = findDetailArticle(detailDocument, sourceUrl);
                         if (detailArticle != null) contentRoot = detailArticle;
                     }
 
-                    String title = contentRoot.select("h1, h2, h3, .title").first() == null
-                            ? "" : contentRoot.select("h1, h2, h3, .title").first().text();
+                    Element titleElement = contentRoot.selectFirst(".title, h3, h1");
+                    String title = titleElement == null ? "" : titleElement.text();
                     String content = contentRoot.select("p.text, p.medium, div.text, div.content, p").text();
                     
                     if (title.isEmpty() && content.isEmpty()) {
@@ -203,6 +203,22 @@ public class EverytimeCrawlerService {
                 driver.quit();
             }
         }
+    }
+
+    private Element findDetailArticle(Document document, String sourceUrl) {
+        Element exactMatch = null;
+        for (Element candidate : document.select("article > a.article[href], a.article[href]")) {
+            String candidateUrl = candidate.absUrl("href").split("\\?")[0];
+            if (candidateUrl.equals(sourceUrl)
+                    && (exactMatch == null || candidate.text().length() > exactMatch.text().length())) {
+                exactMatch = candidate;
+            }
+        }
+        if (exactMatch != null) return exactMatch;
+
+        return document.select("article > a.article, a.article").stream()
+                .max(java.util.Comparator.comparingInt(element -> element.text().length()))
+                .orElse(null);
     }
 
     public void crawlLectureAndSave(String lectureUrl, int startPage, int endPage) {
