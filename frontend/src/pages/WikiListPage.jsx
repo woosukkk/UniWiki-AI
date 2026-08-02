@@ -12,6 +12,8 @@ export function WikiListPage() {
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword') || '';
+  const source = searchParams.get('source') || 'official';
+  const contentType = searchParams.get('type') || 'lecture-review';
   const categoryId = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'latest';
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
@@ -26,7 +28,11 @@ export function WikiListPage() {
     setError('');
     try {
       const [posts, categoryList] = await Promise.all([
-        api.searchWikiPosts(keyword),
+        api.searchWikiPosts(
+          keyword,
+          source === 'everytime' ? 'EVERYTIME' : 'OFFICIAL',
+          source === 'everytime' && contentType === 'lecture-review' ? 'LECTURE_REVIEW' : null,
+        ),
         api.getCategories(),
       ]);
       setWikiPosts(posts);
@@ -36,7 +42,7 @@ export function WikiListPage() {
     } finally {
       setLoading(false);
     }
-  }, [keyword]);
+  }, [keyword, source, contentType]);
 
   useEffect(() => {
     setSearchInput(keyword);
@@ -84,6 +90,27 @@ export function WikiListPage() {
         {isAuthenticated && <Link className="button" to="/wiki/new">위키 작성</Link>}
       </header>
 
+      <nav className="wiki-source-tabs" aria-label="위키 자료 출처">
+        <button
+          className={source === 'official' ? 'active' : ''}
+          onClick={() => updateParams({ source: '', type: '', category: '', page: '' })}
+        >공식·학교 위키</button>
+        <button
+          className={source === 'everytime' ? 'active' : ''}
+          onClick={() => updateParams({ source: 'everytime', type: 'lecture-review', category: '', page: '' })}
+        >에브리타임 자료</button>
+      </nav>
+
+      {source === 'everytime' && (
+        <nav className="wiki-content-tabs" aria-label="에브리타임 자료 분류">
+          <button
+            className={contentType === 'lecture-review' ? 'active' : ''}
+            onClick={() => updateParams({ type: 'lecture-review', page: '' })}
+          >강의평</button>
+          <span>게시판 자료는 추후 추가</span>
+        </nav>
+      )}
+
       <section className="wiki-toolbar" aria-label="위키 검색 및 필터">
         <form className="wiki-search" onSubmit={submitSearch}>
           <input
@@ -95,14 +122,16 @@ export function WikiListPage() {
           <button className="button button-small">검색</button>
         </form>
         <div className="wiki-filters">
-          <select
-            aria-label="카테고리 필터"
-            value={categoryId}
-            onChange={(event) => updateParams({ category: event.target.value, page: '' })}
-          >
-            <option value="">전체 카테고리</option>
-            {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-          </select>
+          {source === 'official' && (
+            <select
+              aria-label="카테고리 필터"
+              value={categoryId}
+              onChange={(event) => updateParams({ category: event.target.value, page: '' })}
+            >
+              <option value="">전체 카테고리</option>
+              {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+            </select>
+          )}
           <select
             aria-label="정렬 기준"
             value={sort}
