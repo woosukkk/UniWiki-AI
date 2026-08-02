@@ -22,8 +22,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -39,7 +37,7 @@ import java.util.Set;
 public class EverytimeLectureBatchService {
 
     private static final String LOGIN_URL = "https://account.everytime.kr/login";
-    private static final String LECTURE_SEARCH_URL = "https://everytime.kr/lecture/search?keyword=";
+    private static final String LECTURE_SEARCH_URL = "https://everytime.kr/lecture";
 
     private final SejongCourseCatalogService courseCatalogService;
     private final RawLectureEvaluationRepository rawLectureEvaluationRepository;
@@ -58,6 +56,9 @@ public class EverytimeLectureBatchService {
         int saved = 0;
         int duplicates = 0;
 
+        if (headless) {
+            System.setProperty("webdriver.chrome.driver", "/usr/bin/chromedriver");
+        }
         WebDriver driver = new ChromeDriver(chromeOptions());
         try {
             waitForLogin(driver);
@@ -119,7 +120,10 @@ public class EverytimeLectureBatchService {
                     driver.manage().addCookie(new Cookie(pair[0].trim(), pair[1].trim()));
                 }
             }
-            driver.navigate().refresh();
+            driver.navigate().to("https://everytime.kr/");
+            new WebDriverWait(driver, Duration.ofSeconds(15)).until(webDriver ->
+                    !webDriver.getCurrentUrl().contains("/login"));
+            return;
         }
         driver.get(LOGIN_URL);
         try {
@@ -133,14 +137,10 @@ public class EverytimeLectureBatchService {
     }
 
     private SearchResult findLecture(WebDriver driver, SejongCourseCatalogService.CourseTarget target) {
-        String encoded = URLEncoder.encode(target.courseName(), StandardCharsets.UTF_8);
-        driver.get(LECTURE_SEARCH_URL + encoded);
+        driver.get(LECTURE_SEARCH_URL);
         waitForPage(driver);
 
-        List<Candidate> candidates = readCandidates(driver);
-        if (candidates.isEmpty()) {
-            candidates = searchThroughForm(driver, target.courseName());
-        }
+        List<Candidate> candidates = searchThroughForm(driver, target.courseName());
 
         String expectedCourse = normalize(target.courseName());
         String expectedProfessor = normalizeProfessor(target.professor());

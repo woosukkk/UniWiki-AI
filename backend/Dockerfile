@@ -8,12 +8,15 @@ RUN ./gradlew dependencies --no-daemon || true
 COPY backend/src src
 RUN ./gradlew clean bootJar --no-daemon
 
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends chromium chromium-driver \
-    && rm -rf /var/lib/apt/lists/* \
-    && useradd --system --uid 10001 uniwiki
+RUN apk add --no-cache chromium chromium-chromedriver \
+    && addgroup -S uniwiki \
+    && adduser -S -u 10001 -h /home/uniwiki -G uniwiki uniwiki \
+    && mkdir -p /home/uniwiki/.cache/selenium \
+    && chown -R uniwiki:uniwiki /home/uniwiki \
+    && test -x /usr/bin/chromium \
+    && test -x /usr/bin/chromedriver
 COPY --from=build /workspace/build/libs/*.jar app.jar
 COPY ai/data/normalized/sejong/software-course-schedules.json /app/data/software-course-schedules.json
 USER uniwiki
