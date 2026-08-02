@@ -17,6 +17,7 @@ import com.uniwiki.dto.CommunityPostImportResponseDto;
 import com.uniwiki.service.EverytimeLectureBatchService;
 import com.uniwiki.service.LectureReviewImportService;
 import com.uniwiki.service.CommunityPostImportService;
+import com.uniwiki.service.CommunityPostWikiWorkflowService;
 import com.uniwiki.service.LectureReviewWorkflowService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,7 @@ public class CrawlerController {
     private final EverytimeLectureBatchService everytimeLectureBatchService;
     private final LectureReviewImportService lectureReviewImportService;
     private final CommunityPostImportService communityPostImportService;
+    private final CommunityPostWikiWorkflowService communityPostWikiWorkflowService;
     private final LectureReviewWorkflowService lectureReviewWorkflowService;
 
     @Value("${uniwiki.everytime.crawl-enabled:true}")
@@ -120,6 +122,14 @@ public class CrawlerController {
     ) {
         requireValidImportToken(crawlerToken);
         return ResponseEntity.ok(communityPostImportService.importPosts(requestDto.posts()));
+    }
+
+    @DeleteMapping("/everytime/community")
+    public ResponseEntity<CommunityPostWikiWorkflowService.ResetResult> resetEverytimeCommunityPosts(
+            @RequestHeader("X-Crawler-Token") String crawlerToken
+    ) {
+        requireValidImportToken(crawlerToken);
+        return ResponseEntity.ok(communityPostWikiWorkflowService.resetCommunityData());
     }
 
     @PostMapping("/everytime/lecture/process")
