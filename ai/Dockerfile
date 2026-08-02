@@ -9,7 +9,6 @@ RUN apt-get update \
     && useradd --system --uid 10001 --home-dir /app uniwiki
 COPY requirements.txt ./
 RUN pip install --upgrade pip \
-    && pip install torch --index-url https://download.pytorch.org/whl/cpu \
     && pip install -r requirements.txt
 COPY app app
 COPY docker-entrypoint.sh /usr/local/bin/uniwiki-ai-entrypoint

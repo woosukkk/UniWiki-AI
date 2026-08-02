@@ -6,7 +6,7 @@ set -eu
 : "${DB_USERNAME:?DB_USERNAME is required}"
 : "${DB_PASSWORD:?DB_PASSWORD is required}"
 
-mysql_base="mysql --protocol=TCP --host=$DB_HOST --port=$DB_PORT --user=$DB_USERNAME"
+mysql_base="mysql --protocol=TCP --host=$DB_HOST --port=$DB_PORT --user=$DB_USERNAME --default-character-set=utf8mb4"
 
 until MYSQL_PWD="$DB_PASSWORD" $mysql_base --execute="SELECT 1" >/dev/null 2>&1; do
   echo "Waiting for MySQL..."
@@ -22,10 +22,32 @@ if [ "${QUERY_ONLY:-false}" != "true" ]; then
     echo "Skipping schema.sql (schema already exists)"
   fi
 
+  if [ "${RESET_SEEDED_WIKI:-false}" = "true" ]; then
+    echo "Backing up seeded wiki posts and categories"
+    MYSQL_PWD="$DB_PASSWORD" $mysql_base --database=uniwiki_ai --execute="
+      CREATE TABLE IF NOT EXISTS wiki_posts_encoding_backup_20260802 LIKE wiki_posts;
+      INSERT IGNORE INTO wiki_posts_encoding_backup_20260802
+      SELECT post.*
+      FROM wiki_posts post
+      JOIN users author ON author.id = post.author_id
+      WHERE author.email = 'official-source@local.invalid';
+      CREATE TABLE IF NOT EXISTS categories_encoding_backup_20260802 LIKE categories;
+      INSERT IGNORE INTO categories_encoding_backup_20260802 SELECT * FROM categories;
+    "
+    echo "Removing previously seeded official wiki posts"
+    MYSQL_PWD="$DB_PASSWORD" $mysql_base --database=uniwiki_ai --execute="
+      DELETE post
+      FROM wiki_posts post
+      JOIN users author ON author.id = post.author_id
+      WHERE author.email = 'official-source@local.invalid';
+    "
+  fi
+
 for file in \
   init.sql \
   migration-data-categories.sql \
   migration-wiki-content-mediumtext.sql \
+  migration-wiki-view-count-default.sql \
   seed-sejong-software.sql \
   seed-sejong-academic-policies.sql \
   seed-sejong-student-support.sql \

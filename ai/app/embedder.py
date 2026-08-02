@@ -11,22 +11,18 @@ class Embedder(Protocol):
         """Return a two-dimensional float array, one row per text."""
 
 
-class SentenceTransformerEmbedder:
+class FastEmbedEmbedder:
     def __init__(self, model_name: str) -> None:
         self.model_name = model_name
 
     @cached_property
     def model(self):
-        from sentence_transformers import SentenceTransformer
+        from fastembed import TextEmbedding
 
-        return SentenceTransformer(self.model_name)
+        return TextEmbedding(model_name=self.model_name, threads=1)
 
     def encode(self, texts: Sequence[str]) -> np.ndarray:
         if not texts:
             return np.empty((0, 0), dtype=np.float32)
-        return self.model.encode(
-            list(texts),
-            normalize_embeddings=True,
-            convert_to_numpy=True,
-            show_progress_bar=False,
-        ).astype(np.float32)
+        vectors = list(self.model.embed(list(texts), batch_size=8))
+        return np.asarray(vectors, dtype=np.float32)
