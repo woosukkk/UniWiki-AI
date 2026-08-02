@@ -127,3 +127,25 @@ EVERYTIME_SESSION_COOKIES=
 - `EVERYTIME_CRAWL_ENABLED=false`는 운영 컨테이너에서 브라우저 크롤링을 차단합니다.
 - import API는 `X-Crawler-Token` 헤더가 운영 토큰과 일치할 때만 데이터를 받습니다.
 - 같은 출처 URL, 강의명, 교수명, 본문 조합은 중복 저장하지 않습니다.
+
+## 핫 게시판 정보성 자료 수집
+
+핫 게시판은 로컬 Chrome에서 수집하고 결과만 운영 import API로 전송합니다.
+
+```text
+EVERYTIME_BOARD_RUN_ON_STARTUP=true
+EVERYTIME_BOARD_URL=https://everytime.kr/hotarticle
+EVERYTIME_BOARD_TYPE=핫 게시판
+EVERYTIME_BOARD_START_PAGE=1
+EVERYTIME_BOARD_END_PAGE=3
+EVERYTIME_COMMUNITY_UPLOAD_URL=https://<운영-백엔드>/api/admin/crawl/everytime/community/import
+EVERYTIME_UPLOAD_TOKEN=<운영 EVERYTIME_IMPORT_TOKEN과 같은 값>
+```
+
+운영 서버는 기본 10초 간격으로 새 게시물을 평가합니다.
+
+- 본문 길이, 추천 수, 댓글 수, 정보성 키워드로 유용성 점수를 계산합니다.
+- 유머·잡담·연애·외모·어그로 표현과 개인 저격은 제외합니다.
+- 이메일, 전화번호, 학번, 외부 링크를 마스킹합니다.
+- 기본 50점 이상만 위키로 즉시 공개하고 AI 벡터 동기화 큐에 등록합니다.
+- 공개 분류는 수강·학사, 장학·지원, 시설·통학·학식, 진로·취업, 동아리·행사, 학교생활 팁입니다.

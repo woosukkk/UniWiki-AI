@@ -30,7 +30,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 @RequiredArgsConstructor
 public class EverytimeCrawlerService {
 
-    private final com.uniwiki.repository.RawCommunityPostRepository rawCommunityPostRepository;
+    private final CommunityPostTransferService communityPostTransferService;
     private final com.uniwiki.repository.RawLectureEvaluationRepository rawLectureEvaluationRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(EverytimeCrawlerService.class);
@@ -60,9 +60,11 @@ public class EverytimeCrawlerService {
             logger.info("에브리타임 로그인 페이지로 이동했습니다. 수동 로그인이 필요할 수 있습니다.");
 
             WebDriverWait loginWait = new WebDriverWait(driver, Duration.ofSeconds(60));
-            loginWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.my, a.message")));
+            loginWait.until(webDriver -> webDriver.getCurrentUrl().startsWith("https://everytime.kr/")
+                    && !webDriver.getCurrentUrl().contains("/login"));
 
             int totalCount = 0;
+            java.util.Set<String> seenUrls = new java.util.HashSet<>();
             
             for (int page = startPage; page <= endPage; page++) {
                 String currentUrl = boardUrl;
@@ -80,11 +82,12 @@ public class EverytimeCrawlerService {
                 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.wrap.articles, article > a.article, #container")));
                 
-                Document doc = Jsoup.parse(driver.getPageSource());
+                Document doc = Jsoup.parse(driver.getPageSource(), currentUrl);
                 Elements articles = doc.select("article > a.article");
                 if (articles.isEmpty()) {
                     articles = doc.select("article");
                 }
+                java.util.List<com.uniwiki.dto.CommunityPostImportItemDto> pagePosts = new java.util.ArrayList<>();
                 
                 if (articles.isEmpty()) {
                     logger.warn("게시물을 찾을 수 없습니다. 현재 페이지 DOM 일부: {}", 
@@ -92,6 +95,15 @@ public class EverytimeCrawlerService {
                 }
                 
                 for (Element article : articles) {
+                    String sourceUrl = article.absUrl("href");
+                    if (sourceUrl.isBlank()) {
+                        Element articleLink = article.selectFirst("a.article, a[href]");
+                        sourceUrl = articleLink == null ? currentUrl : articleLink.absUrl("href");
+                    }
+                    if (sourceUrl.isBlank()) sourceUrl = currentUrl;
+                    sourceUrl = sourceUrl.split("\\?")[0];
+                    if (!seenUrls.add(sourceUrl)) continue;
+
                     String title = article.select("h2").text();
                     String content = article.select("p").text();
                     
@@ -114,6 +126,13 @@ public class EverytimeCrawlerService {
                         try {
                             likesCount = Integer.parseInt(voteEl.text());
                         } catch (NumberFormatException ignored) {}
+                    }
+
+                    int commentsCount = 0;
+                    Element commentEl = article.selectFirst(".comment");
+                    if (commentEl != null) {
+                        String digits = commentEl.text().replaceAll("[^0-9]", "");
+                        if (!digits.isBlank()) commentsCount = Integer.parseInt(digits);
                     }
                     
                     // 키워드 필터링 (OR 조건)
@@ -139,17 +158,18 @@ public class EverytimeCrawlerService {
                         if (!match) continue; // 내용 키워드 중 하나라도 포함되지 않으면 스킵
                     }
                     
-                    RawCommunityPost post = new RawCommunityPost(
-                            currentUrl, 
+                    pagePosts.add(new com.uniwiki.dto.CommunityPostImportItemDto(
+                            sourceUrl,
                             boardType != null ? boardType : "알 수 없는 게시판", 
                             title, 
                             content, 
-                            likesCount, 
+                            likesCount,
+                            commentsCount,
                             "[]"
-                    );
-                    rawCommunityPostRepository.save(post);
-                    totalCount++;
+                    ));
                 }
+
+                totalCount += communityPostTransferService.transfer(pagePosts).saved();
                 
                 if (page < endPage) {
                     Thread.sleep(2000);

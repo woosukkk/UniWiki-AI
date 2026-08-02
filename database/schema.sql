@@ -168,6 +168,28 @@ CREATE TABLE raw_lecture_evaluations (
     INDEX idx_raw_lecture_course_professor (course_name, professor)
 );
 
+CREATE TABLE raw_community_posts (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    source_url VARCHAR(1000) NOT NULL,
+    board_type VARCHAR(100) NOT NULL,
+    title VARCHAR(500) NOT NULL,
+    content TEXT NOT NULL,
+    likes_count INT NOT NULL DEFAULT 0,
+    comments_count INT NOT NULL DEFAULT 0,
+    comments_json TEXT,
+    is_processed BOOLEAN NOT NULL DEFAULT FALSE,
+    processing_status ENUM('PENDING', 'ACCEPTED', 'REJECTED') NOT NULL DEFAULT 'PENDING',
+    usefulness_score INT,
+    content_type ENUM('LECTURE_REVIEW', 'ACADEMIC', 'SCHOLARSHIP', 'FACILITIES', 'CAREER', 'CLUB_EVENT', 'SCHOOL_LIFE'),
+    sanitized_content TEXT,
+    processing_note VARCHAR(500),
+    crawled_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    processed_at DATETIME,
+
+    UNIQUE KEY uq_raw_community_source (source_url(500)),
+    INDEX idx_raw_community_processing (is_processed, id)
+);
+
 CREATE TABLE lecture_review_wiki_drafts (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     course_name VARCHAR(200) NOT NULL,
@@ -178,6 +200,19 @@ CREATE TABLE lecture_review_wiki_drafts (
 
     CONSTRAINT uq_lecture_review_course_professor UNIQUE (course_name, professor),
     CONSTRAINT fk_lecture_review_wiki_post
+        FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE everytime_wiki_documents (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    source_key VARCHAR(500) NOT NULL,
+    content_type ENUM('LECTURE_REVIEW', 'ACADEMIC', 'SCHOLARSHIP', 'FACILITIES', 'CAREER', 'CLUB_EVENT', 'SCHOOL_LIFE') NOT NULL,
+    wiki_post_id BIGINT NOT NULL UNIQUE,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    CONSTRAINT uq_everytime_wiki_source UNIQUE (source_key),
+    CONSTRAINT fk_everytime_wiki_post
         FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id)
         ON DELETE CASCADE
 );

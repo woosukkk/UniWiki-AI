@@ -43,6 +43,7 @@ uniwiki:
     headless: ${EVERYTIME_HEADLESS:false}
     session-cookies: ${EVERYTIME_SESSION_COOKIES:}
     upload-url: ${EVERYTIME_UPLOAD_URL:}
+    community-upload-url: ${EVERYTIME_COMMUNITY_UPLOAD_URL:}
     upload-token: ${EVERYTIME_UPLOAD_TOKEN:}
     import-token: ${EVERYTIME_IMPORT_TOKEN:}
     run-on-startup: ${EVERYTIME_RUN_ON_STARTUP:false}
@@ -51,6 +52,14 @@ uniwiki:
     collector-start-page: ${EVERYTIME_COLLECTOR_START_PAGE:1}
     collector-end-page: ${EVERYTIME_COLLECTOR_END_PAGE:1}
     collector-delay-ms: ${EVERYTIME_COLLECTOR_DELAY_MS:1500}
+    board-run-on-startup: ${EVERYTIME_BOARD_RUN_ON_STARTUP:false}
+    board-url: ${EVERYTIME_BOARD_URL:https://everytime.kr/hotarticle}
+    board-type: ${EVERYTIME_BOARD_TYPE:핫 게시판}
+    board-start-page: ${EVERYTIME_BOARD_START_PAGE:1}
+    board-end-page: ${EVERYTIME_BOARD_END_PAGE:3}
+  everytime-community:
+    interval-ms: ${EVERYTIME_COMMUNITY_INTERVAL_MS:10000}
+    minimum-score: ${EVERYTIME_COMMUNITY_MINIMUM_SCORE:50}
   lecture-review-workflow:
     interval-ms: ${LECTURE_REVIEW_WORKFLOW_INTERVAL_MS:10000}
     author-id: ${LECTURE_REVIEW_AUTHOR_ID:1}
