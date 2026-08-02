@@ -48,3 +48,27 @@
 ## 주의 사항
 - 봇이 구동되는 동안에는 팝업된 크롬 창을 강제로 끄거나, 다른 사이트로 이동하지 마세요. 봇이 길을 잃습니다.
 - 크롤링하려는 게시판 주소(`boardUrl`)는 본인 계정으로 접근 권한이 있는 게시판이어야 합니다. (새내기 게시판, 졸업생 게시판 등 본인 권한이 없는 곳은 에러가 발생할 수 있습니다.)
+
+## 소프트웨어학과 강의평 일괄 수집
+
+`POST /api/admin/crawl/everytime/lecture/batch`는
+`ai/data/normalized/sejong/software-course-schedules.json`에서 강의명·교수명 조합을 읽고,
+에브리타임 검색 결과가 정확히 일치하는 강의의 평가만 저장합니다.
+
+```json
+{
+  "terms": ["2026-1", "2026-2"],
+  "maxCourseProfessorPairs": 10,
+  "startPage": 1,
+  "endPage": 3,
+  "requestDelayMillis": 1500
+}
+```
+
+- `terms`를 생략하면 2024-1~2026-2 전체 데이터를 사용합니다.
+- 첫 시험에서는 `maxCourseProfessorPairs`를 1~3으로 지정하는 것을 권장합니다.
+- 강의명과 교수명이 모두 일치해야 `MATCHED`로 처리합니다.
+- 결과가 없거나 여러 개인 경우 각각 `NOT_FOUND`, `AMBIGUOUS`로 반환하며 저장하지 않습니다.
+- 같은 출처·강의명·교수명·본문의 평가는 다시 저장하지 않습니다.
+- 시간표 경로가 다른 환경에서는 `EVERYTIME_COURSE_DATA_PATH` 환경 변수로 지정합니다.
+- 실행 중에는 같은 `EverytimeChromeProfile`을 사용하는 다른 Chrome 크롤러를 실행하지 마세요.

@@ -6,4 +6,10 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RawLectureEvaluationRepository extends JpaRepository<RawLectureEvaluation, Long> {
+    boolean existsBySourceUrlAndCourseNameAndProfessorAndContent(
+            String sourceUrl,
+            String courseName,
+            String professor,
+            String content
+    );
 }

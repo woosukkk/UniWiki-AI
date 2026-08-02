@@ -32,3 +32,5 @@ uniwiki:
   vector-sync:
     interval-ms: 60000
     max-attempts: 5
+  everytime:
+    course-data-path: ${EVERYTIME_COURSE_DATA_PATH:../ai/data/normalized/sejong/software-course-schedules.json}

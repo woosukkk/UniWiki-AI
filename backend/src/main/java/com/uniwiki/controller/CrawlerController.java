@@ -7,6 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.uniwiki.dto.EverytimeBoardRequestDto;
 import com.uniwiki.dto.EverytimeLectureRequestDto;
+import com.uniwiki.dto.EverytimeLectureBatchRequestDto;
+import com.uniwiki.dto.EverytimeLectureBatchResponseDto;
+import com.uniwiki.service.EverytimeLectureBatchService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/admin/crawl")
@@ -16,6 +20,7 @@ public class CrawlerController {
     private final EverytimeCrawlerService everytimeCrawlerService;
     private final com.uniwiki.repository.RawLectureEvaluationRepository rawLectureEvaluationRepository;
     private final com.uniwiki.repository.RawCommunityPostRepository rawCommunityPostRepository;
+    private final EverytimeLectureBatchService everytimeLectureBatchService;
 
     @PostMapping("/everytime/board")
     public ResponseEntity<String> crawlEverytimeBoard(@RequestBody EverytimeBoardRequestDto requestDto) {
@@ -60,6 +65,13 @@ public class CrawlerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("크롤링 실패: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/everytime/lecture/batch")
+    public ResponseEntity<EverytimeLectureBatchResponseDto> crawlEverytimeLectures(
+            @Valid @RequestBody EverytimeLectureBatchRequestDto requestDto
+    ) {
+        return ResponseEntity.ok(everytimeLectureBatchService.crawl(requestDto));
     }
     
     @GetMapping("/everytime/board")
