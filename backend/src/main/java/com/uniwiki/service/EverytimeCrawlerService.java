@@ -126,11 +126,11 @@ public class EverytimeCrawlerService {
 
                     if (title.isEmpty() && content.isEmpty()) continue;
                     
-                    if (title.isEmpty()) {
-                        title = content.length() > 20 ? content.substring(0, 20) + "..." : content;
-                    }
                     if (content.isEmpty()) {
                         content = title;
+                    }
+                    if (isGenericArticleTitle(title)) {
+                        title = content.length() > 45 ? content.substring(0, 45) + "..." : content;
                     }
 
                     int likesCount = 0;
@@ -219,6 +219,15 @@ public class EverytimeCrawlerService {
         return document.select("article > a.article, a.article").stream()
                 .max(java.util.Comparator.comparingInt(element -> element.text().length()))
                 .orElse(null);
+    }
+
+    private boolean isGenericArticleTitle(String title) {
+        if (title == null || title.isBlank()) return true;
+        String normalized = title.replace(" ", "");
+        return normalized.equals("익명")
+                || normalized.equals("자유게시판")
+                || normalized.equals("비밀게시판")
+                || normalized.equals("핫게시판");
     }
 
     public void crawlLectureAndSave(String lectureUrl, int startPage, int endPage) {
