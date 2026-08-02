@@ -4,17 +4,28 @@
 
 ## 핵심 요약
 
- 세션이나 쿠키를 공유할 필요 없이, 각자의 PC에서 최초 1회만 직접 로그인해 두면 이후부터는 영구적으로 자동 크롤링이 가능
+에브리타임 로그인과 수집은 로컬 PC에서 수행하고, 수집 결과만 토큰으로 보호된 운영 API에 전송합니다. 운영 서버에서는 에브리타임 세션 쿠키를 사용하지 않습니다.
 
 ---
 
 ##  사용 방법 (최초 1회)
 
-1. 백엔드 서버 실행
+1. 로컬 환경 변수 설정
+
+   ```text
+   EVERYTIME_CRAWL_ENABLED=true
+   EVERYTIME_HEADLESS=false
+   EVERYTIME_UPLOAD_URL=https://<운영-백엔드>/api/admin/crawl/everytime/lecture/import
+   EVERYTIME_UPLOAD_TOKEN=<운영 EVERYTIME_IMPORT_TOKEN과 같은 값>
+   ```
+
+   토큰은 `.env`나 Git에 저장하지 말고 실행 환경에만 설정합니다.
+
+2. 백엔드 서버 실행
    - 백엔드 서버(`UniwikiApplication`)를 실행합니다.
    - 처음 실행 시 `selenium-java` 관련 라이브러리가 다운로드되므로 약간의 시간이 걸릴 수 있습니다.
 
-2. Swagger에서 API 호출
+3. Swagger에서 API 호출
    - `http://localhost:8080/swagger-ui/index.html` 에 접속합니다.
    - `POST /api/admin/crawl/everytime` API를 찾습니다.
    - Request Body에 아래 양식을 넣고 **Execute(실행)** 버튼을 누릅니다. (이제 `etsid` 값은 필요 없습니다!)
@@ -27,20 +38,21 @@
    }
    ```
 
-3. **크롬 창 팝업 및 수동 로그인**
+4. **크롬 창 팝업 및 수동 로그인**
    - API를 실행하면 모니터 화면에 **'새로운 크롬 브라우저 창'**이 자동으로 팝업됩니다.
    - 에브리타임 메인 화면이 뜨면 당황하지 마시고, **60초 안에 본인의 에타 아이디와 비밀번호를 입력하고 로그인**을 완료해 주세요.
    - *주의: 60초 안에 로그인을 완료하지 않으면 타임아웃 에러가 발생합니다.*
 
-4. **자동 크롤링 진행**
+5. **자동 크롤링 및 운영 업로드**
    - 로그인이 완료되는 즉시, 봇이 화면을 감지하고 지정한 게시판(`boardUrl`)으로 번개처럼 이동합니다.
-   - 화면에 글 목록이 뜨면 데이터를 싹 긁어서 DB에 저장하고, 크롬 창이 스스로 닫힙니다.
+   - 강의평을 수집하면 운영 import API가 중복을 검사한 뒤 `raw_lecture_evaluations`에 저장합니다.
+   - 운영 서버의 기존 워크플로가 개인정보 마스킹, 품질 검사, 위키 초안 생성을 이어서 수행합니다.
 
 ---
 
 ## 그 다음부터는? 
 
-한 번 로그인을 완료했다면, 로그인 정보(세션, 로컬 스토리지 등)가 사용자 PC의 임시 폴더(`C:\temp` 등)에 영구적으로 안전하게 저장됩니다.
+Chrome 프로필은 로컬 임시 디렉터리의 `EverytimeChromeProfile`에 저장됩니다. 운영 서버로 로그인 정보가 전송되지 않습니다.
 
 - 다음번 API 호출부터는 아이디/비밀번호를 입력하실 필요가 전혀 없습니다.
 - API를 호출하면 크롬 창이 뜨자마자 "1초 만에" 자동으로 글을 긁어오고 종료됩니다! 
@@ -89,3 +101,17 @@ DB에 저장된 강의평은 기본 10초 간격으로 다음 과정을 거칩�
 기존 DB에는 `database/migration-lecture-review-workflow.sql`을 한 번 적용해야 합니다.
 초안 작성자 ID와 카테고리는 각각 `LECTURE_REVIEW_AUTHOR_ID`,
 `LECTURE_REVIEW_CATEGORY_NAME` 환경 변수로 변경할 수 있습니다.
+
+## 운영 서버 설정
+
+운영 백엔드에는 다음 값을 설정합니다.
+
+```text
+EVERYTIME_CRAWL_ENABLED=false
+EVERYTIME_IMPORT_TOKEN=<충분히 긴 임의의 비밀값>
+EVERYTIME_SESSION_COOKIES=
+```
+
+- `EVERYTIME_CRAWL_ENABLED=false`는 운영 컨테이너에서 브라우저 크롤링을 차단합니다.
+- import API는 `X-Crawler-Token` 헤더가 운영 토큰과 일치할 때만 데이터를 받습니다.
+- 같은 출처 URL, 강의명, 교수명, 본문 조합은 중복 저장하지 않습니다.

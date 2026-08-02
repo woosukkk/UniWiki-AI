@@ -39,8 +39,12 @@ uniwiki:
     max-attempts: 5
   everytime:
     course-data-path: ${EVERYTIME_COURSE_DATA_PATH:../ai/data/normalized/sejong/software-course-schedules.json}
+    crawl-enabled: ${EVERYTIME_CRAWL_ENABLED:true}
     headless: ${EVERYTIME_HEADLESS:false}
     session-cookies: ${EVERYTIME_SESSION_COOKIES:}
+    upload-url: ${EVERYTIME_UPLOAD_URL:}
+    upload-token: ${EVERYTIME_UPLOAD_TOKEN:}
+    import-token: ${EVERYTIME_IMPORT_TOKEN:}
   lecture-review-workflow:
     interval-ms: ${LECTURE_REVIEW_WORKFLOW_INTERVAL_MS:10000}
     author-id: ${LECTURE_REVIEW_AUTHOR_ID:1}

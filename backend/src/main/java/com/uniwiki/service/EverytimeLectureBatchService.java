@@ -2,8 +2,8 @@ package com.uniwiki.service;
 
 import com.uniwiki.dto.EverytimeLectureBatchRequestDto;
 import com.uniwiki.dto.EverytimeLectureBatchResponseDto;
-import com.uniwiki.entity.RawLectureEvaluation;
-import com.uniwiki.repository.RawLectureEvaluationRepository;
+import com.uniwiki.dto.LectureReviewImportItemDto;
+import com.uniwiki.dto.LectureReviewImportResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
@@ -40,7 +40,7 @@ public class EverytimeLectureBatchService {
     private static final String LECTURE_SEARCH_URL = "https://everytime.kr/lecture";
 
     private final SejongCourseCatalogService courseCatalogService;
-    private final RawLectureEvaluationRepository rawLectureEvaluationRepository;
+    private final LectureReviewTransferService lectureReviewTransferService;
 
     @Value("${uniwiki.everytime.headless:false}")
     private boolean headless;
@@ -128,7 +128,8 @@ public class EverytimeLectureBatchService {
         driver.get(LOGIN_URL);
         try {
             new WebDriverWait(driver, Duration.ofSeconds(headless ? 15 : 60))
-                    .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.my, a.message")));
+                    .until(webDriver -> webDriver.getCurrentUrl().startsWith("https://everytime.kr/")
+                            && !webDriver.getCurrentUrl().contains("/login"));
         } catch (Exception e) {
             throw new IllegalStateException(headless
                     ? "에브리타임 세션 쿠키가 없거나 만료되었습니다."
@@ -218,6 +219,7 @@ public class EverytimeLectureBatchService {
         int saved = 0;
         int duplicates = 0;
         Set<String> seenThisRun = new LinkedHashSet<>();
+        List<LectureReviewImportItemDto> captured = new ArrayList<>();
         for (int page = startPage; page <= endPage; page++) {
             String reviewUrl = lectureUrl + "?tab=article&page=" + page;
             driver.get(reviewUrl);
@@ -236,21 +238,21 @@ public class EverytimeLectureBatchService {
                 int starRating = readStarRating(review);
                 int likesCount = readInteger(review.selectFirst("li.vote, span.vote"));
                 String fingerprint = starRating + "|" + content;
-                if (!seenThisRun.add(fingerprint)
-                        || rawLectureEvaluationRepository.existsBySourceUrlAndCourseNameAndProfessorAndContent(
-                        lectureUrl, target.courseName(), target.professor(), content)) {
+                if (!seenThisRun.add(fingerprint)) {
                     duplicates++;
                     continue;
                 }
-                rawLectureEvaluationRepository.save(new RawLectureEvaluation(
+                captured.add(new LectureReviewImportItemDto(
                         lectureUrl, target.courseName(), target.professor(), starRating, likesCount, content));
-                saved++;
                 newOnPage++;
             }
             if (newOnPage == 0 && page > startPage) {
                 break;
             }
         }
+        LectureReviewImportResponseDto transferResult = lectureReviewTransferService.transfer(captured);
+        saved += transferResult.saved();
+        duplicates += transferResult.duplicates();
         return new CrawlCount(saved, duplicates);
     }
 

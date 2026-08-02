@@ -1,5 +1,6 @@
 package com.uniwiki.controller;
 
+import com.uniwiki.config.LoginUserId;
 import com.uniwiki.service.EverytimeCrawlerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -9,9 +10,17 @@ import com.uniwiki.dto.EverytimeBoardRequestDto;
 import com.uniwiki.dto.EverytimeLectureRequestDto;
 import com.uniwiki.dto.EverytimeLectureBatchRequestDto;
 import com.uniwiki.dto.EverytimeLectureBatchResponseDto;
+import com.uniwiki.dto.LectureReviewImportRequestDto;
+import com.uniwiki.dto.LectureReviewImportResponseDto;
 import com.uniwiki.service.EverytimeLectureBatchService;
+import com.uniwiki.service.LectureReviewImportService;
 import com.uniwiki.service.LectureReviewWorkflowService;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 
 @RestController
 @RequestMapping("/api/admin/crawl")
@@ -22,10 +31,20 @@ public class CrawlerController {
     private final com.uniwiki.repository.RawLectureEvaluationRepository rawLectureEvaluationRepository;
     private final com.uniwiki.repository.RawCommunityPostRepository rawCommunityPostRepository;
     private final EverytimeLectureBatchService everytimeLectureBatchService;
+    private final LectureReviewImportService lectureReviewImportService;
     private final LectureReviewWorkflowService lectureReviewWorkflowService;
 
+    @Value("${uniwiki.everytime.crawl-enabled:true}")
+    private boolean crawlEnabled;
+
+    @Value("${uniwiki.everytime.import-token:}")
+    private String importToken;
+
     @PostMapping("/everytime/board")
-    public ResponseEntity<String> crawlEverytimeBoard(@RequestBody EverytimeBoardRequestDto requestDto) {
+    public ResponseEntity<String> crawlEverytimeBoard(
+            @LoginUserId Long userId,
+            @RequestBody EverytimeBoardRequestDto requestDto) {
+        requireCrawlEnabled();
         if (requestDto.getBoardUrl() == null) {
             return ResponseEntity.badRequest().body("크롤링할 게시판 URL이 필요합니다.");
         }
@@ -49,7 +68,10 @@ public class CrawlerController {
     }
 
     @PostMapping("/everytime/lecture")
-    public ResponseEntity<String> crawlEverytimeLecture(@RequestBody EverytimeLectureRequestDto requestDto) {
+    public ResponseEntity<String> crawlEverytimeLecture(
+            @LoginUserId Long userId,
+            @RequestBody EverytimeLectureRequestDto requestDto) {
+        requireCrawlEnabled();
         if (requestDto.getLectureUrl() == null) {
             return ResponseEntity.badRequest().body("크롤링할 강의평가 URL이 필요합니다.");
         }
@@ -71,18 +93,31 @@ public class CrawlerController {
 
     @PostMapping("/everytime/lecture/batch")
     public ResponseEntity<EverytimeLectureBatchResponseDto> crawlEverytimeLectures(
+            @LoginUserId Long userId,
             @Valid @RequestBody EverytimeLectureBatchRequestDto requestDto
     ) {
+        requireCrawlEnabled();
         return ResponseEntity.ok(everytimeLectureBatchService.crawl(requestDto));
     }
 
+    @PostMapping("/everytime/lecture/import")
+    public ResponseEntity<LectureReviewImportResponseDto> importEverytimeLectures(
+            @RequestHeader("X-Crawler-Token") String crawlerToken,
+            @Valid @RequestBody LectureReviewImportRequestDto requestDto
+    ) {
+        requireValidImportToken(crawlerToken);
+        return ResponseEntity.ok(lectureReviewImportService.importReviews(requestDto.reviews()));
+    }
+
     @PostMapping("/everytime/lecture/process")
-    public ResponseEntity<LectureReviewWorkflowService.Result> processEverytimeLectures() {
+    public ResponseEntity<LectureReviewWorkflowService.Result> processEverytimeLectures(
+            @LoginUserId Long userId) {
         return ResponseEntity.ok(lectureReviewWorkflowService.processPending());
     }
     
     @GetMapping("/everytime/board")
-    public ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAllRawCommunityPosts() {
+    public ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAllRawCommunityPosts(
+            @LoginUserId Long userId) {
         java.util.List<java.util.Map<String, Object>> result = new java.util.ArrayList<>();
         for (com.uniwiki.entity.RawCommunityPost post : rawCommunityPostRepository.findAll()) {
             java.util.Map<String, Object> map = new java.util.HashMap<>();
@@ -101,7 +136,8 @@ public class CrawlerController {
     }
 
     @GetMapping("/everytime/lecture")
-    public ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAllRawLectureEvaluations() {
+    public ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAllRawLectureEvaluations(
+            @LoginUserId Long userId) {
         java.util.List<java.util.Map<String, Object>> result = new java.util.ArrayList<>();
         for (com.uniwiki.entity.RawLectureEvaluation eval : rawLectureEvaluationRepository.findAll()) {
             java.util.Map<String, Object> map = new java.util.HashMap<>();
@@ -121,5 +157,25 @@ public class CrawlerController {
             result.add(map);
         }
         return ResponseEntity.ok(result);
+    }
+
+    private void requireValidImportToken(String suppliedToken) {
+        if (importToken.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Lecture review import is not configured");
+        }
+        boolean matches = MessageDigest.isEqual(
+                importToken.getBytes(StandardCharsets.UTF_8),
+                suppliedToken.getBytes(StandardCharsets.UTF_8));
+        if (!matches) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid crawler token");
+        }
+    }
+
+    private void requireCrawlEnabled() {
+        if (!crawlEnabled) {
+            throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE,
+                    "Everytime crawling is disabled on this server");
+        }
     }
 }
