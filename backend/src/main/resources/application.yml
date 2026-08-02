@@ -7,7 +7,7 @@ spring:
 
     url: ${DB_URL:jdbc:mysql://localhost:3306/uniwiki_ai?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:han@1009}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -20,9 +20,14 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
 server:
-  port: 8080
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
 
 uniwiki:
+  jwt:
+    secret: ${JWT_SECRET:local-development-jwt-secret-change-before-deploy}
+  cors:
+    allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   promotion:
     like-threshold: 3
     category-name: FAQ
