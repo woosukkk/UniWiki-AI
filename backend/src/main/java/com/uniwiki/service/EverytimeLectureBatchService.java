@@ -11,6 +11,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Cookie;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -19,6 +20,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -41,6 +43,12 @@ public class EverytimeLectureBatchService {
 
     private final SejongCourseCatalogService courseCatalogService;
     private final RawLectureEvaluationRepository rawLectureEvaluationRepository;
+
+    @Value("${uniwiki.everytime.headless:false}")
+    private boolean headless;
+
+    @Value("${uniwiki.everytime.session-cookies:}")
+    private String sessionCookies;
 
     public EverytimeLectureBatchResponseDto crawl(EverytimeLectureBatchRequestDto request) {
         List<SejongCourseCatalogService.CourseTarget> targets = courseCatalogService.loadTargets(
@@ -95,13 +103,33 @@ public class EverytimeLectureBatchService {
         options.addArguments("user-data-dir=" + profilePath);
         options.addArguments("--disable-gpu", "--window-size=1920,1080", "--no-sandbox", "--disable-dev-shm-usage");
         options.addArguments("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+        if (headless) {
+            options.addArguments("--headless=new");
+            options.setBinary("/usr/bin/chromium");
+        }
         return options;
     }
 
     private void waitForLogin(WebDriver driver) {
+        if (!sessionCookies.isBlank()) {
+            driver.get("https://everytime.kr/");
+            for (String part : sessionCookies.split(";")) {
+                String[] pair = part.trim().split("=", 2);
+                if (pair.length == 2 && !pair[0].isBlank() && !pair[1].isBlank()) {
+                    driver.manage().addCookie(new Cookie(pair[0].trim(), pair[1].trim()));
+                }
+            }
+            driver.navigate().refresh();
+        }
         driver.get(LOGIN_URL);
-        new WebDriverWait(driver, Duration.ofSeconds(60))
-                .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.my, a.message")));
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(headless ? 15 : 60))
+                    .until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.my, a.message")));
+        } catch (Exception e) {
+            throw new IllegalStateException(headless
+                    ? "에브리타임 세션 쿠키가 없거나 만료되었습니다."
+                    : "60초 안에 에브리타임 로그인이 완료되지 않았습니다.", e);
+        }
     }
 
     private SearchResult findLecture(WebDriver driver, SejongCourseCatalogService.CourseTarget target) {

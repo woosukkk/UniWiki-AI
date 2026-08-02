@@ -31,7 +31,7 @@ public class WikiPost {
     private String title;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @Column(length = 500)
