@@ -34,3 +34,8 @@ uniwiki:
     max-attempts: 5
   everytime:
     course-data-path: ${EVERYTIME_COURSE_DATA_PATH:../ai/data/normalized/sejong/software-course-schedules.json}
+  lecture-review-workflow:
+    interval-ms: ${LECTURE_REVIEW_WORKFLOW_INTERVAL_MS:10000}
+    author-id: ${LECTURE_REVIEW_AUTHOR_ID:1}
+    category-name: ${LECTURE_REVIEW_CATEGORY_NAME:교과목}
+    max-reviews-per-draft: ${LECTURE_REVIEW_MAX_REVIEWS_PER_DRAFT:100}

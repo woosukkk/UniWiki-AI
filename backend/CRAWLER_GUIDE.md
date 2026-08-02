@@ -72,3 +72,20 @@
 - 같은 출처·강의명·교수명·본문의 평가는 다시 저장하지 않습니다.
 - 시간표 경로가 다른 환경에서는 `EVERYTIME_COURSE_DATA_PATH` 환경 변수로 지정합니다.
 - 실행 중에는 같은 `EverytimeChromeProfile`을 사용하는 다른 Chrome 크롤러를 실행하지 마세요.
+
+## 강의평 자동 처리 워크플로
+
+DB에 저장된 강의평은 기본 10초 간격으로 다음 과정을 거칩니다.
+
+1. 별점과 최소 정보량을 검사한다.
+2. 이메일, 전화번호, 학번, 외부 링크를 마스킹한다.
+3. 모욕적 표현이나 저품질 리뷰를 제외한다.
+4. 통과한 리뷰를 강의명·교수명별 위키 `PENDING` 초안으로 집계한다.
+5. 관리자가 초안을 검토해 `APPROVED`로 변경하면 기존 벡터 동기화 큐가 AI 서비스에 반영한다.
+
+즉시 수동 실행하려면 `POST /api/admin/crawl/everytime/lecture/process`를 호출합니다.
+처리 결과와 제외 사유는 `GET /api/admin/crawl/everytime/lecture`에서 확인할 수 있습니다.
+
+기존 DB에는 `database/migration-lecture-review-workflow.sql`을 한 번 적용해야 합니다.
+초안 작성자 ID와 카테고리는 각각 `LECTURE_REVIEW_AUTHOR_ID`,
+`LECTURE_REVIEW_CATEGORY_NAME` 환경 변수로 변경할 수 있습니다.

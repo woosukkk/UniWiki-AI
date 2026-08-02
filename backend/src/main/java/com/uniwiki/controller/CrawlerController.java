@@ -10,6 +10,7 @@ import com.uniwiki.dto.EverytimeLectureRequestDto;
 import com.uniwiki.dto.EverytimeLectureBatchRequestDto;
 import com.uniwiki.dto.EverytimeLectureBatchResponseDto;
 import com.uniwiki.service.EverytimeLectureBatchService;
+import com.uniwiki.service.LectureReviewWorkflowService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -21,6 +22,7 @@ public class CrawlerController {
     private final com.uniwiki.repository.RawLectureEvaluationRepository rawLectureEvaluationRepository;
     private final com.uniwiki.repository.RawCommunityPostRepository rawCommunityPostRepository;
     private final EverytimeLectureBatchService everytimeLectureBatchService;
+    private final LectureReviewWorkflowService lectureReviewWorkflowService;
 
     @PostMapping("/everytime/board")
     public ResponseEntity<String> crawlEverytimeBoard(@RequestBody EverytimeBoardRequestDto requestDto) {
@@ -73,6 +75,11 @@ public class CrawlerController {
     ) {
         return ResponseEntity.ok(everytimeLectureBatchService.crawl(requestDto));
     }
+
+    @PostMapping("/everytime/lecture/process")
+    public ResponseEntity<LectureReviewWorkflowService.Result> processEverytimeLectures() {
+        return ResponseEntity.ok(lectureReviewWorkflowService.processPending());
+    }
     
     @GetMapping("/everytime/board")
     public ResponseEntity<java.util.List<java.util.Map<String, Object>>> getAllRawCommunityPosts() {
@@ -106,6 +113,10 @@ public class CrawlerController {
             map.put("content", eval.getContent());
             map.put("likesCount", eval.getLikesCount());
             map.put("isProcessed", eval.isProcessed());
+            map.put("processingStatus", eval.getProcessingStatus());
+            map.put("sanitizedContent", eval.getSanitizedContent());
+            map.put("processingNote", eval.getProcessingNote());
+            map.put("processedAt", eval.getProcessedAt() != null ? eval.getProcessedAt().toString() : null);
             map.put("crawledAt", eval.getCrawledAt() != null ? eval.getCrawledAt().toString() : null);
             result.add(map);
         }
