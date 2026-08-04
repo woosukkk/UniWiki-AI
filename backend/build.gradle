@@ -42,6 +42,8 @@ dependencies {
     
     // HTML 파싱 (에브리타임 크롤링용)
     implementation 'org.jsoup:jsoup:1.17.2'
+    implementation 'org.apache.pdfbox:pdfbox:3.0.5'
+    implementation 'org.apache.poi:poi-ooxml:5.4.1'
     
     // 셀레니움 (실제 크롬 브라우저 자동화용)
     implementation 'org.seleniumhq.selenium:selenium-java:4.19.1'

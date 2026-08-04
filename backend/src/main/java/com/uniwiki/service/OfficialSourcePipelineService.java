@@ -37,6 +37,7 @@ public class OfficialSourcePipelineService {
     private final UserRepository userRepository;
     private final WikiPostRepository wikiPostRepository;
     private final WikiVectorSyncService vectorSyncService;
+    private final OfficialAttachmentService attachmentService;
 
     @Value("${uniwiki.official-sources.allowed-host-suffixes:sejong.ac.kr}")
     private String allowedHostSuffixes;
@@ -95,19 +96,30 @@ public class OfficialSourcePipelineService {
                 try {
                     Document articlePage = fetch(articleUrl);
                     String title = requiredText(articlePage, source.getTitleSelector(), "제목");
-                    String content = requiredContent(articlePage, source.getContentSelector());
+                    List<OfficialAttachmentService.CollectedAttachment> attachments =
+                            attachmentService.collect(articlePage);
+                    String content = requiredContent(articlePage, source.getContentSelector())
+                            + attachmentService.render(attachments);
                     String hash = hash(title + "\n" + content);
                     RawOfficialDocument raw = rawRepository
                             .findByOfficialSource_IdAndSourceUrl(source.getId(), articleUrl)
                             .orElse(null);
                     if (raw == null) {
                         raw = rawRepository.save(new RawOfficialDocument(source, articleUrl, title, content, hash));
+                        attachmentService.synchronize(raw, attachments);
                         createOrUpdateWiki(raw);
                         created++;
                     } else if (raw.updateIfChanged(title, content, hash)) {
+                        attachmentService.synchronize(raw, attachments);
+                        createOrUpdateWiki(raw);
+                        changed++;
+                    } else if (source.isAutoPublish()
+                            && raw.getProcessingStatus() != OfficialDocumentStatus.PUBLISHED) {
+                        attachmentService.synchronize(raw, attachments);
                         createOrUpdateWiki(raw);
                         changed++;
                     } else {
+                        attachmentService.synchronize(raw, attachments);
                         unchanged++;
                     }
                 } catch (Exception exception) {

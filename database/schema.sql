@@ -258,3 +258,21 @@ CREATE TABLE official_wiki_documents (
     CONSTRAINT fk_official_wiki_raw FOREIGN KEY (raw_document_id) REFERENCES raw_official_documents(id),
     CONSTRAINT fk_official_wiki_post FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id) ON DELETE CASCADE
 );
+
+CREATE TABLE official_attachments (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    raw_document_id BIGINT NOT NULL,
+    source_url VARCHAR(1000) NOT NULL,
+    file_name VARCHAR(500) NOT NULL,
+    content_type VARCHAR(150),
+    file_size BIGINT NOT NULL,
+    content_hash CHAR(64) NOT NULL,
+    extraction_status VARCHAR(20) NOT NULL,
+    extracted_text MEDIUMTEXT,
+    extraction_error VARCHAR(1000),
+    first_collected_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_collected_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uq_official_attachment_url UNIQUE (raw_document_id, source_url),
+    CONSTRAINT fk_official_attachment_raw FOREIGN KEY (raw_document_id)
+        REFERENCES raw_official_documents(id) ON DELETE CASCADE
+);

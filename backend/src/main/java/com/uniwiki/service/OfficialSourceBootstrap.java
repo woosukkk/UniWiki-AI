@@ -50,7 +50,11 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
     public void run(ApplicationArguments args) {
         int registered = 0;
         for (DefaultSource definition : defaultSources()) {
-            if (sourceRepository.existsByName(definition.name())) continue;
+            OfficialSource existing = sourceRepository.findByName(definition.name()).orElse(null);
+            if (existing != null) {
+                existing.enableAutoPublish();
+                continue;
+            }
             Category category = resolveCategory(definition);
             if (category == null) {
                 log.warn("Skipping official source bootstrap because category is missing: source={}, category={}",
@@ -64,7 +68,7 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
                     definition.articleLinkSelector(),
                     TITLE_SELECTOR,
                     CONTENT_SELECTOR,
-                    false
+                    true
             ));
             registered++;
         }

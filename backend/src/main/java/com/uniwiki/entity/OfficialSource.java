@@ -81,6 +81,10 @@ public class OfficialSource {
         this.lastError = error == null ? "Unknown error" : error.substring(0, Math.min(1000, error.length()));
     }
 
+    public void enableAutoPublish() {
+        this.autoPublish = true;
+    }
+
     @PrePersist
     private void prePersist() {
         LocalDateTime now = LocalDateTime.now();

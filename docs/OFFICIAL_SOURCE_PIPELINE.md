@@ -18,7 +18,7 @@
 
 ## 기본 출처
 
-`OFFICIAL_SOURCE_BOOTSTRAP_ENABLED=true`이면 다음 출처를 이름 기준으로 중복 없이 등록한다. 모두 `autoPublish=false`이다.
+`OFFICIAL_SOURCE_BOOTSTRAP_ENABLED=true`이면 다음 출처를 이름 기준으로 중복 없이 등록한다. 기존 출처를 포함해 모두 자동 게시로 설정한다.
 
 | 출처 | 카테고리 | URL |
 |---|---|---|
@@ -28,6 +28,19 @@
 | 세종대학교 소프트웨어학과 공지 | 학교생활 | `https://dept.sejong.ac.kr/softwaredpt/board/notice.do` |
 
 카테고리 ID가 설정돼 있으면 ID를 우선 사용하고, 없으면 정상 한글 이름으로 조회한다. 둘 다 찾지 못하면 해당 출처는 건너뛰고 경고 로그를 남긴다. `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`이면 등록 직후 활성 출처를 한 번 수집한다.
+
+## 첨부파일 처리
+
+게시글에 연결된 첨부파일은 원문과 함께 다운로드하며 `official_attachments`에 다음 정보를 저장한다.
+
+- 파일명, 원문 URL, MIME 형식, 크기
+- SHA-256 해시와 마지막 확인 시각
+- 텍스트 추출 상태와 오류
+- 추출된 텍스트
+
+PDF, XLS, XLSX, DOCX, TXT, CSV의 텍스트를 추출한다. 지원하지 않는 형식도 파일명·URL·해시와 `UNSUPPORTED` 상태를 저장한다. 이미지 또는 스캔 PDF는 텍스트가 없을 수 있으며 현재 OCR은 수행하지 않는다.
+
+기본 제한은 게시글당 10개, 파일당 20 MiB, 파일당 추출 텍스트 50,000자다. 추출 결과와 파일 해시는 위키 본문에도 포함되므로 첨부파일 변경도 위키 및 벡터 동기화 대상이 된다.
 
 ## 보안 범위
 
@@ -54,7 +67,7 @@
   "articleLinkSelector": ".b-td-title .b-title-box > a[href*='mode=view'][href*='articleNo=']",
   "titleSelector": ".b-title-box > .b-title",
   "contentSelector": ".b-content-box",
-  "autoPublish": false
+  "autoPublish": true
 }
 ```
 
@@ -75,6 +88,9 @@ OFFICIAL_SOURCE_ACADEMIC_CATEGORY_ID=0
 OFFICIAL_SOURCE_CAREER_CATEGORY_ID=0
 OFFICIAL_SOURCE_SCHOLARSHIP_CATEGORY_ID=0
 OFFICIAL_SOURCE_CAMPUS_LIFE_CATEGORY_ID=0
+OFFICIAL_ATTACHMENT_MAX_COUNT=10
+OFFICIAL_ATTACHMENT_MAX_BYTES=20971520
+OFFICIAL_ATTACHMENT_MAX_TEXT_LENGTH=50000
 ```
 
-초기 운영 확인 때는 `OFFICIAL_SOURCE_MAX_ARTICLES=5`, `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`로 소량 수집한 뒤 결과를 검수한다. 이후 시작 시 수집을 끄고 스케줄러를 켜는 것을 권장한다.
+초기 운영 확인 때는 `OFFICIAL_SOURCE_MAX_ARTICLES=5`, `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`로 소량 수집한 뒤 결과를 확인한다. 이후 시작 시 수집을 끄고 스케줄러를 켠다. 등록된 공식 출처는 수집 직후 게시되고 벡터 동기화 작업에 들어간다.
