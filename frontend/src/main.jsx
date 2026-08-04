@@ -9,6 +9,7 @@ import './styles/tokens.css';
 import './styles.css';
 import './styles/layout.css';
 import './styles/home.css';
+import './styles/data-map.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

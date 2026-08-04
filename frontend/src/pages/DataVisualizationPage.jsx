@@ -1,110 +1,509 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-const palette = {
-  '교과정보': '#315c49',
-  '학교정보': '#5579c6',
-  '학교생활': '#dc6b45',
-  '학생지원': '#a45db5',
-  '진로·취업': '#d09a25',
-  'SW·인증': '#2b9b91',
-};
+const categoryDefinitions = [
+  {
+    key: 'curriculum',
+    label: '교과정보',
+    colorClass: 'data-category-green',
+  },
+  {
+    key: 'academic',
+    label: '학교정보',
+    colorClass: 'data-category-blue',
+  },
+  {
+    key: 'campus',
+    label: '학교생활',
+    colorClass: 'data-category-orange',
+  },
+  {
+    key: 'support',
+    label: '학생지원',
+    colorClass: 'data-category-purple',
+  },
+  {
+    key: 'career',
+    label: '진로·취업',
+    colorClass: 'data-category-yellow',
+  },
+  {
+    key: 'software',
+    label: 'SW·인증',
+    colorClass: 'data-category-teal',
+  },
+];
 
-function levelLabel(level) {
-  return { scarce: '부족', balanced: '보통', dense: '많음' }[level] || level;
-}
+const knowledgeNodes = [
+  {
+    id: 1,
+    label: '시간표',
+    value: 206,
+    category: 'curriculum',
+    size: 'large',
+    x: 15,
+    y: 24,
+    description: '학기별 강의 시간표와 수업 운영 정보',
+  },
+  {
+    id: 2,
+    label: '교과과정',
+    value: 229,
+    category: 'curriculum',
+    size: 'xlarge',
+    x: 30,
+    y: 42,
+    description: '전공별 교육과정, 필수 및 선택 과목 정보',
+  },
+  {
+    id: 3,
+    label: '학사제도',
+    value: 8,
+    category: 'academic',
+    size: 'small',
+    x: 43,
+    y: 14,
+    description: '휴학, 복학, 전과 등 학사 제도 관련 정보',
+  },
+  {
+    id: 4,
+    label: '수강편람',
+    value: 6,
+    category: 'academic',
+    size: 'small',
+    x: 56,
+    y: 25,
+    description: '수강신청 안내와 과목별 수강 정보',
+  },
+  {
+    id: 5,
+    label: '수강신청',
+    value: 3,
+    category: 'academic',
+    size: 'small',
+    x: 50,
+    y: 45,
+    description: '수강신청 일정, 절차 및 유의사항',
+  },
+  {
+    id: 6,
+    label: '학과공지',
+    value: 29,
+    category: 'campus',
+    size: 'medium',
+    x: 70,
+    y: 18,
+    description: '학과별 공지사항과 주요 안내',
+  },
+  {
+    id: 7,
+    label: '장학',
+    value: 104,
+    category: 'support',
+    size: 'large',
+    x: 77,
+    y: 48,
+    description: '교내외 장학금 종류와 신청 정보',
+  },
+  {
+    id: 8,
+    label: '현장실습',
+    value: 87,
+    category: 'support',
+    size: 'medium',
+    x: 82,
+    y: 70,
+    description: '현장실습, 인턴십, 산학협력 관련 정보',
+  },
+  {
+    id: 9,
+    label: '취업공지',
+    value: 510,
+    category: 'career',
+    size: 'xxlarge',
+    x: 40,
+    y: 72,
+    description: '채용공고, 취업지원, 기업설명회 정보',
+  },
+  {
+    id: 10,
+    label: '프로그램',
+    value: 49,
+    category: 'career',
+    size: 'medium',
+    x: 59,
+    y: 77,
+    description: '취업 및 진로 관련 비교과 프로그램',
+  },
+  {
+    id: 11,
+    label: 'SW사업',
+    value: 24,
+    category: 'software',
+    size: 'medium',
+    x: 17,
+    y: 70,
+    description: 'SW중심대학사업 및 교육 프로그램',
+  },
+  {
+    id: 12,
+    label: 'TOSC',
+    value: 18,
+    category: 'software',
+    size: 'small',
+    x: 27,
+    y: 83,
+    description: 'SW 역량 인증 및 시험 관련 정보',
+  },
+];
+
+const coverageItems = [
+  {
+    key: 'curriculum',
+    label: '교과정보',
+    value: 435,
+    status: '많음',
+    statusClass: 'coverage-status-high',
+  },
+  {
+    key: 'academic',
+    label: '학교정보',
+    value: 17,
+    status: '부족',
+    statusClass: 'coverage-status-low',
+  },
+  {
+    key: 'campus',
+    label: '학교생활',
+    value: 29,
+    status: '부족',
+    statusClass: 'coverage-status-low',
+  },
+  {
+    key: 'support',
+    label: '학생지원',
+    value: 171,
+    status: '보통',
+    statusClass: 'coverage-status-medium',
+  },
+  {
+    key: 'career',
+    label: '진로·취업',
+    value: 559,
+    status: '많음',
+    statusClass: 'coverage-status-high',
+  },
+  {
+    key: 'software',
+    label: 'SW·인증',
+    value: 42,
+    status: '부족',
+    statusClass: 'coverage-status-low',
+  },
+];
+
+const summaryItems = [
+  {
+    label: 'TOTAL RECORDS',
+    value: '1,253',
+  },
+  {
+    label: 'DATA SOURCES',
+    value: '12',
+  },
+  {
+    label: 'LOW COVERAGE',
+    value: '3',
+  },
+  {
+    label: 'LAST UPDATED',
+    value: '2026.07.31',
+  },
+];
+
+const maxCoverage = Math.max(...coverageItems.map((item) => item.value));
 
 export function DataVisualizationPage() {
-  const [data, setData] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState('전체');
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [error, setError] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
+  const [selectedNode, setSelectedNode] = useState(knowledgeNodes[0]);
 
-  useEffect(() => {
-    fetch('/data/knowledge-map.json')
-      .then((response) => {
-        if (!response.ok) throw new Error('시각화 데이터를 불러오지 못했습니다.');
-        return response.json();
-      })
-      .then(setData)
-      .catch((requestError) => setError(requestError.message));
-  }, []);
+  const filteredNodes = useMemo(() => {
+    if (activeCategory === 'all') {
+      return knowledgeNodes;
+    }
 
-  const visibleNodes = useMemo(() => {
-    if (!data) return [];
-    return selectedCategory === '전체'
-      ? data.nodes
-      : data.nodes.filter((node) => node.category === selectedCategory);
-  }, [data, selectedCategory]);
+    return knowledgeNodes.filter(
+      (node) => node.category === activeCategory,
+    );
+  }, [activeCategory]);
 
-  if (error) return <main className="coverage-page container"><p>{error}</p></main>;
-  if (!data) return <main className="coverage-page container"><p>데이터 지도를 준비하고 있습니다.</p></main>;
-
-  const maxCount = Math.max(...data.categories.map((category) => category.count));
+  function findCategory(categoryKey) {
+    return categoryDefinitions.find(
+      (category) => category.key === categoryKey,
+    );
+  }
 
   return (
-    <main className="coverage-page container">
-      <header className="coverage-heading">
-        <div><span>KNOWLEDGE COVERAGE</span><h1>세종대 정보 지형도</h1></div>
-        <p>색은 정보 영역, 원의 크기는 현재 확보한 레코드 수를 나타냅니다. 가까운 위치는 같은 분류에 속한다는 뜻이며 아직 실제 임베딩 거리는 아닙니다.</p>
-      </header>
+    <div className="data-map-page">
+      <section className="data-map-hero">
+        <div className="data-map-content-width data-map-hero-inner">
+          <div className="data-map-hero-copy">
+            <span className="data-map-section-label">
+              KNOWLEDGE COVERAGE
+            </span>
 
-      <section className="coverage-summary">
-        <article><strong>{data.totalRecords.toLocaleString()}</strong><span>전체 레코드</span></article>
-        <article><strong>{data.nodes.length}</strong><span>데이터 소스</span></article>
-        <article><strong>{data.categories.filter((item) => item.level === 'scarce').length}</strong><span>보강 필요 영역</span></article>
-        <article><strong>{data.generatedAt}</strong><span>집계 기준일</span></article>
+            <h1>세종대 정보 지형도</h1>
+
+            <p>
+              색은 정보 영역을 나타내며, 원의 크기는 해당 영역에
+              축적된 정보의 양을 의미합니다.
+              <br />
+              지식을 함께 만들고, 아직 부족한 정보 영역을 확인해보세요.
+            </p>
+          </div>
+
+          <div className="data-map-hero-graphic" aria-hidden="true">
+            <span className="data-map-orbit orbit-one" />
+            <span className="data-map-orbit orbit-two" />
+            <span className="data-map-orbit orbit-three" />
+
+            <strong>U</strong>
+
+            <span className="data-map-hero-dot dot-one" />
+            <span className="data-map-hero-dot dot-two" />
+            <span className="data-map-hero-dot dot-three" />
+            <span className="data-map-hero-dot dot-four" />
+
+            <span className="data-map-chart-bar bar-one" />
+            <span className="data-map-chart-bar bar-two" />
+            <span className="data-map-chart-bar bar-three" />
+          </div>
+        </div>
       </section>
 
-      <section className="coverage-grid">
-        <div className="coverage-map-panel">
-          <div className="coverage-toolbar">
-            {['전체', ...data.categories.map((item) => item.name)].map((category) => (
-              <button key={category} className={selectedCategory === category ? 'active' : ''} onClick={() => setSelectedCategory(category)}>{category}</button>
-            ))}
+      <section className="data-map-summary">
+        <div className="data-map-content-width data-map-summary-grid">
+          {summaryItems.map((item) => (
+            <article className="data-map-summary-card" key={item.label}>
+              <strong>{item.value}</strong>
+              <span>{item.label}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="data-map-main-section">
+        <div className="data-map-content-width data-map-main-layout">
+          <div className="data-map-board">
+            <div className="data-map-board-header">
+              <div>
+                <span className="data-map-section-label">
+                  INFORMATION LANDSCAPE
+                </span>
+                <h2>정보 영역 분포 지도</h2>
+              </div>
+
+              <p>
+                카테고리를 선택하거나 원을 눌러
+                <br />
+                상세 정보를 확인할 수 있습니다.
+              </p>
+            </div>
+
+            <div
+              className="data-map-category-tabs"
+              aria-label="데이터 카테고리"
+            >
+              <button
+                type="button"
+                className={
+                  activeCategory === 'all'
+                    ? 'data-map-category-button active'
+                    : 'data-map-category-button'
+                }
+                onClick={() => setActiveCategory('all')}
+              >
+                전체
+              </button>
+
+              {categoryDefinitions.map((category) => (
+                <button
+                  type="button"
+                  key={category.key}
+                  className={
+                    activeCategory === category.key
+                      ? 'data-map-category-button active'
+                      : 'data-map-category-button'
+                  }
+                  onClick={() => setActiveCategory(category.key)}
+                >
+                  {category.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="data-map-visualization">
+              <span className="data-map-grid-line line-one" />
+              <span className="data-map-grid-line line-two" />
+              <span className="data-map-grid-line line-three" />
+
+              {filteredNodes.map((node) => {
+                const category = findCategory(node.category);
+
+                return (
+                  <button
+                    type="button"
+                    key={node.id}
+                    className={[
+                      'data-map-node',
+                      `data-map-node-${node.size}`,
+                      category?.colorClass,
+                      selectedNode?.id === node.id
+                        ? 'data-map-node-selected'
+                        : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                    style={{
+                      left: `${node.x}%`,
+                      top: `${node.y}%`,
+                    }}
+                    onClick={() => setSelectedNode(node)}
+                    aria-label={`${node.label}, ${node.value}건`}
+                  >
+                    <strong>{node.label}</strong>
+                    <span>{node.value}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="data-map-legend">
+              {categoryDefinitions.map((category) => (
+                <div key={category.key}>
+                  <span
+                    className={[
+                      'data-map-legend-dot',
+                      category.colorClass,
+                    ].join(' ')}
+                  />
+                  <span>{category.label}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <svg className="coverage-map" viewBox="0 0 900 540" role="img" aria-label="분류별 데이터 분포 지도">
-            <defs><filter id="node-shadow"><feDropShadow dx="0" dy="5" stdDeviation="6" floodOpacity=".18" /></filter></defs>
-            {visibleNodes.map((node) => {
-              const radius = 15 + Math.sqrt(node.count) * 1.45;
+
+          <aside className="data-map-detail-panel">
+            <span className="data-map-detail-kicker">
+              SELECTED DATA
+            </span>
+
+            <div className="data-map-detail-index">
+              {String(selectedNode.id).padStart(2, '0')}
+            </div>
+
+            <h2>{selectedNode.label}</h2>
+
+            <p>{selectedNode.description}</p>
+
+            <dl>
+              <div>
+                <dt>RECORDS</dt>
+                <dd>{selectedNode.value}</dd>
+              </div>
+
+              <div>
+                <dt>CATEGORY</dt>
+                <dd>
+                  {findCategory(selectedNode.category)?.label}
+                </dd>
+              </div>
+
+              <div>
+                <dt>STATUS</dt>
+                <dd>
+                  {selectedNode.value < 50 ? 'LOW' : 'ACTIVE'}
+                </dd>
+              </div>
+            </dl>
+
+            <div className="data-map-detail-guide">
+              <span className="data-map-detail-guide-dot" />
+
+              <div>
+                <strong>HOW TO READ</strong>
+                <p>
+                  원의 크기는 기록 수를, 색상은 정보 카테고리를
+                  의미합니다.
+                </p>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section className="data-map-coverage-section">
+        <div className="data-map-content-width">
+          <div className="data-map-coverage-header">
+            <div>
+              <span className="data-map-section-label">
+                COVERAGE BALANCE
+              </span>
+              <h2>영역별 데이터 충족도</h2>
+            </div>
+
+            <p>
+              현재 50건 미만인 영역을
+              <br />
+              ‘부족’으로 표시합니다.
+            </p>
+          </div>
+
+          <div className="data-map-coverage-list">
+            {coverageItems.map((item) => {
+              const category = findCategory(item.key);
+              const ratio = (item.value / maxCoverage) * 100;
+
               return (
-                <g key={node.id} className="coverage-node" onClick={() => setSelectedNode(node)} tabIndex="0">
-                  <circle cx={node.x} cy={node.y} r={radius} fill={palette[node.category]} filter="url(#node-shadow)" opacity={selectedNode?.id === node.id ? 1 : .86} />
-                  <text x={node.x} y={node.y - 3} textAnchor="middle">{node.shortLabel}</text>
-                  <text className="coverage-node-count" x={node.x} y={node.y + 14} textAnchor="middle">{node.count.toLocaleString()}</text>
-                </g>
+                <div
+                  className="data-map-coverage-row"
+                  key={item.key}
+                >
+                  <div className="data-map-coverage-label">
+                    <strong>{item.label}</strong>
+                    <span className={item.statusClass}>
+                      {item.status}
+                    </span>
+                  </div>
+
+                  <div className="data-map-progress">
+                    <span
+                      className={[
+                        'data-map-progress-value',
+                        category?.colorClass,
+                      ]
+                        .filter(Boolean)
+                        .join(' ')}
+                      style={{
+                        width: `${Math.max(ratio, 4)}%`,
+                      }}
+                    />
+                  </div>
+
+                  <strong className="data-map-coverage-value">
+                    {item.value}건
+                  </strong>
+                </div>
               );
             })}
-          </svg>
-          <div className="coverage-legend">{Object.entries(palette).map(([name, color]) => <span key={name}><i style={{ background: color }} />{name}</span>)}</div>
+          </div>
+
+          <p className="data-map-coverage-note">
+            ※ 현재 50건 미만인 영역은 ‘부족’으로 표시됩니다.
+            원천 데이터 간 일부 중복이 있어 실제 문서 수와 다를 수
+            있습니다.
+          </p>
         </div>
-
-        <aside className="coverage-detail">
-          {selectedNode ? (
-            <>
-              <span className="coverage-kicker">{selectedNode.category}</span>
-              <h2>{selectedNode.label}</h2>
-              <strong>{selectedNode.count.toLocaleString()}건</strong>
-              <p>{selectedNode.description}</p>
-              <small>수집 범위: {selectedNode.range}</small>
-              {selectedNode.source && <a href={selectedNode.source} target="_blank" rel="noreferrer">공식 출처 보기 ↗</a>}
-            </>
-          ) : (
-            <><span className="coverage-kicker">HOW TO READ</span><h2>원을 선택해보세요</h2><p>데이터 출처, 수집 범위와 현재 보유량을 확인할 수 있습니다.</p></>
-          )}
-        </aside>
       </section>
-
-      <section className="coverage-bars">
-        <div className="coverage-section-title"><span>COVERAGE BALANCE</span><h2>영역별 데이터 충족도</h2></div>
-        {data.categories.map((category) => (
-          <article key={category.name}>
-            <div><strong>{category.name}</strong><span className={`coverage-level ${category.level}`}>{levelLabel(category.level)}</span></div>
-            <div className="coverage-track"><i style={{ width: `${Math.max(4, category.count / maxCount * 100)}%`, background: palette[category.name] }} /></div>
-            <b>{category.count.toLocaleString()}건</b>
-          </article>
-        ))}
-        <p className="coverage-note">※ 현재 50건 미만인 영역을 ‘부족’으로 표시합니다. 원천 데이터 간 부분 중복이 있어 절대적인 문서 수와는 다를 수 있습니다.</p>
-      </section>
-    </main>
+    </div>
   );
 }
