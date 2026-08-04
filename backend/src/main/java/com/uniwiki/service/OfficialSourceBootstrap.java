@@ -34,12 +34,24 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
     @Value("${uniwiki.official-sources.collect-on-startup:false}")
     private boolean collectOnStartup;
 
+    @Value("${uniwiki.official-sources.category-ids.academic:0}")
+    private Long academicCategoryId;
+
+    @Value("${uniwiki.official-sources.category-ids.career:0}")
+    private Long careerCategoryId;
+
+    @Value("${uniwiki.official-sources.category-ids.scholarship:0}")
+    private Long scholarshipCategoryId;
+
+    @Value("${uniwiki.official-sources.category-ids.campus-life:0}")
+    private Long campusLifeCategoryId;
+
     @Override
     public void run(ApplicationArguments args) {
         int registered = 0;
         for (DefaultSource definition : defaultSources()) {
             if (sourceRepository.existsByName(definition.name())) continue;
-            Category category = categoryRepository.findByName(definition.categoryName()).orElse(null);
+            Category category = resolveCategory(definition);
             if (category == null) {
                 log.warn("Skipping official source bootstrap because category is missing: source={}, category={}",
                         definition.name(), definition.categoryName());
@@ -65,20 +77,29 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
 
     private List<DefaultSource> defaultSources() {
         return List.of(
-                new DefaultSource("세종대학교 학사공지", "학사",
+                new DefaultSource("세종대학교 학사공지", "학사", academicCategoryId,
                         "https://www.sejong.ac.kr/kor/intro/notice3.do", MAIN_LIST_SELECTOR),
-                new DefaultSource("세종대학교 취업공지", "진로·취업",
+                new DefaultSource("세종대학교 취업공지", "진로·취업", careerCategoryId,
                         "https://www.sejong.ac.kr/kor/intro/notice6.do", MAIN_LIST_SELECTOR),
-                new DefaultSource("세종대학교 장학공지", "장학·지원",
+                new DefaultSource("세종대학교 장학공지", "장학·지원", scholarshipCategoryId,
                         "https://www.sejong.ac.kr/kor/intro/notice7.do", MAIN_LIST_SELECTOR),
-                new DefaultSource("세종대학교 소프트웨어학과 공지", "학교생활",
+                new DefaultSource("세종대학교 소프트웨어학과 공지", "학교생활", campusLifeCategoryId,
                         "https://dept.sejong.ac.kr/softwaredpt/board/notice.do", DEPARTMENT_LIST_SELECTOR)
         );
+    }
+
+    private Category resolveCategory(DefaultSource definition) {
+        if (definition.categoryId() != null && definition.categoryId() > 0) {
+            Category category = categoryRepository.findById(definition.categoryId()).orElse(null);
+            if (category != null) return category;
+        }
+        return categoryRepository.findByName(definition.categoryName()).orElse(null);
     }
 
     private record DefaultSource(
             String name,
             String categoryName,
+            Long categoryId,
             String listUrl,
             String articleLinkSelector
     ) { }

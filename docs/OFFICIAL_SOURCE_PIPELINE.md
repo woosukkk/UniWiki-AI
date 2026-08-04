@@ -27,7 +27,7 @@
 | 세종대학교 장학공지 | 장학·지원 | `https://www.sejong.ac.kr/kor/intro/notice7.do` |
 | 세종대학교 소프트웨어학과 공지 | 학교생활 | `https://dept.sejong.ac.kr/softwaredpt/board/notice.do` |
 
-등록할 카테고리가 DB에 없으면 해당 출처는 건너뛰고 경고 로그를 남긴다. `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`이면 등록 직후 활성 출처를 한 번 수집한다.
+카테고리 ID가 설정돼 있으면 ID를 우선 사용하고, 없으면 정상 한글 이름으로 조회한다. 둘 다 찾지 못하면 해당 출처는 건너뛰고 경고 로그를 남긴다. `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`이면 등록 직후 활성 출처를 한 번 수집한다.
 
 ## 보안 범위
 
@@ -71,6 +71,10 @@ OFFICIAL_SOURCE_MAX_ARTICLES=20
 OFFICIAL_SOURCE_AUTHOR_ID=1
 OFFICIAL_SOURCE_AUTHOR_EMAIL=official-source@local.invalid
 OFFICIAL_SOURCE_ALLOWED_HOST_SUFFIXES=sejong.ac.kr
+OFFICIAL_SOURCE_ACADEMIC_CATEGORY_ID=0
+OFFICIAL_SOURCE_CAREER_CATEGORY_ID=0
+OFFICIAL_SOURCE_SCHOLARSHIP_CATEGORY_ID=0
+OFFICIAL_SOURCE_CAMPUS_LIFE_CATEGORY_ID=0
 ```
 
 초기 운영 확인 때는 `OFFICIAL_SOURCE_MAX_ARTICLES=5`, `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`로 소량 수집한 뒤 결과를 검수한다. 이후 시작 시 수집을 끄고 스케줄러를 켜는 것을 권장한다.

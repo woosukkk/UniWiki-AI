@@ -46,6 +46,11 @@ uniwiki:
     author-id: ${OFFICIAL_SOURCE_AUTHOR_ID:1}
     author-email: ${OFFICIAL_SOURCE_AUTHOR_EMAIL:official-source@local.invalid}
     allowed-host-suffixes: ${OFFICIAL_SOURCE_ALLOWED_HOST_SUFFIXES:sejong.ac.kr}
+    category-ids:
+      academic: ${OFFICIAL_SOURCE_ACADEMIC_CATEGORY_ID:0}
+      career: ${OFFICIAL_SOURCE_CAREER_CATEGORY_ID:0}
+      scholarship: ${OFFICIAL_SOURCE_SCHOLARSHIP_CATEGORY_ID:0}
+      campus-life: ${OFFICIAL_SOURCE_CAMPUS_LIFE_CATEGORY_ID:0}
   everytime:
     course-data-path: ${EVERYTIME_COURSE_DATA_PATH:../ai/data/normalized/sejong/software-course-schedules.json}
     crawl-enabled: ${EVERYTIME_CRAWL_ENABLED:true}
