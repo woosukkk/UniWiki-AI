@@ -20,6 +20,8 @@ import java.util.HexFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 
@@ -93,7 +95,7 @@ public class OfficialSourcePipelineService {
                 try {
                     Document articlePage = fetch(articleUrl);
                     String title = requiredText(articlePage, source.getTitleSelector(), "제목");
-                    String content = requiredText(articlePage, source.getContentSelector(), "본문");
+                    String content = requiredContent(articlePage, source.getContentSelector());
                     String hash = hash(title + "\n" + content);
                     RawOfficialDocument raw = rawRepository
                             .findByOfficialSource_IdAndSourceUrl(source.getId(), articleUrl)
@@ -188,9 +190,13 @@ public class OfficialSourcePipelineService {
         try {
             document = connection(url).get();
         } catch (SSLHandshakeException exception) {
-            SSLContext tls12 = SSLContext.getInstance("TLSv1.2");
-            tls12.init(null, null, null);
-            document = connection(url).sslSocketFactory(tls12.getSocketFactory()).get();
+            try {
+                SSLContext tls12 = SSLContext.getInstance("TLSv1.2");
+                tls12.init(null, null, null);
+                document = connection(url).sslSocketFactory(tls12.getSocketFactory()).get();
+            } catch (SSLHandshakeException retryException) {
+                document = fetchWithCurl(url);
+            }
         }
         requireAllowedUrl(document.location());
         return document;
@@ -202,12 +208,56 @@ public class OfficialSourcePipelineService {
                 .timeout((int) Duration.ofSeconds(15).toMillis());
     }
 
+    private Document fetchWithCurl(String url) throws Exception {
+        Process process = new ProcessBuilder(
+                "curl", "--fail", "--silent", "--show-error", "--location",
+                "--max-time", "15", "--user-agent",
+                "Mozilla/5.0 (compatible; UniWiki-AI official source monitor/1.0)", url)
+                .redirectErrorStream(true)
+                .start();
+        byte[] response = process.getInputStream().readAllBytes();
+        if (!process.waitFor(20, TimeUnit.SECONDS)) {
+            process.destroyForcibly();
+            throw new IllegalStateException("공식 출처 curl 요청 시간이 초과됐습니다.");
+        }
+        if (process.exitValue() != 0) {
+            throw new IllegalStateException("공식 출처 curl 요청에 실패했습니다. 종료 코드: " + process.exitValue());
+        }
+        return Jsoup.parse(new String(response, StandardCharsets.UTF_8), url);
+    }
+
     private String requiredText(Document document, String selector, String label) {
         Element element = document.selectFirst(selector);
         if (element == null || element.text().isBlank()) {
             throw new IllegalArgumentException(label + " 선택자에 해당하는 내용이 없습니다: " + selector);
         }
         return element.text().replaceAll("\\s+", " ").trim();
+    }
+
+    private String requiredContent(Document document, String selector) {
+        String text = document.select(selector).stream()
+                .map(Element::text)
+                .filter(value -> !value.isBlank())
+                .collect(Collectors.joining(" "))
+                .replaceAll("\\s+", " ")
+                .trim();
+        if (!text.isBlank()) return text;
+
+        String images = document.select(selector + " img").stream()
+                .map(image -> image.absUrl("src"))
+                .filter(value -> !value.isBlank())
+                .collect(Collectors.joining("\n- "));
+        String attachments = document.select("a[href*='mode=download']").stream()
+                .map(Element::text)
+                .filter(value -> !value.isBlank())
+                .collect(Collectors.joining("\n- "));
+        StringBuilder fallback = new StringBuilder("이미지 또는 첨부파일 중심의 공지입니다.");
+        if (!images.isBlank()) fallback.append("\n\n이미지:\n- ").append(images);
+        if (!attachments.isBlank()) fallback.append("\n\n첨부파일:\n- ").append(attachments);
+        if (images.isBlank() && attachments.isBlank()) {
+            throw new IllegalArgumentException("본문 선택자에 해당하는 내용이 없습니다: " + selector);
+        }
+        return fallback.toString();
     }
 
     private void requireAllowedUrl(String value) {
