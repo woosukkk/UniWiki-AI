@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -15,12 +16,17 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    // 토큰 암호화에 사용할 비밀키 (실제 배포 시에는 application.yml 등 환경변수로 빼는 것이 좋습니다)
-    private final String SECRET = "my-super-secret-key-uniwiki-ai-project-2026-very-long";
-    private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    private final SecretKey key;
     
     // 토큰 만료 시간 (예: 24시간)
     private final long EXPIRATION_TIME = 1000L * 60 * 60 * 24;
+
+    public JwtUtil(@Value("${uniwiki.jwt.secret}") String secret) {
+        if (secret == null || secret.length() < 32) {
+            throw new IllegalStateException("JWT_SECRET은 32자 이상이어야 합니다.");
+        }
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
 
     /**
      * 유저 이메일과 ID를 바탕으로 JWT 토큰을 생성합니다.

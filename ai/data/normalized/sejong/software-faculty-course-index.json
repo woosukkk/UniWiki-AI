@@ -1,0 +1,1984 @@
+{
+  "generatedFrom": [
+    "data\\raw\\sejong\\faculty\\software-faculty.json",
+    "data\\normalized\\sejong\\software-course-schedules.json"
+  ],
+  "sourceUrl": "https://dept.sejong.ac.kr/softwaredpt/intro/professor.do",
+  "facultyCount": 12,
+  "facultyWithTeachingHistoryCount": 10,
+  "faculty": [
+    {
+      "name": "권순일",
+      "role": "교수",
+      "isDepartmentChair": true,
+      "specialtySummary": "인공지능, 음성인식, 감정인식",
+      "email": "sikwon@sejong.ac.kr",
+      "phone": "02-3408-3847",
+      "office": "대양AI센터 센0624",
+      "highestDegree": "공학박사",
+      "researchAreas": [
+        "인공지능",
+        "음성인식",
+        "감정인식"
+      ],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/soon-il-kwon/",
+      "homepageUrl": "https://prof.sejong.ac.kr/sikwon/",
+      "teachingTerms": [
+        "2026-2",
+        "2026-1",
+        "2025-2",
+        "2025-1",
+        "2024-2",
+        "2024-1"
+      ],
+      "teachingCourseCount": 19,
+      "teachingCourses": [
+        {
+          "term": "2026-2",
+          "courseCode": "011839",
+          "section": "001",
+          "courseName": "세종인을위한전공탐색",
+          "completionType": "공통교양필수",
+          "credits": "1.0",
+          "schedule": "목 19:00~20:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "010112",
+          "section": "002",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "009960",
+          "section": "001",
+          "courseName": "Capstone디자인(산학협력프로젝트)",
+          "completionType": "전공필수",
+          "credits": "6.0",
+          "schedule": "금 13:30~19:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "001",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010000",
+          "section": "001",
+          "courseName": "기계학습",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "009960",
+          "section": "001",
+          "courseName": "Capstone디자인(산학협력프로젝트)",
+          "completionType": "전공필수",
+          "credits": "6.0",
+          "schedule": "금 13:30~19:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "011839",
+          "section": "001",
+          "courseName": "세종인을위한전공탐색",
+          "completionType": "공통교양필수",
+          "credits": "1.0",
+          "schedule": "목 19:00~20:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "011175",
+          "section": "001",
+          "courseName": "음성오디오처리",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "002",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "009960",
+          "section": "001",
+          "courseName": "Capstone디자인(산학협력프로젝트)",
+          "completionType": "전공필수",
+          "credits": "6.0",
+          "schedule": "금 13:30~19:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "007",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010000",
+          "section": "001",
+          "courseName": "기계학습",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "009960",
+          "section": "001",
+          "courseName": "Capstone디자인(산학협력프로젝트)",
+          "completionType": "전공필수",
+          "credits": "6.0",
+          "schedule": "금 13:30~19:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "011175",
+          "section": "001",
+          "courseName": "음성오디오처리",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "010112",
+          "section": "008",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009960",
+          "section": "001",
+          "courseName": "Capstone디자인(산학협력프로젝트)",
+          "completionType": "전공필수",
+          "credits": "6.0",
+          "schedule": "금 13:30~19:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010111",
+          "section": "008",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010000",
+          "section": "001",
+          "courseName": "기계학습",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 15:00~16:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "009960",
+          "section": "001",
+          "courseName": "Capstone디자인(산학협력프로젝트)",
+          "completionType": "전공필수",
+          "credits": "6.0",
+          "schedule": "금 13:30~19:30",
+          "classroom": "센B112"
+        }
+      ]
+    },
+    {
+      "name": "백성욱",
+      "role": "교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "시각 지능",
+      "email": "sbaik@sejong.ac.kr",
+      "phone": "02-3408-3797",
+      "office": "대양AI센터 센0622",
+      "highestDegree": "공학박사(George Mason Univ.)",
+      "researchAreas": [
+        "컴퓨터비전",
+        "인공지능",
+        "에너지 인포메틱스",
+        "데이터 사이언스"
+      ],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/sung-wook-baik/",
+      "homepageUrl": "https://sites.google.com/view/imlab2002",
+      "teachingTerms": [
+        "2026-2",
+        "2026-1",
+        "2025-2",
+        "2025-1",
+        "2024-2",
+        "2024-1"
+      ],
+      "teachingCourseCount": 6,
+      "teachingCourses": [
+        {
+          "term": "2026-2",
+          "courseCode": "010112",
+          "section": "004",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "004",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "004",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "003",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "010112",
+          "section": "004",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010111",
+          "section": "004",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B114"
+        }
+      ]
+    },
+    {
+      "name": "이종원",
+      "role": "교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "컴퓨터과학",
+      "email": "jwlee@sejong.ac.kr",
+      "phone": "02-3408-3798",
+      "office": "대양AI센터 센0619",
+      "highestDegree": "컴퓨터과학 박사",
+      "researchAreas": [
+        "확장현실",
+        "증강현실",
+        "가상현실",
+        "HCI"
+      ],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/jong-weon-lee/",
+      "homepageUrl": "https://prof.sejong.ac.kr/jwlee",
+      "teachingTerms": [
+        "2026-1",
+        "2025-2",
+        "2025-1",
+        "2024-2",
+        "2024-1"
+      ],
+      "teachingCourseCount": 14,
+      "teachingCourses": [
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "006",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "006208",
+          "section": "001",
+          "courseName": "가상현실",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "007",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010001",
+          "section": "001",
+          "courseName": "증강현실",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 15:00~16:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "001725",
+          "section": "002",
+          "courseName": "선형대수",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "001725",
+          "section": "001",
+          "courseName": "선형대수",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "005",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "006208",
+          "section": "001",
+          "courseName": "가상현실",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "010112",
+          "section": "006",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009961",
+          "section": "002",
+          "courseName": "선형대수및프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009961",
+          "section": "001",
+          "courseName": "선형대수및프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "001725",
+          "section": "001",
+          "courseName": "선형대수",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "월 수 15:00~16:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010111",
+          "section": "006",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "006208",
+          "section": "001",
+          "courseName": "가상현실",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B114"
+        }
+      ]
+    },
+    {
+      "name": "송오영",
+      "role": "교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "컴퓨터 그래픽스",
+      "email": "oysong@sejong.edu",
+      "phone": "02-3408-3830",
+      "office": "대양AI센터 센0623",
+      "highestDegree": "공학박사",
+      "researchAreas": [
+        "컴퓨터 그래픽스",
+        "인공지능",
+        "가상현실",
+        "증강현실",
+        "혼합현실"
+      ],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/oh-young-song/",
+      "homepageUrl": "https://prof.sejong.ac.kr/oysong",
+      "teachingTerms": [
+        "2026-2",
+        "2026-1",
+        "2025-2",
+        "2025-1",
+        "2024-2",
+        "2024-1"
+      ],
+      "teachingCourseCount": 18,
+      "teachingCourses": [
+        {
+          "term": "2026-2",
+          "courseCode": "011495",
+          "section": "002",
+          "courseName": "알고리즘및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "금 13:00~15:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "011495",
+          "section": "001",
+          "courseName": "알고리즘및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "금 10:00~12:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "010112",
+          "section": "005",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010206",
+          "section": "002",
+          "courseName": "일반물리및시뮬레이션",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 13:30~15:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010206",
+          "section": "001",
+          "courseName": "일반물리및시뮬레이션",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "005",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "006",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "009954",
+          "section": "002",
+          "courseName": "알고리즘및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "수 16:30~18:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "009954",
+          "section": "001",
+          "courseName": "알고리즘및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 16:30~18:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010206",
+          "section": "002",
+          "courseName": "일반물리및시뮬레이션",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 13:30~15:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010206",
+          "section": "001",
+          "courseName": "일반물리및시뮬레이션",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "008",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "010112",
+          "section": "002",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009954",
+          "section": "002",
+          "courseName": "알고리즘및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "수 16:30~18:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009954",
+          "section": "001",
+          "courseName": "알고리즘및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 16:30~18:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010206",
+          "section": "002",
+          "courseName": "일반물리및시뮬레이션",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 13:30~15:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010206",
+          "section": "001",
+          "courseName": "일반물리및시뮬레이션",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010111",
+          "section": "009",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B114"
+        }
+      ]
+    },
+    {
+      "name": "최준연",
+      "role": "교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "지능형시스템, 예측분석, 자연어처리",
+      "email": "zoon@sejong.edu",
+      "phone": "02-3408-3887",
+      "office": "대양AI센터 센0620",
+      "highestDegree": "경영공학 박사, KAIST",
+      "researchAreas": [
+        "Intelligent systems",
+        "Predictive Analytics",
+        "Data mining",
+        "Social media"
+      ],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/joon-yeon-choeh/",
+      "homepageUrl": "https://prof.sejong.ac.kr/zoon",
+      "teachingTerms": [
+        "2026-2",
+        "2026-1",
+        "2025-2",
+        "2025-1",
+        "2024-2",
+        "2024-1"
+      ],
+      "teachingCourseCount": 18,
+      "teachingCourses": [
+        {
+          "term": "2026-2",
+          "courseCode": "012166",
+          "section": "001",
+          "courseName": "연구실인턴십4",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 09:00~10:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "010112",
+          "section": "001",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "012165",
+          "section": "001",
+          "courseName": "연구실인턴십3",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 09:00~10:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "011488",
+          "section": "002",
+          "courseName": "자료구조및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "수 15:00~17:00, 수 17:00~19:00",
+          "classroom": "센B114, 센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "011488",
+          "section": "001",
+          "courseName": "자료구조및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 15:00~17:00, 월 17:00~19:00",
+          "classroom": "센B114, 센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "002",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "011912",
+          "section": "001",
+          "courseName": "연구실인턴쉽2",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 09:00~10:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "001",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "011911",
+          "section": "001",
+          "courseName": "연구실인턴쉽1",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 16:30~19:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "002",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "009952",
+          "section": "002",
+          "courseName": "자료구조및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "수 15:00~17:00, 수 17:00~19:00",
+          "classroom": "센B114, 센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "009952",
+          "section": "001",
+          "courseName": "자료구조및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 15:00~17:00, 월 17:00~19:00",
+          "classroom": "센B114, 센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "011839",
+          "section": "002",
+          "courseName": "세종인을위한전공탐색",
+          "completionType": "공통교양필수",
+          "credits": "1.0",
+          "schedule": "월 18:00~19:00",
+          "classroom": "집302"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "010112",
+          "section": "001",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009973",
+          "section": "001",
+          "courseName": "소프트웨어특강2",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 16:30~19:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010111",
+          "section": "001",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "009952",
+          "section": "002",
+          "courseName": "자료구조및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "수 15:00~17:00, 수 17:00~19:00",
+          "classroom": "센B114,센B111"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "009952",
+          "section": "001",
+          "courseName": "자료구조및실습",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 15:00~17:00, 월 17:00~19:00",
+          "classroom": "센B114,센B111"
+        }
+      ]
+    },
+    {
+      "name": "변재욱",
+      "role": "부교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "데이터베이스",
+      "email": "jwbyun@sejong.ac.kr",
+      "phone": "02-3408-1847",
+      "office": "대양AI센터 센0604",
+      "highestDegree": "공학박사(한국과학기술원)",
+      "researchAreas": [
+        "Temporal Network",
+        "Graph Database",
+        "Graph Mining",
+        "Internet of Things"
+      ],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/jaewook-byun/",
+      "homepageUrl": "https://home.sejong.ac.kr/~jwbyun/",
+      "teachingTerms": [
+        "2025-2",
+        "2025-1",
+        "2024-2",
+        "2024-1"
+      ],
+      "teachingCourseCount": 13,
+      "teachingCourses": [
+        {
+          "term": "2025-2",
+          "courseCode": "011926",
+          "section": "001",
+          "courseName": "최신기술콜로키움4",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 16:30~17:30",
+          "classroom": "학대공연장"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "011923",
+          "section": "001",
+          "courseName": "최신기술콜로키움2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 16:30~17:30",
+          "classroom": "학대공연장"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "011839",
+          "section": "002",
+          "courseName": "세종인을위한전공탐색",
+          "completionType": "공통교양필수",
+          "credits": "1.0",
+          "schedule": "목 19:00~20:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "005",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "005910",
+          "section": "001",
+          "courseName": "데이터베이스프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 10:30~12:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "004",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "007219",
+          "section": "002",
+          "courseName": "데이터베이스",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "007219",
+          "section": "001",
+          "courseName": "데이터베이스",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 10:30~12:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "010112",
+          "section": "005",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "005910",
+          "section": "001",
+          "courseName": "데이터베이스프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 10:30~12:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010111",
+          "section": "005",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "007219",
+          "section": "002",
+          "courseName": "데이터베이스",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "007219",
+          "section": "001",
+          "courseName": "데이터베이스",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 10:30~12:00",
+          "classroom": "센B111"
+        }
+      ]
+    },
+    {
+      "name": "박상일",
+      "role": "조교수",
+      "isDepartmentChair": false,
+      "specialtySummary": null,
+      "email": "sipark@sejong.ac.kr",
+      "phone": "02-3408-3832",
+      "office": "대양AI센터 센0626",
+      "highestDegree": null,
+      "researchAreas": [
+        "컴퓨터 그래픽스"
+      ],
+      "researcherPortalUrl": null,
+      "homepageUrl": null,
+      "teachingTerms": [
+        "2026-2",
+        "2026-1",
+        "2025-2",
+        "2025-1",
+        "2024-2",
+        "2024-1"
+      ],
+      "teachingCourseCount": 24,
+      "teachingCourses": [
+        {
+          "term": "2026-2",
+          "courseCode": "012013",
+          "section": "002",
+          "courseName": "실시간컴퓨터그래픽스",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "012013",
+          "section": "001",
+          "courseName": "실시간컴퓨터그래픽스",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "010112",
+          "section": "003",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "003281",
+          "section": "001",
+          "courseName": "컴퓨터그래픽스",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "012012",
+          "section": "001",
+          "courseName": "디지털이미지프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "012009",
+          "section": "002",
+          "courseName": "객체지향프로그래밍:C++",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "012009",
+          "section": "001",
+          "courseName": "객체지향프로그래밍:C++",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "003",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "003",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "009956",
+          "section": "001",
+          "courseName": "문제해결및실습:JAVA",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "003281",
+          "section": "001",
+          "courseName": "컴퓨터그래픽스",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "001",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "009992",
+          "section": "002",
+          "courseName": "문제해결및실습:C++",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "009992",
+          "section": "001",
+          "courseName": "문제해결및실습:C++",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "005619",
+          "section": "001",
+          "courseName": "멀티미디어프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "011839",
+          "section": "001",
+          "courseName": "세종인을위한전공탐색",
+          "completionType": "공통교양필수",
+          "credits": "1.0",
+          "schedule": "월 18:00~19:00",
+          "classroom": "집302"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "010112",
+          "section": "003",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009956",
+          "section": "002",
+          "courseName": "문제해결및실습:JAVA",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 15:00~16:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009956",
+          "section": "001",
+          "courseName": "문제해결및실습:JAVA",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 13:30~15:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "003281",
+          "section": "001",
+          "courseName": "컴퓨터그래픽스",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010111",
+          "section": "003",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "009992",
+          "section": "002",
+          "courseName": "문제해결및실습:C++",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "009992",
+          "section": "001",
+          "courseName": "문제해결및실습:C++",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "005619",
+          "section": "001",
+          "courseName": "멀티미디어프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B112"
+        }
+      ]
+    },
+    {
+      "name": "이은상",
+      "role": "조교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "프라이버시-보존 머신러닝",
+      "email": "eslee3209@sejong.ac.kr",
+      "phone": "02-3408-2975",
+      "office": null,
+      "highestDegree": "공학박사(서울대)",
+      "researchAreas": [
+        "프라이버시-보존 머신러닝",
+        "암호"
+      ],
+      "researcherPortalUrl": null,
+      "homepageUrl": "https://sites.google.com/view/pmlclab/",
+      "teachingTerms": [
+        "2026-2",
+        "2026-1",
+        "2025-2",
+        "2025-1",
+        "2024-2",
+        "2024-1"
+      ],
+      "teachingCourseCount": 25,
+      "teachingCourses": [
+        {
+          "term": "2026-2",
+          "courseCode": "011839",
+          "section": "002",
+          "courseName": "세종인을위한전공탐색",
+          "completionType": "공통교양필수",
+          "credits": "1.0",
+          "schedule": "목 19:00~20:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "010112",
+          "section": "007",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "009955",
+          "section": "002",
+          "courseName": "이산수학및프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "009955",
+          "section": "001",
+          "courseName": "이산수학및프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 10:30~12:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "002505",
+          "section": "001",
+          "courseName": "인공지능",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 16:30~18:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "007",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "009957",
+          "section": "002",
+          "courseName": "오픈소스SW개론",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 16:30~18:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "009957",
+          "section": "001",
+          "courseName": "오픈소스SW개론",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 15:00~16:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "008",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "009955",
+          "section": "002",
+          "courseName": "이산수학및프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "009955",
+          "section": "001",
+          "courseName": "이산수학및프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 10:30~12:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "002505",
+          "section": "001",
+          "courseName": "인공지능",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 16:30~18:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "011924",
+          "section": "001",
+          "courseName": "최신기술콜로키움3",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 16:30~17:30",
+          "classroom": "학대공연장"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "011921",
+          "section": "001",
+          "courseName": "최신기술콜로키움1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 16:30~17:30",
+          "classroom": "학대공연장"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "006",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "009957",
+          "section": "002",
+          "courseName": "오픈소스SW개론",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 16:30~18:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "009957",
+          "section": "001",
+          "courseName": "오픈소스SW개론",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 15:00~16:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "010112",
+          "section": "007",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009955",
+          "section": "002",
+          "courseName": "이산수학및프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009955",
+          "section": "001",
+          "courseName": "이산수학및프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 10:30~12:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "002505",
+          "section": "001",
+          "courseName": "인공지능",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "010111",
+          "section": "007",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "009957",
+          "section": "002",
+          "courseName": "오픈소스SW개론",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 16:30~18:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "009957",
+          "section": "001",
+          "courseName": "오픈소스SW개론",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-1",
+          "courseCode": "007330",
+          "section": "001",
+          "courseName": "확률및통계",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B114"
+        }
+      ]
+    },
+    {
+      "name": "정승화",
+      "role": "조교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "컴퓨터 그래픽스, 비전",
+      "email": "seunghwajeong@sejong.ac.kr",
+      "phone": "02-3408-3795",
+      "office": "대양AI센터 센0623",
+      "highestDegree": "공학박사 (KAIST)",
+      "researchAreas": [
+        "컴퓨터 비전",
+        "VR",
+        "AR"
+      ],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/seunghwa-jeong/",
+      "homepageUrl": "https://www.imm-lab.org/",
+      "teachingTerms": [
+        "2026-2",
+        "2026-1",
+        "2025-2",
+        "2025-1",
+        "2024-2"
+      ],
+      "teachingCourseCount": 15,
+      "teachingCourses": [
+        {
+          "term": "2026-2",
+          "courseCode": "010112",
+          "section": "008",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "009993",
+          "section": "002",
+          "courseName": "SW설계기초(산학프로젝트입문)",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 16:30~18:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "009993",
+          "section": "001",
+          "courseName": "SW설계기초(산학프로젝트입문)",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "008",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "004310",
+          "section": "002",
+          "courseName": "운영체제",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "004310",
+          "section": "001",
+          "courseName": "운영체제",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 10:30~12:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "010112",
+          "section": "009",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "009993",
+          "section": "002",
+          "courseName": "SW설계기초(산학프로젝트입문)",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 16:30~18:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "009993",
+          "section": "001",
+          "courseName": "SW설계기초(산학프로젝트입문)",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "010111",
+          "section": "009",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "006476",
+          "section": "001",
+          "courseName": "게임프로그래밍",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "월 수 15:00~16:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "004310",
+          "section": "002",
+          "courseName": "운영체제",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "004310",
+          "section": "001",
+          "courseName": "운영체제",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 10:30~12:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009993",
+          "section": "002",
+          "courseName": "SW설계기초(산학프로젝트입문)",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 16:30~18:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2024-2",
+          "courseCode": "009993",
+          "section": "001",
+          "courseName": "SW설계기초(산학프로젝트입문)",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "화 목 15:00~16:30",
+          "classroom": "센B111"
+        }
+      ]
+    },
+    {
+      "name": "백경준",
+      "role": "조교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "컴퓨터비전, 딥러닝",
+      "email": "kyungjune.baek@sejong.ac.kr",
+      "phone": "02-3408-3281",
+      "office": "대양AI센터 센0504",
+      "highestDegree": "공학박사 (연세대학교)",
+      "researchAreas": [
+        "인공지능",
+        "자기지도학습",
+        "생성모델",
+        "3D"
+      ],
+      "researcherPortalUrl": null,
+      "homepageUrl": "https://friedronaldo.github.io/",
+      "teachingTerms": [
+        "2026-2",
+        "2026-1",
+        "2025-2",
+        "2025-1"
+      ],
+      "teachingCourseCount": 14,
+      "teachingCourses": [
+        {
+          "term": "2026-2",
+          "courseCode": "010112",
+          "section": "009",
+          "courseName": "졸업연구및진로2",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 18:00~19:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "001725",
+          "section": "002",
+          "courseName": "선형대수",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "001725",
+          "section": "001",
+          "courseName": "선형대수",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "화 목 12:00~13:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "000304",
+          "section": "002",
+          "courseName": "공업수학1",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "월 수 10:30~12:00",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-2",
+          "courseCode": "000304",
+          "section": "001",
+          "courseName": "공업수학1",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "월 수 09:00~10:30",
+          "classroom": "센B111"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "011924",
+          "section": "001",
+          "courseName": "최신기술콜로키움3",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 16:30~17:30",
+          "classroom": "학대공연장"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "011921",
+          "section": "001",
+          "courseName": "최신기술콜로키움1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "목 16:30~17:30",
+          "classroom": "학대공연장"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "011904",
+          "section": "001",
+          "courseName": "생성형AI",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "금 09:00~12:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "010111",
+          "section": "009",
+          "courseName": "졸업연구및진로1",
+          "completionType": "전공선택",
+          "credits": "1.0",
+          "schedule": "화 18:00~19:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2026-1",
+          "courseCode": "007330",
+          "section": "001",
+          "courseName": "확률및통계",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "호203"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "003278",
+          "section": "002",
+          "courseName": "컴퓨터구조",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 13:30~15:00",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-2",
+          "courseCode": "003278",
+          "section": "001",
+          "courseName": "컴퓨터구조",
+          "completionType": "전공필수",
+          "credits": "3.0",
+          "schedule": "월 수 12:00~13:30",
+          "classroom": "센B114"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "011904",
+          "section": "001",
+          "courseName": "생성형AI",
+          "completionType": "전공선택",
+          "credits": "3.0",
+          "schedule": "화 목 13:30~15:00",
+          "classroom": "센B112"
+        },
+        {
+          "term": "2025-1",
+          "courseCode": "007330",
+          "section": "001",
+          "courseName": "확률및통계",
+          "completionType": "전공기초",
+          "credits": "3.0",
+          "schedule": "월 수 13:30~15:00",
+          "classroom": "호203"
+        }
+      ]
+    },
+    {
+      "name": "김문현",
+      "role": "명예교수",
+      "isDepartmentChair": false,
+      "specialtySummary": null,
+      "email": "mhkim@sejong.ac.kr",
+      "phone": null,
+      "office": null,
+      "highestDegree": null,
+      "researchAreas": [],
+      "researcherPortalUrl": null,
+      "homepageUrl": null,
+      "teachingTerms": [],
+      "teachingCourseCount": 0,
+      "teachingCourses": []
+    },
+    {
+      "name": "김화슬",
+      "role": "산학협력중점교수",
+      "isDepartmentChair": false,
+      "specialtySummary": "예술공학",
+      "email": "artaslife@sju.ac.kr",
+      "phone": "02-3409-9882",
+      "office": null,
+      "highestDegree": "공학박사",
+      "researchAreas": [
+        "인터랙티브 미디어아트",
+        "AI활용 융합교육"
+      ],
+      "researcherPortalUrl": null,
+      "homepageUrl": null,
+      "teachingTerms": [],
+      "teachingCourseCount": 0,
+      "teachingCourses": []
+    }
+  ]
+}

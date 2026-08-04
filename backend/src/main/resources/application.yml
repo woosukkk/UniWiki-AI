@@ -7,12 +7,12 @@ spring:
 
     url: ${DB_URL:jdbc:mysql://localhost:3306/uniwiki_ai?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8&allowPublicKeyRetrieval=true}
     username: ${DB_USERNAME:root}
-    password: ${DB_PASSWORD:han@1009}
+    password: ${DB_PASSWORD:}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: none # 이미 스키마(schema.sql)가 있으므로 자동 생성(update) 기능을 끕니다.
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
@@ -20,9 +20,14 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
 
 server:
-  port: 8080
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
 
 uniwiki:
+  jwt:
+    secret: ${JWT_SECRET:local-development-jwt-secret-change-before-deploy}
+  cors:
+    allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   promotion:
     like-threshold: 3
     category-name: FAQ
@@ -32,3 +37,49 @@ uniwiki:
   vector-sync:
     interval-ms: 60000
     max-attempts: 5
+  official-sources:
+    bootstrap-enabled: ${OFFICIAL_SOURCE_BOOTSTRAP_ENABLED:false}
+    collect-on-startup: ${OFFICIAL_SOURCE_COLLECT_ON_STARTUP:false}
+    scheduler-enabled: ${OFFICIAL_SOURCE_SCHEDULER_ENABLED:false}
+    interval-ms: ${OFFICIAL_SOURCE_INTERVAL_MS:3600000}
+    max-articles-per-run: ${OFFICIAL_SOURCE_MAX_ARTICLES:20}
+    author-id: ${OFFICIAL_SOURCE_AUTHOR_ID:1}
+    author-email: ${OFFICIAL_SOURCE_AUTHOR_EMAIL:official-source@local.invalid}
+    allowed-host-suffixes: ${OFFICIAL_SOURCE_ALLOWED_HOST_SUFFIXES:sejong.ac.kr}
+    category-ids:
+      academic: ${OFFICIAL_SOURCE_ACADEMIC_CATEGORY_ID:0}
+      career: ${OFFICIAL_SOURCE_CAREER_CATEGORY_ID:0}
+      scholarship: ${OFFICIAL_SOURCE_SCHOLARSHIP_CATEGORY_ID:0}
+      campus-life: ${OFFICIAL_SOURCE_CAMPUS_LIFE_CATEGORY_ID:0}
+    attachments:
+      max-count: ${OFFICIAL_ATTACHMENT_MAX_COUNT:10}
+      max-bytes: ${OFFICIAL_ATTACHMENT_MAX_BYTES:20971520}
+      max-text-length: ${OFFICIAL_ATTACHMENT_MAX_TEXT_LENGTH:50000}
+  everytime:
+    course-data-path: ${EVERYTIME_COURSE_DATA_PATH:../ai/data/normalized/sejong/software-course-schedules.json}
+    crawl-enabled: ${EVERYTIME_CRAWL_ENABLED:true}
+    headless: ${EVERYTIME_HEADLESS:false}
+    session-cookies: ${EVERYTIME_SESSION_COOKIES:}
+    upload-url: ${EVERYTIME_UPLOAD_URL:}
+    community-upload-url: ${EVERYTIME_COMMUNITY_UPLOAD_URL:}
+    upload-token: ${EVERYTIME_UPLOAD_TOKEN:}
+    import-token: ${EVERYTIME_IMPORT_TOKEN:}
+    run-on-startup: ${EVERYTIME_RUN_ON_STARTUP:false}
+    collector-terms: ${EVERYTIME_COLLECTOR_TERMS:2026-2}
+    collector-max-pairs: ${EVERYTIME_COLLECTOR_MAX_PAIRS:1}
+    collector-start-page: ${EVERYTIME_COLLECTOR_START_PAGE:1}
+    collector-end-page: ${EVERYTIME_COLLECTOR_END_PAGE:1}
+    collector-delay-ms: ${EVERYTIME_COLLECTOR_DELAY_MS:1500}
+    board-run-on-startup: ${EVERYTIME_BOARD_RUN_ON_STARTUP:false}
+    board-url: ${EVERYTIME_BOARD_URL:https://everytime.kr/hotarticle}
+    board-type: ${EVERYTIME_BOARD_TYPE:핫 게시판}
+    board-start-page: ${EVERYTIME_BOARD_START_PAGE:1}
+    board-end-page: ${EVERYTIME_BOARD_END_PAGE:3}
+  everytime-community:
+    interval-ms: ${EVERYTIME_COMMUNITY_INTERVAL_MS:10000}
+    minimum-score: ${EVERYTIME_COMMUNITY_MINIMUM_SCORE:50}
+  lecture-review-workflow:
+    interval-ms: ${LECTURE_REVIEW_WORKFLOW_INTERVAL_MS:10000}
+    author-id: ${LECTURE_REVIEW_AUTHOR_ID:1}
+    category-name: ${LECTURE_REVIEW_CATEGORY_NAME:교과목}
+    max-reviews-per-draft: ${LECTURE_REVIEW_MAX_REVIEWS_PER_DRAFT:100}

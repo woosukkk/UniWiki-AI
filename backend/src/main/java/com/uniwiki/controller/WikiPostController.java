@@ -3,6 +3,7 @@ package com.uniwiki.controller;
 import com.uniwiki.config.LoginUserId;
 import com.uniwiki.dto.WikiPostDto;
 import com.uniwiki.service.WikiPostService;
+import com.uniwiki.service.WikiCoverageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,6 +25,7 @@ import java.util.List;
 public class WikiPostController {
 
     private final WikiPostService wikiPostService;
+    private final WikiCoverageService wikiCoverageService;
 
     // 위키 문서 생성
     @Operation(summary = "위키 문서 생성")
@@ -62,6 +64,12 @@ public class WikiPostController {
         return ResponseEntity.ok(
                 wikiPostService.getWikiPosts()
         );
+    }
+
+    @Operation(summary = "승인된 위키 데이터 분포 조회")
+    @GetMapping("/coverage")
+    public ResponseEntity<?> getWikiCoverage() {
+        return ResponseEntity.ok(wikiCoverageService.getCoverage());
     }
 
     // 내가 작성한 위키 문서 조회
@@ -175,9 +183,11 @@ public class WikiPostController {
     @Operation(summary = "위키 문서 검색")
     @GetMapping("/search")
     public ResponseEntity<List<WikiPostDto.ListResponse>> searchWikiPosts(
-        @RequestParam(required = false) String keyword) {
+        @RequestParam(required = false) String keyword,
+        @RequestParam(defaultValue = "ALL") String source,
+        @RequestParam(required = false) String contentType) {
                 return ResponseEntity.ok(
-                        wikiPostService.searchWikiPosts(keyword)
+                        wikiPostService.searchWikiPosts(keyword, source, contentType)
                 );
         }
 }

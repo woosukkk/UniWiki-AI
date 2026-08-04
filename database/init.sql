@@ -1,4 +1,4 @@
-INSERT INTO categories (name, description) VALUES
+INSERT IGNORE INTO categories (name, description) VALUES
 ('학사', '학사일정, 휴복학, 수강신청 등 학교생활 정보'),
 ('교과목', '전공 및 교양 과목 정보'),
 ('교수님', '교수님 및 연구실 정보'),

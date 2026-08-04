@@ -1,0 +1,97 @@
+{
+  "department": "콘텐츠소프트웨어학과",
+  "formerDepartmentName": "소프트웨어학과",
+  "sourceUrl": "https://dept.sejong.ac.kr/softwaredpt/intro/professor.do",
+  "collectedAt": "2026-07-31",
+  "facultyCount": 12,
+  "faculty": [
+    {
+      "name": "권순일", "role": "교수", "isDepartmentChair": true,
+      "specialtySummary": "인공지능, 음성인식, 감정인식", "email": "sikwon@sejong.ac.kr",
+      "phone": "02-3408-3847", "office": "대양AI센터 센0624", "highestDegree": "공학박사",
+      "researchAreas": ["인공지능", "음성인식", "감정인식"],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/soon-il-kwon/",
+      "homepageUrl": "https://prof.sejong.ac.kr/sikwon/"
+    },
+    {
+      "name": "백성욱", "role": "교수", "isDepartmentChair": false,
+      "specialtySummary": "시각 지능", "email": "sbaik@sejong.ac.kr", "phone": "02-3408-3797",
+      "office": "대양AI센터 센0622", "highestDegree": "공학박사(George Mason Univ.)",
+      "researchAreas": ["컴퓨터비전", "인공지능", "에너지 인포메틱스", "데이터 사이언스"],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/sung-wook-baik/",
+      "homepageUrl": "https://sites.google.com/view/imlab2002"
+    },
+    {
+      "name": "이종원", "role": "교수", "isDepartmentChair": false,
+      "specialtySummary": "컴퓨터과학", "email": "jwlee@sejong.ac.kr", "phone": "02-3408-3798",
+      "office": "대양AI센터 센0619", "highestDegree": "컴퓨터과학 박사",
+      "researchAreas": ["확장현실", "증강현실", "가상현실", "HCI"],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/jong-weon-lee/",
+      "homepageUrl": "https://prof.sejong.ac.kr/jwlee"
+    },
+    {
+      "name": "송오영", "role": "교수", "isDepartmentChair": false,
+      "specialtySummary": "컴퓨터 그래픽스", "email": "oysong@sejong.edu", "phone": "02-3408-3830",
+      "office": "대양AI센터 센0623", "highestDegree": "공학박사",
+      "researchAreas": ["컴퓨터 그래픽스", "인공지능", "가상현실", "증강현실", "혼합현실"],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/oh-young-song/",
+      "homepageUrl": "https://prof.sejong.ac.kr/oysong"
+    },
+    {
+      "name": "최준연", "role": "교수", "isDepartmentChair": false,
+      "specialtySummary": "지능형시스템, 예측분석, 자연어처리", "email": "zoon@sejong.edu",
+      "phone": "02-3408-3887", "office": "대양AI센터 센0620", "highestDegree": "경영공학 박사, KAIST",
+      "researchAreas": ["Intelligent systems", "Predictive Analytics", "Data mining", "Social media"],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/joon-yeon-choeh/",
+      "homepageUrl": "https://prof.sejong.ac.kr/zoon"
+    },
+    {
+      "name": "변재욱", "role": "부교수", "isDepartmentChair": false,
+      "specialtySummary": "데이터베이스", "email": "jwbyun@sejong.ac.kr", "phone": "02-3408-1847",
+      "office": "대양AI센터 센0604", "highestDegree": "공학박사(한국과학기술원)",
+      "researchAreas": ["Temporal Network", "Graph Database", "Graph Mining", "Internet of Things"],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/jaewook-byun/",
+      "homepageUrl": "https://home.sejong.ac.kr/~jwbyun/"
+    },
+    {
+      "name": "박상일", "role": "조교수", "isDepartmentChair": false,
+      "specialtySummary": null, "email": "sipark@sejong.ac.kr", "phone": "02-3408-3832",
+      "office": "대양AI센터 센0626", "highestDegree": null, "researchAreas": ["컴퓨터 그래픽스"],
+      "researcherPortalUrl": null, "homepageUrl": null
+    },
+    {
+      "name": "이은상", "role": "조교수", "isDepartmentChair": false,
+      "specialtySummary": "프라이버시-보존 머신러닝", "email": "eslee3209@sejong.ac.kr",
+      "phone": "02-3408-2975", "office": null, "highestDegree": "공학박사(서울대)",
+      "researchAreas": ["프라이버시-보존 머신러닝", "암호"], "researcherPortalUrl": null,
+      "homepageUrl": "https://sites.google.com/view/pmlclab/"
+    },
+    {
+      "name": "정승화", "role": "조교수", "isDepartmentChair": false,
+      "specialtySummary": "컴퓨터 그래픽스, 비전", "email": "seunghwajeong@sejong.ac.kr",
+      "phone": "02-3408-3795", "office": "대양AI센터 센0623", "highestDegree": "공학박사 (KAIST)",
+      "researchAreas": ["컴퓨터 비전", "VR", "AR"],
+      "researcherPortalUrl": "https://sejong.elsevierpure.com/en/persons/seunghwa-jeong/",
+      "homepageUrl": "https://www.imm-lab.org/"
+    },
+    {
+      "name": "백경준", "role": "조교수", "isDepartmentChair": false,
+      "specialtySummary": "컴퓨터비전, 딥러닝", "email": "kyungjune.baek@sejong.ac.kr",
+      "phone": "02-3408-3281", "office": "대양AI센터 센0504", "highestDegree": "공학박사 (연세대학교)",
+      "researchAreas": ["인공지능", "자기지도학습", "생성모델", "3D"], "researcherPortalUrl": null,
+      "homepageUrl": "https://friedronaldo.github.io/"
+    },
+    {
+      "name": "김문현", "role": "명예교수", "isDepartmentChair": false,
+      "specialtySummary": null, "email": "mhkim@sejong.ac.kr", "phone": null, "office": null,
+      "highestDegree": null, "researchAreas": [], "researcherPortalUrl": null, "homepageUrl": null
+    },
+    {
+      "name": "김화슬", "role": "산학협력중점교수", "isDepartmentChair": false,
+      "specialtySummary": "예술공학", "email": "artaslife@sju.ac.kr", "phone": "02-3409-9882",
+      "office": null, "highestDegree": "공학박사",
+      "researchAreas": ["인터랙티브 미디어아트", "AI활용 융합교육"],
+      "researcherPortalUrl": null, "homepageUrl": null
+    }
+  ]
+}

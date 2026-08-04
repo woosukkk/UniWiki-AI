@@ -34,9 +34,11 @@ frontend/.vite/
 # Backend (Spring Boot / Gradle)
 # =========================================================
 .gradle/
+.gradle-local/
 backend/.gradle/
 backend/build/
 backend/out/
+backend/data/
 
 # =========================================================
 # Java
@@ -78,6 +80,9 @@ AGENTS.md
 *.tmp
 *.temp
 .mysql-local/
+.mysql-data/
+.run-logs/
+.gradle-cache/
 
 # Backend - Gradle
 backend/.gradle/
