@@ -15,6 +15,9 @@ spring:
 uniwiki:
   cors:
     allowed-origin-patterns: http://localhost:5173,http://127.0.0.1:5173
+  vector-sync:
+    interval-ms: 5000
+    max-attempts: 100
   official-sources:
     bootstrap-enabled: true
     collect-on-startup: true

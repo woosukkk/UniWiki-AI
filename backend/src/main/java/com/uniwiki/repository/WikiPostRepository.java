@@ -13,7 +13,7 @@ public interface WikiPostRepository extends JpaRepository<WikiPost, Long> {
     long countByStatus(WikiPostStatus status);
 
     @Query("""
-            select p.category.id, p.category.name, p.category.description, count(p)
+            select p.category.id, p.category.name, p.category.description, count(p), max(p.updatedAt)
             from WikiPost p
             where p.status = :status
             group by p.category.id, p.category.name, p.category.description

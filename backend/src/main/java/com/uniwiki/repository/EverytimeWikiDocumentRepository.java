@@ -25,4 +25,11 @@ public interface EverytimeWikiDocumentRepository extends JpaRepository<Everytime
             order by d.contentType
             """)
     List<Object[]> summarizeApprovedByContentType();
+
+    @Query("""
+            select d.wikiPost.id, d.wikiPost.category.id
+            from EverytimeWikiDocument d
+            where d.wikiPost.status = com.uniwiki.entity.WikiPostStatus.APPROVED
+            """)
+    List<Object[]> findApprovedWikiPostCategoryPairs();
 }
