@@ -20,6 +20,8 @@ import java.util.HexFormat;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLHandshakeException;
 
 @Service
 @Slf4j
@@ -108,6 +110,8 @@ public class OfficialSourcePipelineService {
                     }
                 } catch (Exception exception) {
                     failed++;
+                    log.warn("Official source article failed: source={}, url={}, error={}",
+                            source.getName(), articleUrl, exception.getMessage());
                 }
             }
             source.markSuccess();
@@ -180,12 +184,22 @@ public class OfficialSourcePipelineService {
     }
 
     private Document fetch(String url) throws Exception {
-        Document document = Jsoup.connect(url)
-                .userAgent("UniWiki-AI official source monitor/1.0")
-                .timeout((int) Duration.ofSeconds(15).toMillis())
-                .get();
+        Document document;
+        try {
+            document = connection(url).get();
+        } catch (SSLHandshakeException exception) {
+            SSLContext tls12 = SSLContext.getInstance("TLSv1.2");
+            tls12.init(null, null, null);
+            document = connection(url).sslSocketFactory(tls12.getSocketFactory()).get();
+        }
         requireAllowedUrl(document.location());
         return document;
+    }
+
+    private org.jsoup.Connection connection(String url) {
+        return Jsoup.connect(url)
+                .userAgent("Mozilla/5.0 (compatible; UniWiki-AI official source monitor/1.0)")
+                .timeout((int) Duration.ofSeconds(15).toMillis());
     }
 
     private String requiredText(Document document, String selector, String label) {
