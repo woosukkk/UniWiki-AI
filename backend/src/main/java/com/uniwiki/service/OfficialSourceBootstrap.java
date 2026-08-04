@@ -53,6 +53,7 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
             OfficialSource existing = sourceRepository.findByName(definition.name()).orElse(null);
             if (existing != null) {
                 existing.enableAutoPublish();
+                sourceRepository.save(existing);
                 continue;
             }
             Category category = resolveCategory(definition);
