@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.time.Duration;
@@ -209,6 +210,8 @@ public class OfficialSourcePipelineService {
             } catch (SSLHandshakeException retryException) {
                 document = fetchWithCurl(url);
             }
+        } catch (IOException exception) {
+            document = fetchWithCurl(url);
         }
         requireAllowedUrl(document.location());
         return document;

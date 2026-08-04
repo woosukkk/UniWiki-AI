@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -136,6 +137,8 @@ public class OfficialAttachmentService {
             } catch (SSLHandshakeException retryException) {
                 return downloadWithCurl(url);
             }
+        } catch (IOException exception) {
+            return downloadWithCurl(url);
         }
     }
 
