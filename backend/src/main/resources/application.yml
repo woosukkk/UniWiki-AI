@@ -38,10 +38,13 @@ uniwiki:
     interval-ms: 60000
     max-attempts: 5
   official-sources:
+    bootstrap-enabled: ${OFFICIAL_SOURCE_BOOTSTRAP_ENABLED:false}
+    collect-on-startup: ${OFFICIAL_SOURCE_COLLECT_ON_STARTUP:false}
     scheduler-enabled: ${OFFICIAL_SOURCE_SCHEDULER_ENABLED:false}
     interval-ms: ${OFFICIAL_SOURCE_INTERVAL_MS:3600000}
     max-articles-per-run: ${OFFICIAL_SOURCE_MAX_ARTICLES:20}
     author-id: ${OFFICIAL_SOURCE_AUTHOR_ID:1}
+    author-email: ${OFFICIAL_SOURCE_AUTHOR_EMAIL:official-source@local.invalid}
     allowed-host-suffixes: ${OFFICIAL_SOURCE_ALLOWED_HOST_SUFFIXES:sejong.ac.kr}
   everytime:
     course-data-path: ${EVERYTIME_COURSE_DATA_PATH:../ai/data/normalized/sejong/software-course-schedules.json}

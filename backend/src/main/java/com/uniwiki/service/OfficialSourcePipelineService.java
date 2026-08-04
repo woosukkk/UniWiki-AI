@@ -41,6 +41,9 @@ public class OfficialSourcePipelineService {
     @Value("${uniwiki.official-sources.author-id:1}")
     private Long authorId;
 
+    @Value("${uniwiki.official-sources.author-email:official-source@local.invalid}")
+    private String authorEmail;
+
     @Transactional
     public OfficialSourceDto.Response register(OfficialSourceDto.CreateRequest request) {
         requireAllowedUrl(request.listUrl());
@@ -156,7 +159,8 @@ public class OfficialSourcePipelineService {
         OfficialWikiDocument existing = documentRepository.findByRawDocument_Id(raw.getId()).orElse(null);
         WikiPost wikiPost;
         if (existing == null) {
-            User author = userRepository.findById(authorId)
+            User author = userRepository.findByEmail(authorEmail)
+                    .or(() -> userRepository.findById(authorId))
                     .orElseThrow(() -> new IllegalStateException("공식 위키 작성자를 찾을 수 없습니다."));
             wikiPost = wikiPostRepository.save(new WikiPost(
                     source.getCategory(), author, truncate(raw.getTitle(), 200), content, summary, status));
