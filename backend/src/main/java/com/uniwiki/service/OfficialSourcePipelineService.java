@@ -4,6 +4,7 @@ import com.uniwiki.dto.OfficialSourceDto;
 import com.uniwiki.entity.*;
 import com.uniwiki.repository.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class OfficialSourcePipelineService {
 
@@ -127,9 +129,13 @@ public class OfficialSourcePipelineService {
     public void collectActiveSources() {
         for (OfficialSource source : sourceRepository.findByActiveTrueOrderByIdAsc()) {
             try {
-                collect(source.getId());
-            } catch (Exception ignored) {
-                // 출처별 실패 상태는 collect에서 기록하며 다른 출처 수집은 계속한다.
+                OfficialSourceDto.CollectionResult result = collect(source.getId());
+                log.info("Official source collection: source={}, discovered={}, created={}, changed={}, unchanged={}, failed={}",
+                        source.getName(), result.discovered(), result.created(), result.changed(),
+                        result.unchanged(), result.failed());
+            } catch (Exception exception) {
+                log.warn("Official source collection failed: source={}, error={}",
+                        source.getName(), exception.getMessage());
             }
         }
     }
