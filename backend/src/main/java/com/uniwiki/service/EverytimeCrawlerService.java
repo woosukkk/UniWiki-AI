@@ -30,7 +30,7 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 @RequiredArgsConstructor
 public class EverytimeCrawlerService {
 
-    private final com.uniwiki.repository.RawCommunityPostRepository rawCommunityPostRepository;
+    private final CommunityPostTransferService communityPostTransferService;
     private final com.uniwiki.repository.RawLectureEvaluationRepository rawLectureEvaluationRepository;
     
     private static final Logger logger = LoggerFactory.getLogger(EverytimeCrawlerService.class);
@@ -60,9 +60,11 @@ public class EverytimeCrawlerService {
             logger.info("에브리타임 로그인 페이지로 이동했습니다. 수동 로그인이 필요할 수 있습니다.");
 
             WebDriverWait loginWait = new WebDriverWait(driver, Duration.ofSeconds(60));
-            loginWait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.my, a.message")));
+            loginWait.until(webDriver -> webDriver.getCurrentUrl().startsWith("https://everytime.kr/")
+                    && !webDriver.getCurrentUrl().contains("/login"));
 
             int totalCount = 0;
+            java.util.Set<String> seenUrls = new java.util.HashSet<>();
             
             for (int page = startPage; page <= endPage; page++) {
                 String currentUrl = boardUrl;
@@ -80,11 +82,12 @@ public class EverytimeCrawlerService {
                 WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
                 wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.wrap.articles, article > a.article, #container")));
                 
-                Document doc = Jsoup.parse(driver.getPageSource());
+                Document doc = Jsoup.parse(driver.getPageSource(), currentUrl);
                 Elements articles = doc.select("article > a.article");
                 if (articles.isEmpty()) {
                     articles = doc.select("article");
                 }
+                java.util.List<com.uniwiki.dto.CommunityPostImportItemDto> pagePosts = new java.util.ArrayList<>();
                 
                 if (articles.isEmpty()) {
                     logger.warn("게시물을 찾을 수 없습니다. 현재 페이지 DOM 일부: {}", 
@@ -92,28 +95,75 @@ public class EverytimeCrawlerService {
                 }
                 
                 for (Element article : articles) {
-                    String title = article.select("h2").text();
-                    String content = article.select("p").text();
+                    String sourceUrl = article.absUrl("href");
+                    if (sourceUrl.isBlank()) {
+                        Element articleLink = article.selectFirst("a.article, a[href]");
+                        sourceUrl = articleLink == null ? currentUrl : articleLink.absUrl("href");
+                    }
+                    if (sourceUrl.isBlank()) sourceUrl = currentUrl;
+                    sourceUrl = sourceUrl.split("\\?")[0];
+                    if (!seenUrls.add(sourceUrl)) continue;
+
+                    Element contentRoot = article;
+                    Document detailDocument = null;
+                    if (article.text().isBlank()) {
+                        driver.get(sourceUrl);
+                        new WebDriverWait(driver, Duration.ofSeconds(10))
+                                .until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
+                        Thread.sleep(750);
+                        detailDocument = Jsoup.parse(driver.getPageSource(), sourceUrl);
+                        String currentDetailUrl = driver.getCurrentUrl().split("\\?")[0];
+                        Element detailArticle = currentDetailUrl.equals(sourceUrl)
+                                ? findDetailArticle(detailDocument, sourceUrl) : null;
+                        for (int retry = 0; detailArticle == null && retry < 3; retry++) {
+                            Thread.sleep(500);
+                            detailDocument = Jsoup.parse(driver.getPageSource(), sourceUrl);
+                            currentDetailUrl = driver.getCurrentUrl().split("\\?")[0];
+                            if (currentDetailUrl.equals(sourceUrl)) {
+                                detailArticle = findDetailArticle(detailDocument, sourceUrl);
+                            }
+                        }
+                        if (detailArticle != null) {
+                            contentRoot = detailArticle;
+                        } else {
+                            logger.warn("에브리타임 상세 글 불일치로 건너뜀: requested={}, current={}",
+                                    sourceUrl, driver.getCurrentUrl());
+                        }
+                    }
+
+                    Element titleElement = contentRoot.selectFirst(".title, h3, h1");
+                    String title = titleElement == null ? "" : titleElement.text();
+                    String content = contentRoot.select("p.text, p.medium, div.text, div.content, p").text();
                     
                     if (title.isEmpty() && content.isEmpty()) {
-                        content = article.text();
+                        content = contentRoot.text();
                     }
 
                     if (title.isEmpty() && content.isEmpty()) continue;
                     
-                    if (title.isEmpty()) {
-                        title = content.length() > 20 ? content.substring(0, 20) + "..." : content;
-                    }
                     if (content.isEmpty()) {
                         content = title;
                     }
+                    if (isGenericArticleTitle(title)) {
+                        title = content.length() > 45 ? content.substring(0, 45) + "..." : content;
+                    }
 
                     int likesCount = 0;
-                    Element voteEl = article.selectFirst(".vote");
+                    Element voteEl = contentRoot.selectFirst(".vote");
                     if (voteEl != null && !voteEl.text().isEmpty()) {
                         try {
                             likesCount = Integer.parseInt(voteEl.text());
                         } catch (NumberFormatException ignored) {}
+                    }
+
+                    int commentsCount = 0;
+                    Element commentEl = contentRoot.selectFirst(".comment");
+                    if (commentEl != null) {
+                        String digits = commentEl.text().replaceAll("[^0-9]", "");
+                        if (!digits.isBlank()) commentsCount = Integer.parseInt(digits);
+                    }
+                    if (commentsCount == 0 && detailDocument != null) {
+                        commentsCount = detailDocument.select("div.comments article, div.comments div.comment").size();
                     }
                     
                     // 키워드 필터링 (OR 조건)
@@ -139,17 +189,18 @@ public class EverytimeCrawlerService {
                         if (!match) continue; // 내용 키워드 중 하나라도 포함되지 않으면 스킵
                     }
                     
-                    RawCommunityPost post = new RawCommunityPost(
-                            currentUrl, 
+                    pagePosts.add(new com.uniwiki.dto.CommunityPostImportItemDto(
+                            sourceUrl,
                             boardType != null ? boardType : "알 수 없는 게시판", 
                             title, 
                             content, 
-                            likesCount, 
+                            likesCount,
+                            commentsCount,
                             "[]"
-                    );
-                    rawCommunityPostRepository.save(post);
-                    totalCount++;
+                    ));
                 }
+
+                totalCount += communityPostTransferService.transfer(pagePosts).saved();
                 
                 if (page < endPage) {
                     Thread.sleep(2000);
@@ -167,6 +218,27 @@ public class EverytimeCrawlerService {
                 driver.quit();
             }
         }
+    }
+
+    private Element findDetailArticle(Document document, String sourceUrl) {
+        Element exactMatch = null;
+        for (Element candidate : document.select("article > a.article[href], a.article[href]")) {
+            String candidateUrl = candidate.absUrl("href").split("\\?")[0];
+            if (candidateUrl.equals(sourceUrl)
+                    && (exactMatch == null || candidate.text().length() > exactMatch.text().length())) {
+                exactMatch = candidate;
+            }
+        }
+        return exactMatch != null ? exactMatch : document.selectFirst("article.item");
+    }
+
+    private boolean isGenericArticleTitle(String title) {
+        if (title == null || title.isBlank()) return true;
+        String normalized = title.replace(" ", "");
+        return normalized.equals("익명")
+                || normalized.equals("자유게시판")
+                || normalized.equals("비밀게시판")
+                || normalized.equals("핫게시판");
     }
 
     public void crawlLectureAndSave(String lectureUrl, int startPage, int endPage) {

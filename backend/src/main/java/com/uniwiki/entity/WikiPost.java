@@ -31,7 +31,7 @@ public class WikiPost {
     private String title;
 
     @Lob
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "MEDIUMTEXT")
     private String content;
 
     @Column(length = 500)
@@ -85,6 +85,10 @@ public class WikiPost {
     // 조회수 증가
     public void increaseViewCount() {
         this.viewCount++;
+    }
+
+    public void publish() {
+        this.status = WikiPostStatus.APPROVED;
     }
 
     @PrePersist

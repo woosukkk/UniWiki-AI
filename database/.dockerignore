@@ -1,0 +1,4 @@
+*
+!*.sql
+!deploy-entrypoint.sh
+!Dockerfile

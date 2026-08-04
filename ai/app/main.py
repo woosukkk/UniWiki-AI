@@ -3,7 +3,7 @@ from functools import lru_cache
 from fastapi import Depends, FastAPI, HTTPException, Query, Response, status
 
 from app.config import settings
-from app.embedder import SentenceTransformerEmbedder
+from app.embedder import FastEmbedEmbedder
 from app.embedding_service import WikiEmbeddingService
 from app.models import (
     HealthResponse,
@@ -39,7 +39,7 @@ app = FastAPI(
 
 @lru_cache(maxsize=1)
 def get_embedding_service() -> WikiEmbeddingService:
-    embedder = SentenceTransformerEmbedder(settings.embedding_model)
+    embedder = FastEmbedEmbedder(settings.embedding_model)
     return WikiEmbeddingService(
         embedder=embedder,
         max_chars=settings.chunk_max_chars,

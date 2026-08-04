@@ -44,7 +44,10 @@ export const api = {
   signup: (payload) => request({ url: '/api/users/signup', method: 'POST', data: payload }),
   getMe: () => request({ url: '/api/users/me' }),
   getWikiPosts: () => request({ url: '/api/wiki-posts' }),
-  searchWikiPosts: (keyword) => request({ url: '/api/wiki-posts/search', params: { keyword } }),
+  searchWikiPosts: (keyword, source = 'ALL', contentType = null) => request({
+    url: '/api/wiki-posts/search',
+    params: { keyword, source, contentType },
+  }),
   getWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}` }),
   getWikiPostLikes: (wikiPostId, authenticated = false) => request({ url: `/api/wiki-posts/${wikiPostId}/likes${authenticated ? '' : '/count'}` }),
   likeWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}/likes`, method: 'POST' }),

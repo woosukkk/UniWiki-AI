@@ -1,0 +1,7 @@
+USE uniwiki_ai;
+
+ALTER TABLE wiki_posts
+    MODIFY COLUMN content MEDIUMTEXT NOT NULL;
+
+ALTER TABLE wiki_versions
+    MODIFY COLUMN content MEDIUMTEXT NOT NULL;

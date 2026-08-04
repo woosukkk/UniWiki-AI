@@ -79,6 +79,9 @@ AGENTS.md
 *.tmp
 *.temp
 .mysql-local/
+.mysql-data/
+.run-logs/
+.gradle-cache/
 
 # Backend - Gradle
 backend/.gradle/

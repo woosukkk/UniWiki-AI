@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface RawCommunityPostRepository extends JpaRepository<RawCommunityPost, Long> {
+    boolean existsBySourceUrl(String sourceUrl);
+    java.util.List<RawCommunityPost> findTop100ByIsProcessedFalseOrderByIdAsc();
 }
