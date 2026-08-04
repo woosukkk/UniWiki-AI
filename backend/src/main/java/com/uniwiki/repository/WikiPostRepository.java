@@ -5,8 +5,24 @@ import com.uniwiki.entity.WikiPostStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.time.LocalDateTime;
+import org.springframework.data.jpa.repository.Query;
 
 public interface WikiPostRepository extends JpaRepository<WikiPost, Long> {
+
+    long countByStatus(WikiPostStatus status);
+
+    @Query("""
+            select p.category.id, p.category.name, p.category.description, count(p)
+            from WikiPost p
+            where p.status = :status
+            group by p.category.id, p.category.name, p.category.description
+            order by count(p) desc, p.category.name asc
+            """)
+    List<Object[]> summarizeCategoriesByStatus(WikiPostStatus status);
+
+    @Query("select max(p.updatedAt) from WikiPost p where p.status = :status")
+    LocalDateTime findLatestUpdatedAtByStatus(WikiPostStatus status);
 
     // 최신순 전체 조회
     List<WikiPost> findAllByOrderByCreatedAtDesc();

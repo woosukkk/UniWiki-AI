@@ -10,7 +10,8 @@ RUN ./gradlew clean bootJar --no-daemon
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
-RUN addgroup -S uniwiki \
+RUN apk add --no-cache curl \
+    && addgroup -S uniwiki \
     && adduser -S -u 10001 -h /home/uniwiki -G uniwiki uniwiki \
     && chown -R uniwiki:uniwiki /home/uniwiki
 COPY --from=build /workspace/build/libs/*.jar app.jar

@@ -16,4 +16,13 @@ public interface EverytimeWikiDocumentRepository extends JpaRepository<Everytime
 
     @Query("select d.wikiPost.id from EverytimeWikiDocument d")
     List<Long> findAllWikiPostIds();
+
+    @Query("""
+            select d.contentType, count(d)
+            from EverytimeWikiDocument d
+            where d.wikiPost.status = com.uniwiki.entity.WikiPostStatus.APPROVED
+            group by d.contentType
+            order by d.contentType
+            """)
+    List<Object[]> summarizeApprovedByContentType();
 }
