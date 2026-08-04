@@ -37,6 +37,12 @@ uniwiki:
   vector-sync:
     interval-ms: 60000
     max-attempts: 5
+  official-sources:
+    scheduler-enabled: ${OFFICIAL_SOURCE_SCHEDULER_ENABLED:false}
+    interval-ms: ${OFFICIAL_SOURCE_INTERVAL_MS:3600000}
+    max-articles-per-run: ${OFFICIAL_SOURCE_MAX_ARTICLES:20}
+    author-id: ${OFFICIAL_SOURCE_AUTHOR_ID:1}
+    allowed-host-suffixes: ${OFFICIAL_SOURCE_ALLOWED_HOST_SUFFIXES:sejong.ac.kr}
   everytime:
     course-data-path: ${EVERYTIME_COURSE_DATA_PATH:../ai/data/normalized/sejong/software-course-schedules.json}
     crawl-enabled: ${EVERYTIME_CRAWL_ENABLED:true}
