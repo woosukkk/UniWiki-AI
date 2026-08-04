@@ -11,12 +11,14 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.core.annotation.Order;
 
 import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Order(20)
 @ConditionalOnProperty(name = "uniwiki.official-sources.bootstrap-enabled", havingValue = "true")
 public class OfficialSourceBootstrap implements ApplicationRunner {
 

@@ -38,6 +38,7 @@ frontend/.vite/
 backend/.gradle/
 backend/build/
 backend/out/
+backend/data/
 
 # =========================================================
 # Java

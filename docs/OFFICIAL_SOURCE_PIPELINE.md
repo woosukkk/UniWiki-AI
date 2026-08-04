@@ -94,3 +94,25 @@ OFFICIAL_ATTACHMENT_MAX_TEXT_LENGTH=50000
 ```
 
 초기 운영 확인 때는 `OFFICIAL_SOURCE_MAX_ARTICLES=5`, `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`로 소량 수집한 뒤 결과를 확인한다. 이후 시작 시 수집을 끄고 스케줄러를 켠다. 등록된 공식 출처는 수집 직후 게시되고 벡터 동기화 작업에 들어간다.
+
+## 로컬 확인
+
+Docker나 별도 MySQL 없이 H2 파일 DB로 공식 자료와 첨부파일을 확인할 수 있다.
+
+```powershell
+cd backend
+.\gradlew.bat bootRun --args="--spring.profiles.active=local"
+```
+
+로컬 프로필은 카테고리와 공식 작성자를 초기화하고 공식 출처별 최신 5건을 수집해 자동 게시한다. DB 파일은 `backend/data/`에 생성되며 Git에 포함되지 않는다.
+
+프론트 실행:
+
+```powershell
+cd frontend
+npm.cmd run dev -- --host 127.0.0.1
+```
+
+- 프론트: `http://127.0.0.1:5173`
+- 백엔드: `http://localhost:8080`
+- Swagger: `http://localhost:8080/swagger-ui/index.html`
