@@ -14,6 +14,9 @@ import './styles/wiki.css';
 import './styles/questions.css';
 import './styles/chatbot.css';
 import './styles/mypage.css';
+import './styles/auth.css';
+import './styles/admin.css';
+import './styles/responsive.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
