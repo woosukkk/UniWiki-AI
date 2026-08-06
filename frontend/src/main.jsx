@@ -13,6 +13,7 @@ import './styles/data-map.css';
 import './styles/wiki.css';
 import './styles/questions.css';
 import './styles/chatbot.css';
+import './styles/mypage.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
