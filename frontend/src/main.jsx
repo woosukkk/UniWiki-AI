@@ -11,6 +11,7 @@ import './styles/layout.css';
 import './styles/home.css';
 import './styles/data-map.css';
 import './styles/wiki.css';
+import './styles/questions.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
