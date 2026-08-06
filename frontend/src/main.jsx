@@ -10,6 +10,7 @@ import './styles.css';
 import './styles/layout.css';
 import './styles/home.css';
 import './styles/data-map.css';
+import './styles/wiki.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
