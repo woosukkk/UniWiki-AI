@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 @Order(21)
-@ConditionalOnProperty(name = "uniwiki.official-sources.bootstrap-enabled", havingValue = "true")
 public class PinnedWikiBootstrap implements ApplicationRunner {
 
     private static final String SOURCE_TITLE = "UniWiki 공식 데이터 출처 안내";
