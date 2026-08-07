@@ -30,7 +30,7 @@ uniwiki:
     allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   promotion:
     like-threshold: 3
-    category-name: FAQ
+    category-name: 함께 만들어낸 위키
     cron: "0 0 3 * * *"
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL:http://localhost:8000}
@@ -78,6 +78,7 @@ uniwiki:
   everytime-community:
     interval-ms: ${EVERYTIME_COMMUNITY_INTERVAL_MS:10000}
     minimum-score: ${EVERYTIME_COMMUNITY_MINIMUM_SCORE:50}
+    author-id: ${EVERYTIME_COMMUNITY_AUTHOR_ID:1}
   lecture-review-workflow:
     interval-ms: ${LECTURE_REVIEW_WORKFLOW_INTERVAL_MS:10000}
     author-id: ${LECTURE_REVIEW_AUTHOR_ID:1}

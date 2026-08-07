@@ -1,5 +1,6 @@
 package com.uniwiki.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uniwiki.entity.*;
 import com.uniwiki.repository.CategoryRepository;
 import com.uniwiki.repository.CourseEvaluationRepository;
@@ -32,6 +33,7 @@ public class EverytimeCrawlerService {
 
     private final CommunityPostTransferService communityPostTransferService;
     private final com.uniwiki.repository.RawLectureEvaluationRepository rawLectureEvaluationRepository;
+    private final ObjectMapper objectMapper;
     
     private static final Logger logger = LoggerFactory.getLogger(EverytimeCrawlerService.class);
 
@@ -196,7 +198,7 @@ public class EverytimeCrawlerService {
                             content, 
                             likesCount,
                             commentsCount,
-                            "[]"
+                            serializeComments(detailDocument)
                     ));
                 }
 
@@ -403,6 +405,23 @@ public class EverytimeCrawlerService {
             }
         }
     }
+    private String serializeComments(Document detailDocument) {
+        if (detailDocument == null) return "[]";
 
-
+        java.util.List<String> comments = detailDocument
+                .select("div.comments article p.text, div.comments article div.text, "
+                        + "div.comments div.comment p.text, div.comments div.comment div.text")
+                .eachText()
+                .stream()
+                .map(String::trim)
+                .filter(comment -> !comment.isBlank())
+                .distinct()
+                .limit(30)
+                .toList();
+        try {
+            return objectMapper.writeValueAsString(comments);
+        } catch (Exception ignored) {
+            return "[]";
+        }
+    }
 }

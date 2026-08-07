@@ -65,7 +65,7 @@
 
 .wiki-source-tabs {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   margin-bottom: 0;
   border: 1px solid var(--ui-black);
 }
@@ -233,6 +233,24 @@
 .sync-completed { color: #176b3a; background: #e2f5e9; }
 .sync-failed { color: #a52622; background: #fde6e5; }
 .sync-pending { color: #6a4b00; background: #fff0bd; }
+
+.editorial-question-source-badge {
+  padding: 4px 7px;
+  color: var(--ui-blue);
+  border: 1px solid var(--ui-blue);
+  font-family: var(--ui-font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.editorial-question-source-link {
+  display: inline-block;
+  margin-top: 20px;
+  color: var(--ui-blue);
+  font-family: var(--ui-font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
 
 @media (max-width: 960px) {
   .wiki-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }

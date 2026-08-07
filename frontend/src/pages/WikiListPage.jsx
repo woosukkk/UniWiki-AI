@@ -12,8 +12,7 @@ export function WikiListPage() {
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword') || '';
-  const source = searchParams.get('source') || 'official';
-  const contentType = searchParams.get('type') || 'all';
+  const source = 'official';
   const categoryId = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'latest';
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
@@ -31,9 +30,7 @@ export function WikiListPage() {
         api.searchWikiPosts(
           keyword,
           source === 'everytime' ? 'EVERYTIME' : 'OFFICIAL',
-          source === 'everytime' && contentType !== 'all'
-            ? contentType.replaceAll('-', '_').toUpperCase()
-            : null,
+          source === 'everytime' ? 'LECTURE_REVIEW' : null,
         ),
         api.getCategories(),
       ]);
@@ -44,7 +41,7 @@ export function WikiListPage() {
     } finally {
       setLoading(false);
     }
-  }, [keyword, source, contentType]);
+  }, [keyword, source]);
 
   useEffect(() => {
     setSearchInput(keyword);
@@ -97,32 +94,7 @@ export function WikiListPage() {
           className={source === 'official' ? 'active' : ''}
           onClick={() => updateParams({ source: '', type: '', category: '', page: '' })}
         >공식·학교 위키</button>
-        <button
-          className={source === 'everytime' ? 'active' : ''}
-          onClick={() => updateParams({ source: 'everytime', type: '', category: '', page: '' })}
-        >에브리타임 자료</button>
       </nav>
-
-      {source === 'everytime' && (
-        <nav className="wiki-content-tabs" aria-label="에브리타임 자료 분류">
-          {[
-            ['all', '전체'],
-            ['lecture-review', '강의평'],
-            ['academic', '수강·학사'],
-            ['scholarship', '장학·지원'],
-            ['facilities', '시설·통학·학식'],
-            ['career', '진로·취업'],
-            ['club-event', '동아리·행사'],
-            ['school-life', '학교생활 팁'],
-          ].map(([value, label]) => (
-            <button
-              key={value}
-              className={contentType === value ? 'active' : ''}
-              onClick={() => updateParams({ type: value === 'all' ? '' : value, page: '' })}
-            >{label}</button>
-          ))}
-        </nav>
-      )}
 
       <section className="wiki-toolbar" aria-label="위키 검색 및 필터">
         <form className="wiki-search" onSubmit={submitSearch}>

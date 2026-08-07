@@ -78,7 +78,11 @@ public class QuestionLikeService {
     }
 
     private LikeDto.Response response(Long questionId, boolean liked) {
-        long likeCount = likeRepository.countByTargetTypeAndTargetId(TARGET_TYPE, questionId);
+        long externalLikeCount = questionRepository.findById(questionId)
+                .map(com.uniwiki.entity.Question::getExternalLikeCount)
+                .orElse(0L);
+        long likeCount = externalLikeCount
+                + likeRepository.countByTargetTypeAndTargetId(TARGET_TYPE, questionId);
         return new LikeDto.Response(questionId, likeCount, liked);
     }
 

@@ -1,5 +1,7 @@
 package com.uniwiki.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uniwiki.entity.*;
 import com.uniwiki.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -25,11 +27,13 @@ public class CommunityPostWikiWorkflowService {
     private final RawCommunityPostRepository rawRepository;
     private final EverytimeWikiDocumentRepository documentRepository;
     private final WikiPostRepository wikiPostRepository;
-    private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final WikiVectorSyncService vectorSyncService;
+    private final QuestionRepository questionRepository;
+    private final AnswerRepository answerRepository;
+    private final ObjectMapper objectMapper;
 
-    @Value("${uniwiki.lecture-review-workflow.author-id:1}")
+    @Value("${uniwiki.everytime-community.author-id:1}")
     private Long authorId;
 
     @Value("${uniwiki.everytime-community.minimum-score:50}")
@@ -37,8 +41,12 @@ public class CommunityPostWikiWorkflowService {
 
     @Transactional
     public Result processPending() {
+        List<RawCommunityPost> acceptedLegacy = rawRepository
+                .findUnmigratedByStatus(CommunityPostProcessingStatus.ACCEPTED);
+        acceptedLegacy.forEach(this::publishQuestion);
+
         List<RawCommunityPost> pending = rawRepository.findTop100ByIsProcessedFalseOrderByIdAsc();
-        int accepted = 0;
+        int accepted = acceptedLegacy.size();
         int rejected = 0;
         for (RawCommunityPost raw : pending) {
             Evaluation evaluation = evaluate(raw);
@@ -48,10 +56,10 @@ public class CommunityPostWikiWorkflowService {
                 continue;
             }
             raw.accept(evaluation.score(), evaluation.contentType(), evaluation.sanitizedContent());
-            publish(raw);
+            publishQuestion(raw);
             accepted++;
         }
-        return new Result(pending.size(), accepted, rejected);
+        return new Result(pending.size() + acceptedLegacy.size(), accepted, rejected);
     }
 
     @Transactional
@@ -136,26 +144,52 @@ public class CommunityPostWikiWorkflowService {
         };
     }
 
-    private void publish(RawCommunityPost raw) {
-        Category category = categoryRepository.findByName("학교생활")
-                .or(() -> categoryRepository.findByName("교과목"))
-                .orElseThrow(() -> new IllegalStateException("에브리타임 위키 카테고리를 찾을 수 없습니다."));
+    private void publishQuestion(RawCommunityPost raw) {
         User author = userRepository.findById(authorId)
-                .orElseThrow(() -> new IllegalStateException("에브리타임 위키 작성자를 찾을 수 없습니다."));
-        String title = raw.getTitle().length() > 180 ? raw.getTitle().substring(0, 180) : raw.getTitle();
-        String content = "# " + title + "\n\n"
-                + "## 정제된 핵심 내용\n\n" + raw.getSanitizedContent() + "\n\n"
-                + "## 자료 성격\n\n"
-                + "- 학생 커뮤니티의 경험성 정보를 자동 정제한 자료입니다.\n"
-                + "- 정보성 점수: " + raw.getUsefulnessScore() + "점\n"
-                + "- 추천 " + raw.getLikesCount() + "개, 댓글 " + raw.getCommentsCount() + "개\n"
-                + "- 공식 규정이나 공지는 학교 홈페이지에서 다시 확인해야 합니다.\n";
-        String summary = "에브리타임 핫 게시판의 정보성 게시물을 개인정보·잡담 필터링 후 정리한 자료입니다.";
+                .orElseThrow(() -> new IllegalStateException("Everytime question author was not found."));
+        String rawTitle = raw.getTitle().strip();
+        String title = rawTitle.endsWith("?")
+                ? rawTitle
+                : rawTitle + " 관련 정보가 궁금합니다";
+        if (title.length() > 200) title = title.substring(0, 200);
 
-        WikiPost wikiPost = wikiPostRepository.save(new WikiPost(
-                category, author, title, content, summary, WikiPostStatus.APPROVED));
-        documentRepository.save(new EverytimeWikiDocument(raw.getSourceUrl(), raw.getContentType(), wikiPost));
-        vectorSyncService.enqueueUpsert(wikiPost);
+        String content = raw.getSanitizedContent() + "\n\n"
+                + "---\n"
+                + "학생 커뮤니티에서 수집된 내용을 질문으로 정리했습니다. "
+                + "경험이나 공식 근거를 포함한 답변을 남겨주세요.\n"
+                + "정보성 점수 " + raw.getUsefulnessScore() + "점 · 추천 "
+                + raw.getLikesCount() + "개 · 댓글 " + raw.getCommentsCount() + "개";
+
+        Question question = questionRepository.save(new Question(
+                author,
+                title,
+                content,
+                "EVERYTIME",
+                raw.getSourceUrl(),
+                raw.getLikesCount()
+        ));
+
+        parseComments(raw.getCommentsJson()).stream()
+                .map(this::sanitizeComment)
+                .filter(comment -> !comment.isBlank())
+                .limit(30)
+                .forEach(comment -> answerRepository.save(new Answer(question, author, comment)));
+    }
+
+    private List<String> parseComments(String commentsJson) {
+        if (commentsJson == null || commentsJson.isBlank()) return List.of();
+        try {
+            return objectMapper.readValue(commentsJson, new TypeReference<>() { });
+        } catch (Exception ignored) {
+            return List.of();
+        }
+    }
+
+    private String sanitizeComment(String comment) {
+        String sanitized = PERSONAL.matcher(comment).replaceAll("[개인정보 제거]");
+        sanitized = URL.matcher(sanitized).replaceAll("[외부 링크 제거]");
+        sanitized = sanitized.replaceAll("\\s+", " ").trim();
+        return sanitized.length() > 1000 ? sanitized.substring(0, 1000) : sanitized;
     }
 
     private boolean containsAny(String text, String... keywords) {
