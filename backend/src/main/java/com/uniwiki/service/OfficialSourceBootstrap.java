@@ -28,6 +28,8 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
             "a[data-article-no][href*='mode=view']";
     private static final String TOSC_LIST_SELECTOR =
             "a[href*='/cusomter_support/notice/view/']";
+    private static final String UDREAM_PROGRAM_LIST_SELECTOR =
+            "li[onclick*='goView']";
     private static final String TITLE_SELECTOR = ".b-title-box > .b-title";
     private static final String CONTENT_SELECTOR = ".b-content-box";
     private static final String TOSC_TITLE_SELECTOR = "meta[property=og:title]";
@@ -113,7 +115,10 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
                         TITLE_SELECTOR, CONTENT_SELECTOR),
                 new DefaultSource("세종대학교 TOSC 공지", "인증제도", null,
                         "https://tosc.sejong.ac.kr/ko/cusomter_support/notice", TOSC_LIST_SELECTOR,
-                        TOSC_TITLE_SELECTOR, TOSC_CONTENT_SELECTOR)
+                        TOSC_TITLE_SELECTOR, TOSC_CONTENT_SELECTOR),
+                new DefaultSource("세종대학교 uDream 비교과·진로 프로그램", "진로·취업", careerCategoryId,
+                        "https://udream.sejong.ac.kr/Career/CareerTask/ProgramList.aspx",
+                        UDREAM_PROGRAM_LIST_SELECTOR, "#Title", "#programInfo, #Info")
         );
     }
 

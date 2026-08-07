@@ -13,7 +13,7 @@ class OfficialSourcePipelineServiceTest {
             new OfficialSourcePipelineService(null, null, null, null, null, null, null, null, null);
 
     @Test
-    void buildsListPageUrlsForSejongAndToscBoards() {
+    void buildsListPageUrlsForSupportedBoards() {
         assertThat(service.listPageUrl(
                 "https://www.sejong.ac.kr/kor/intro/notice3.do", 3))
                 .isEqualTo("https://www.sejong.ac.kr/kor/intro/notice3.do"
@@ -21,6 +21,23 @@ class OfficialSourcePipelineServiceTest {
         assertThat(service.listPageUrl(
                 "https://tosc.sejong.ac.kr/ko/cusomter_support/notice", 3))
                 .isEqualTo("https://tosc.sejong.ac.kr/ko/cusomter_support/notice?p=3");
+        assertThat(service.listPageUrl(
+                "https://udream.sejong.ac.kr/Career/CareerTask/ProgramList.aspx", 3))
+                .isEqualTo("https://udream.sejong.ac.kr/Career/CareerTask/ProgramList.aspx?rp=3");
+    }
+
+    @Test
+    void extractsUdreamProgramUrlFromOnclick() {
+        OfficialSource source = new OfficialSource(null, "uDream",
+                "https://udream.sejong.ac.kr/Career/CareerTask/ProgramList.aspx",
+                "li[onclick]", "#Title", "#Info", true);
+        Document document = Jsoup.parse("""
+                <li onclick="javascript:goView('C633F505CDA2E669B80E42B7E8C5015D')"></li>
+                """);
+
+        assertThat(service.articleUrl(source, document.selectFirst("li")))
+                .isEqualTo("https://udream.sejong.ac.kr/community/Program/programView.aspx"
+                        + "?pgdx=C633F505CDA2E669B80E42B7E8C5015D");
     }
 
     @Test

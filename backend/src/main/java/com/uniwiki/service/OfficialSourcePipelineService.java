@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 
@@ -282,7 +284,7 @@ public class OfficialSourcePipelineService {
             Document listPage = fetch(listUrl);
             Set<String> pageUrls = new LinkedHashSet<>();
             for (Element link : listPage.select(source.getArticleLinkSelector())) {
-                String url = canonicalArticleUrl(link.absUrl("href"));
+                String url = canonicalArticleUrl(articleUrl(source, link));
                 if (url.isBlank() || url.length() > 500 || !discovered.add(url)) continue;
                 requireAllowedUrl(url);
                 pageUrls.add(url);
@@ -293,8 +295,8 @@ public class OfficialSourcePipelineService {
                 boolean exists = rawRepository
                         .findByOfficialSource_IdAndSourceUrl(source.getId(), articleUrl)
                         .isPresent();
-                if (!exists && unseen.size() < maxArticlesPerRun) {
-                    unseen.add(articleUrl);
+                if (!exists) {
+                    if (unseen.size() < maxArticlesPerRun) unseen.add(articleUrl);
                 } else if (page == 1 && recent.size() < maxRecentArticlesPerRun) {
                     recent.add(articleUrl);
                 }
@@ -308,12 +310,27 @@ public class OfficialSourcePipelineService {
 
     String listPageUrl(String listUrl, int page) {
         if (page <= 1) return listUrl;
+        if (listUrl.contains("udream.sejong.ac.kr")) {
+            return listUrl + (listUrl.contains("?") ? "&" : "?") + "rp=" + page;
+        }
         if (listUrl.contains("tosc.sejong.ac.kr")) {
             return listUrl + (listUrl.contains("?") ? "&" : "?") + "p=" + page;
         }
         int offset = (page - 1) * 100;
         return listUrl + (listUrl.contains("?") ? "&" : "?")
                 + "mode=list&articleLimit=100&article.offset=" + offset;
+    }
+
+    String articleUrl(OfficialSource source, Element link) {
+        String href = link.absUrl("href");
+        if (!href.isBlank()) return href;
+        if (!source.getListUrl().contains("udream.sejong.ac.kr")) return "";
+
+        Matcher matcher = Pattern.compile("goView\\(['\"]([A-Fa-f0-9]+)['\"]\\)")
+                .matcher(link.attr("onclick"));
+        if (!matcher.find()) return "";
+        return "https://udream.sejong.ac.kr/community/Program/programView.aspx?pgdx="
+                + matcher.group(1);
     }
 
     String canonicalArticleUrl(String value) {
