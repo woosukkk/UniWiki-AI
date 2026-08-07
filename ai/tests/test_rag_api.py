@@ -94,6 +94,33 @@ def test_deduplicates_sources_from_chunks_of_the_same_wiki_post() -> None:
     ]
 
 
+def test_uses_expanded_chunks_from_selected_wiki_document() -> None:
+    class ExpandingSearchService(FakeSearchService):
+        def expand_results(self, results):
+            return [search_result(chunk_index=0), search_result(chunk_index=1)]
+
+    search_service = ExpandingSearchService([search_result(chunk_index=0)])
+    language_model = FakeLanguageModel()
+    service = RagAnswerService(
+        search_service,
+        language_model,
+        top_k=4,
+        min_score=0.4,
+        max_context_chars=1000,
+    )
+    app.dependency_overrides[get_rag_service] = lambda: service
+
+    response = TestClient(app).post(
+        "/api/rag/answers",
+        json={"question": "장학금 종류를 모두 알려줘"},
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["retrievedChunkCount"] == 2
+    assert "[문서 2]" in language_model.calls[0][1]
+
+
 def test_returns_service_unavailable_when_api_key_is_missing() -> None:
     override_service([search_result()], FakeLanguageModel(error=LlmConfigurationError("missing")))
     response = TestClient(app).post("/api/rag/answers", json={"question": "수강신청은 어디서 하나요?"})

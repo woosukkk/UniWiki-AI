@@ -20,6 +20,7 @@ public class QuestionService {
 
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    private final QuestionWikiPromotionService questionWikiPromotionService;
 
     // 질문 생성
     @Transactional
@@ -72,6 +73,7 @@ public class QuestionService {
                 request.getTitle(),
                 request.getContent()
         );
+        questionWikiPromotionService.refreshIfPromoted(questionId);
 
         return QuestionDto.Response.from(question);
     }

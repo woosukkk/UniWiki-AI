@@ -102,4 +102,18 @@ public class RawCommunityPost {
         this.isProcessed = true;
         this.processedAt = LocalDateTime.now();
     }
+
+    public void refresh(String boardType, String title, String content,
+                        int likesCount, int commentsCount, String commentsJson) {
+        this.boardType = boardType;
+        this.title = title;
+        this.content = content;
+        this.likesCount = Math.max(0, likesCount);
+        this.commentsCount = Math.max(0, commentsCount);
+        this.commentsJson = commentsJson;
+        this.isProcessed = false;
+        this.processingStatus = CommunityPostProcessingStatus.PENDING;
+        this.processingNote = null;
+        this.processedAt = null;
+    }
 }

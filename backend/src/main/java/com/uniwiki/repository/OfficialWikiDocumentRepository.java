@@ -8,7 +8,14 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 
 public interface OfficialWikiDocumentRepository extends JpaRepository<OfficialWikiDocument, Long> {
+    boolean existsByTopicKeyIsNull();
+    boolean existsByTopicKeyLike(String pattern);
+
     Optional<OfficialWikiDocument> findByRawDocument_Id(Long rawDocumentId);
+
+    List<OfficialWikiDocument> findByTopicKeyOrderByIdAsc(String topicKey);
+
+    List<OfficialWikiDocument> findByWikiPost_IdOrderByRawDocument_IdAsc(Long wikiPostId);
 
     @Query("""
             select d.wikiPost.id, d.wikiPost.category.id

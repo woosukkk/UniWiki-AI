@@ -19,13 +19,20 @@ public class JwtUtil {
     private final SecretKey key;
     
     // 토큰 만료 시간 (예: 24시간)
-    private final long EXPIRATION_TIME = 1000L * 60 * 60 * 24;
+    private final long expirationTime;
 
-    public JwtUtil(@Value("${uniwiki.jwt.secret}") String secret) {
+    public JwtUtil(
+            @Value("${uniwiki.jwt.secret}") String secret,
+            @Value("${uniwiki.jwt.expiration-ms:2592000000}") long expirationTime
+    ) {
         if (secret == null || secret.length() < 32) {
             throw new IllegalStateException("JWT_SECRET은 32자 이상이어야 합니다.");
         }
         this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        if (expirationTime <= 0) {
+            throw new IllegalStateException("JWT expiration time must be positive.");
+        }
+        this.expirationTime = expirationTime;
     }
 
     /**
@@ -36,7 +43,7 @@ public class JwtUtil {
                 .subject(email) // 토큰의 주인을 이메일로 설정
                 .claim("userId", userId) // 추가 정보로 유저 ID 저장
                 .issuedAt(new Date()) // 발행 시간
-                .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME)) // 만료 시간
+                .expiration(new Date(System.currentTimeMillis() + expirationTime)) // 만료 시간
                 .signWith(key) // 비밀키로 서명
                 .compact();
     }
@@ -64,6 +71,13 @@ public class JwtUtil {
                 .parseSignedClaims(token)
                 .getPayload();
                 
-        return claims.get("userId", Long.class);
+        Object userId = claims.get("userId");
+        if (userId instanceof Number number) {
+            return number.longValue();
+        }
+        if (userId instanceof String value) {
+            return Long.parseLong(value);
+        }
+        throw new IllegalArgumentException("Token does not contain a valid userId.");
     }
 }

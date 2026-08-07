@@ -1,0 +1,284 @@
+/* =========================================================
+   UniWiki Editorial Authentication
+   Login / Signup
+   ========================================================= */
+
+.editorial-auth-page {
+  min-height: calc(100vh - 82px);
+  display: grid;
+  grid-template-columns: minmax(360px, 0.85fr) minmax(0, 1.15fr);
+  color: var(--ui-black);
+  background: var(--ui-white);
+}
+
+.editorial-auth-visual {
+  position: relative;
+  min-height: 720px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(36px, 5vw, 72px);
+  color: var(--ui-white);
+  background: var(--ui-black);
+}
+
+.editorial-auth-visual-label,
+.editorial-auth-form-label {
+  font-family: var(--ui-font-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+
+.editorial-auth-visual-label {
+  color: var(--ui-blue);
+}
+
+.editorial-auth-visual h1 {
+  position: relative;
+  z-index: 2;
+  margin: auto 0 30px;
+  font-size: clamp(3rem, 6vw, 6.5rem);
+  line-height: 0.96;
+  letter-spacing: -0.07em;
+}
+
+.editorial-auth-visual h1 em {
+  color: var(--ui-blue);
+  font-style: normal;
+}
+
+.editorial-auth-visual > p {
+  position: relative;
+  z-index: 2;
+  max-width: 500px;
+  margin: 0;
+  color: var(--ui-gray-300);
+  line-height: 1.8;
+  word-break: keep-all;
+}
+
+.editorial-auth-visual-meta {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 54px;
+  padding-top: 22px;
+  border-top: 1px solid var(--ui-dark-border);
+  font-family: var(--ui-font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+}
+
+.editorial-auth-visual-circle {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+}
+
+.editorial-auth-visual-circle.circle-one {
+  top: 90px;
+  right: -80px;
+  width: 330px;
+  height: 330px;
+}
+
+.editorial-auth-visual-circle.circle-two {
+  top: 155px;
+  right: -15px;
+  width: 200px;
+  height: 200px;
+}
+
+.editorial-auth-visual-circle.circle-three {
+  top: 220px;
+  right: 50px;
+  width: 70px;
+  height: 70px;
+  background: var(--ui-blue);
+  border-color: var(--ui-blue);
+}
+
+.editorial-auth-form-area {
+  display: grid;
+  place-items: center;
+  padding: 64px var(--ui-page-padding);
+}
+
+.editorial-auth-form-card {
+  width: min(100%, 520px);
+}
+
+.editorial-auth-form-label {
+  color: var(--ui-blue);
+}
+
+.editorial-auth-form-card h2 {
+  margin: 20px 0 14px;
+  font-size: clamp(2.6rem, 5vw, 4.8rem);
+  line-height: 1;
+  letter-spacing: -0.065em;
+}
+
+.editorial-auth-form-description {
+  margin: 0 0 44px;
+  color: var(--ui-gray-500);
+  line-height: 1.75;
+}
+
+.editorial-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.editorial-auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.editorial-auth-form label > span {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--ui-font-mono);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.editorial-auth-form label > span small {
+  color: var(--ui-gray-500);
+  font-weight: 400;
+}
+
+.editorial-auth-form input,
+.editorial-auth-form select {
+  width: 100%;
+  min-height: 56px;
+  padding: 0 16px;
+  color: var(--ui-black);
+  background: var(--ui-white);
+  border: 1px solid var(--ui-border);
+  outline: 0;
+  font: inherit;
+}
+
+.editorial-auth-form input:focus,
+.editorial-auth-form select:focus {
+  border-color: var(--ui-blue);
+  box-shadow: 0 0 0 1px var(--ui-blue);
+}
+
+.editorial-auth-error {
+  padding: 14px 16px;
+  color: var(--ui-red);
+  border: 1px solid var(--ui-red);
+  line-height: 1.6;
+}
+
+.editorial-auth-submit {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  color: var(--ui-white);
+  background: var(--ui-blue);
+  border: 1px solid var(--ui-blue);
+  font-family: var(--ui-font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.editorial-auth-submit:hover:not(:disabled) {
+  background: var(--ui-black);
+  border-color: var(--ui-black);
+}
+
+.editorial-auth-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.editorial-auth-footer {
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--ui-border);
+  color: var(--ui-gray-500);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.editorial-auth-footer a {
+  margin-left: 8px;
+  color: var(--ui-blue);
+  font-weight: 700;
+}
+
+.editorial-auth-footer a:hover {
+  color: var(--ui-black);
+}
+
+.editorial-auth-helper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: var(--ui-gray-500);
+  font-size: 0.75rem;
+}
+
+.editorial-auth-helper label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.editorial-auth-helper input {
+  width: auto;
+  min-height: auto;
+}
+
+@media (max-width: 900px) {
+  .editorial-auth-page {
+    grid-template-columns: 1fr;
+  }
+
+  .editorial-auth-visual {
+    min-height: 450px;
+  }
+
+  .editorial-auth-visual h1 {
+    margin-top: 120px;
+  }
+}
+
+@media (max-width: 560px) {
+  .editorial-auth-visual {
+    min-height: 390px;
+    padding: 38px 20px;
+  }
+
+  .editorial-auth-visual h1 {
+    margin-top: 90px;
+    font-size: clamp(3rem, 15vw, 4.6rem);
+  }
+
+  .editorial-auth-visual-meta {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .editorial-auth-form-area {
+    padding: 56px 20px;
+  }
+
+  .editorial-auth-form-card h2 {
+    font-size: 3rem;
+  }
+}

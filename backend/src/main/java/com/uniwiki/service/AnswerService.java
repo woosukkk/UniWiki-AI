@@ -23,6 +23,7 @@ public class AnswerService {
     private final AnswerRepository answerRepository;
     private final QuestionRepository questionRepository;
     private final UserRepository userRepository;
+    private final QuestionWikiPromotionService questionWikiPromotionService;
 
     @Transactional
     public AnswerDto.Response create(
@@ -33,8 +34,11 @@ public class AnswerService {
         User author = findUser(loginUserId);
         Question question = findQuestion(questionId);
 
-        Answer answer = new Answer(question, author, request.getContent());
-        return AnswerDto.Response.from(answerRepository.save(answer));
+        Answer answer = answerRepository.save(
+                new Answer(question, author, request.getContent())
+        );
+        questionWikiPromotionService.refreshIfPromoted(questionId);
+        return AnswerDto.Response.from(answer);
     }
 
     public List<AnswerDto.Response> findByQuestionId(Long questionId) {
@@ -55,6 +59,9 @@ public class AnswerService {
         Answer answer = findAnswer(answerId);
         validateAuthor(answer, loginUserId);
         answer.update(request.getContent());
+        questionWikiPromotionService.refreshIfPromoted(
+                answer.getQuestion().getId()
+        );
 
         return AnswerDto.Response.from(answer);
     }
@@ -63,7 +70,10 @@ public class AnswerService {
     public void delete(Long loginUserId, Long answerId) {
         Answer answer = findAnswer(answerId);
         validateAuthor(answer, loginUserId);
+        Long questionId = answer.getQuestion().getId();
         answerRepository.delete(answer);
+        answerRepository.flush();
+        questionWikiPromotionService.refreshIfPromoted(questionId);
     }
 
     @Transactional

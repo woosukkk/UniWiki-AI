@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Core colors */
+  --ui-black: #101010;
+  --ui-white: #ffffff;
+  --ui-blue: #2455ff;
+  --ui-blue-dark: #173ecf;
+  --ui-blue-light: #e9eeff;
+  --ui-red: #e3322d;
+
+  /* Neutral colors */
+  --ui-gray-50: #fafafa;
+  --ui-gray-100: #f3f3f3;
+  --ui-gray-200: #e5e5e5;
+  --ui-gray-300: #cccccc;
+  --ui-gray-500: #777777;
+  --ui-gray-700: #3b3b3b;
+  --ui-gray-900: #171717;
+
+  /* Semantic colors */
+  --ui-background: var(--ui-white);
+  --ui-surface: var(--ui-white);
+  --ui-surface-dark: var(--ui-black);
+  --ui-text-primary: var(--ui-black);
+  --ui-text-secondary: var(--ui-gray-500);
+  --ui-text-inverse: var(--ui-white);
+  --ui-border: var(--ui-gray-300);
+  --ui-border-dark: #333333;
+  --ui-accent: var(--ui-blue);
+  --ui-danger: var(--ui-red);
+
+  /* Typography */
+  --ui-font-sans: 'Noto Sans KR', sans-serif;
+  --ui-font-mono: 'IBM Plex Mono', monospace;
+
+  --ui-font-size-xs: 0.75rem;
+  --ui-font-size-sm: 0.875rem;
+  --ui-font-size-md: 1rem;
+  --ui-font-size-lg: 1.25rem;
+  --ui-font-size-xl: 1.75rem;
+  --ui-font-size-2xl: 2.5rem;
+  --ui-font-size-3xl: 4rem;
+  --ui-font-size-display: clamp(3.5rem, 8vw, 7.5rem);
+
+  --ui-line-height-tight: 1.05;
+  --ui-line-height-heading: 1.2;
+  --ui-line-height-body: 1.7;
+
+  --ui-letter-spacing-tight: -0.045em;
+  --ui-letter-spacing-normal: 0;
+  --ui-letter-spacing-wide: 0.12em;
+
+  /* Layout */
+  --ui-page-max-width: 1440px;
+  --ui-content-max-width: 1320px;
+  --ui-page-padding: 40px;
+  --ui-section-padding: 96px;
+
+  /* Spacing */
+  --ui-space-1: 4px;
+  --ui-space-2: 8px;
+  --ui-space-3: 12px;
+  --ui-space-4: 16px;
+  --ui-space-5: 20px;
+  --ui-space-6: 24px;
+  --ui-space-8: 32px;
+  --ui-space-10: 40px;
+  --ui-space-12: 48px;
+  --ui-space-16: 64px;
+  --ui-space-20: 80px;
+  --ui-space-24: 96px;
+
+  /* Borders */
+  --ui-border-width: 1px;
+  --ui-border-width-strong: 2px;
+
+  /* Radius */
+  --ui-radius-none: 0;
+  --ui-radius-sm: 2px;
+  --ui-radius-md: 4px;
+
+  /* Shadows */
+  --ui-shadow-offset: 8px 8px 0 var(--ui-black);
+  --ui-shadow-blue: 8px 8px 0 var(--ui-blue);
+
+  /* Motion */
+  --ui-duration-fast: 150ms;
+  --ui-duration-normal: 250ms;
+  --ui-ease: ease;
+}

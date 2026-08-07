@@ -40,6 +40,7 @@ public class LocalDataInitializer implements ApplicationRunner {
 
     private List<CategoryDefinition> categories() {
         return List.of(
+                new CategoryDefinition("함께 만들어낸 위키", "질문과 답변을 통해 함께 검증하고 만든 위키"),
                 new CategoryDefinition("학사", "학사일정, 등록, 수강신청 등 학교생활 정보"),
                 new CategoryDefinition("교과목", "전공 및 교양 과목 정보"),
                 new CategoryDefinition("교수님", "교수진 및 연구실 정보"),

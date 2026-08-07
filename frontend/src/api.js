@@ -50,6 +50,7 @@ export const api = {
     params: { keyword, source, contentType },
   }),
   getWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}` }),
+  getCommunityWiki: () => request({ url: '/api/wiki-posts/community' }),
   getWikiPostLikes: (wikiPostId, authenticated = false) => request({ url: `/api/wiki-posts/${wikiPostId}/likes${authenticated ? '' : '/count'}` }),
   likeWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}/likes`, method: 'POST' }),
   unlikeWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}/likes`, method: 'DELETE' }),
@@ -78,4 +79,12 @@ export const api = {
   askAi: (payload) => request({ url: '/api/ai/answers', method: 'POST', data: payload }),
   summarizeWikiPost: (wikiPostId, maxChars = 500) => request({ url: `/api/ai/wiki-posts/${wikiPostId}/summary`, method: 'POST', params: { maxChars } }),
   getAdminDashboard: () => request({ url: '/api/admin/dashboard' }),
+  promoteAnswerToWiki: (answerId) => request({
+    url: `/api/admin/wiki-promotions/answers/${answerId}`,
+    method: 'POST',
+  }),
+  promoteQuestionToWiki: (questionId) => request({
+    url: `/api/admin/wiki-promotions/questions/${questionId}`,
+    method: 'POST',
+  }),
 };

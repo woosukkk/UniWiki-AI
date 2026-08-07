@@ -33,6 +33,9 @@ class VectorStore(Protocol):
     ) -> list[SemanticSearchResult]:
         """Return chunks ordered by cosine similarity."""
 
+    def all_records(self, category_id: int | None = None) -> list[SemanticSearchResult]:
+        """Return stored chunks for lexical reranking."""
+
 
 class ChromaVectorStore:
     def __init__(self, persist_dir: str, collection_name: str) -> None:
@@ -143,3 +146,24 @@ class ChromaVectorStore:
                 )
             )
         return records
+
+    def all_records(self, category_id: int | None = None) -> list[SemanticSearchResult]:
+        where = {"categoryId": category_id} if category_id is not None else None
+        result = self.collection.get(
+            where=where,
+            include=["documents", "metadatas"],
+        )
+        return [
+            SemanticSearchResult(
+                chunkId=chunk_id,
+                wikiPostId=metadata["wikiPostId"],
+                title=metadata["title"],
+                content=result["documents"][index],
+                categoryId=metadata["categoryId"],
+                chunkIndex=metadata["chunkIndex"],
+                score=0.0,
+            )
+            for index, (chunk_id, metadata) in enumerate(
+                zip(result["ids"], result["metadatas"])
+            )
+        ]

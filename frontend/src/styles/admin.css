@@ -1,0 +1,437 @@
+/* =========================================================
+   UniWiki Editorial Admin
+   ========================================================= */
+
+.editorial-admin-page {
+  min-height: 100vh;
+  color: var(--ui-black);
+  background: var(--ui-gray-50);
+}
+
+.editorial-admin-content-width {
+  width: min(
+    var(--ui-content-max-width),
+    calc(100% - (var(--ui-page-padding) * 2))
+  );
+  margin: 0 auto;
+}
+
+.editorial-admin-label {
+  display: inline-block;
+  color: var(--ui-blue);
+  font-family: var(--ui-font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.editorial-admin-state {
+  min-height: 70vh;
+  display: grid;
+  place-items: center;
+  padding: 40px 20px;
+}
+
+/* =========================================================
+   Hero
+   ========================================================= */
+
+.editorial-admin-hero {
+  padding: 64px 0 50px;
+  color: var(--ui-white);
+  background: var(--ui-black);
+}
+
+.editorial-admin-hero-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 50px;
+}
+
+.editorial-admin-hero h1 {
+  margin: 22px 0 0;
+  font-size: clamp(3.2rem, 6vw, 6rem);
+  line-height: 0.98;
+  letter-spacing: -0.07em;
+  word-break: keep-all;
+}
+
+.editorial-admin-hero p {
+  max-width: 500px;
+  margin: 0;
+  color: var(--ui-gray-300);
+  line-height: 1.8;
+  text-align: right;
+  word-break: keep-all;
+}
+
+/* =========================================================
+   Main
+   ========================================================= */
+
+.editorial-admin-main {
+  padding: 44px 0 90px;
+}
+
+/* =========================================================
+   Summary Statistics
+   ========================================================= */
+
+.editorial-admin-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--ui-black);
+  border-left: 1px solid var(--ui-black);
+  background: var(--ui-white);
+}
+
+.editorial-admin-stat-card {
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+  border-right: 1px solid var(--ui-black);
+  border-bottom: 1px solid var(--ui-black);
+}
+
+.editorial-admin-stat-card > span {
+  font-family: var(--ui-font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+}
+
+.editorial-admin-stat-card strong {
+  margin-top: 34px;
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  line-height: 1;
+}
+
+.editorial-admin-stat-card p {
+  margin: auto 0 0;
+  color: var(--ui-gray-500);
+  font-size: 0.75rem;
+}
+
+.editorial-admin-stat-card.highlight {
+  color: var(--ui-white);
+  background: var(--ui-blue);
+}
+
+.editorial-admin-stat-card.highlight p {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* =========================================================
+   Shared Section
+   ========================================================= */
+
+.editorial-admin-section {
+  margin-top: 30px;
+  background: var(--ui-white);
+  border: 1px solid var(--ui-black);
+}
+
+.editorial-admin-section-header {
+  min-height: 112px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 26px 30px;
+  border-bottom: 1px solid var(--ui-black);
+}
+
+.editorial-admin-section-header h2 {
+  margin: 12px 0 0;
+  font-size: 2.4rem;
+  letter-spacing: -0.05em;
+}
+
+.editorial-admin-section-header > span {
+  color: var(--ui-gray-500);
+  font-family: var(--ui-font-mono);
+  font-size: 0.62rem;
+}
+
+/* =========================================================
+   Overview Grid
+   ========================================================= */
+
+.editorial-admin-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.editorial-admin-overview-grid article {
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  padding: 26px;
+  border-right: 1px solid var(--ui-black);
+}
+
+.editorial-admin-overview-grid article:last-child {
+  border-right: 0;
+}
+
+.editorial-admin-overview-grid article > span {
+  color: var(--ui-blue);
+  font-family: var(--ui-font-mono);
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.editorial-admin-overview-grid article strong {
+  margin-top: 40px;
+  font-size: clamp(2.5rem, 4vw, 4rem);
+  line-height: 1;
+}
+
+.editorial-admin-overview-grid article p {
+  margin: auto 0 0;
+  color: var(--ui-gray-500);
+  font-size: 0.76rem;
+  line-height: 1.7;
+  word-break: keep-all;
+}
+
+/* =========================================================
+   Table
+   ========================================================= */
+
+.editorial-admin-table-wrapper {
+  overflow-x: auto;
+}
+
+.editorial-admin-table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: collapse;
+}
+
+.editorial-admin-table th,
+.editorial-admin-table td {
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--ui-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.editorial-admin-table th {
+  color: var(--ui-gray-500);
+  background: var(--ui-gray-50);
+  font-family: var(--ui-font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+
+.editorial-admin-table td {
+  font-size: 0.82rem;
+}
+
+.editorial-admin-table tbody tr:hover {
+  background: var(--ui-blue-light);
+}
+
+/* =========================================================
+   Status
+   ========================================================= */
+
+.editorial-admin-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  font-size: 0.64rem;
+  font-weight: 700;
+}
+
+.editorial-admin-status.pending {
+  color: #986400;
+  background: #fff0c4;
+}
+
+.editorial-admin-status.approved {
+  color: #216642;
+  background: #def2e6;
+}
+
+.editorial-admin-status.rejected {
+  color: #a3372b;
+  background: #ffe2dd;
+}
+
+/* =========================================================
+   Actions
+   ========================================================= */
+
+.editorial-admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.editorial-admin-actions button,
+.editorial-admin-actions a {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  color: var(--ui-black);
+  background: var(--ui-white);
+  border: 1px solid var(--ui-black);
+  font-family: var(--ui-font-mono);
+  font-size: 0.57rem;
+}
+
+.editorial-admin-actions button:hover,
+.editorial-admin-actions a:hover {
+  color: var(--ui-white);
+  background: var(--ui-blue);
+  border-color: var(--ui-blue);
+}
+
+.editorial-admin-actions button.danger:hover {
+  background: var(--ui-red);
+  border-color: var(--ui-red);
+}
+
+/* =========================================================
+   Empty State
+   ========================================================= */
+
+.editorial-admin-empty {
+  min-height: 250px;
+  display: grid;
+  place-items: center;
+  padding: 30px;
+  color: var(--ui-gray-500);
+  text-align: center;
+}
+
+.editorial-admin-empty > div {
+  max-width: 460px;
+}
+
+.editorial-admin-empty strong {
+  color: var(--ui-black);
+  font-size: 1.2rem;
+}
+
+.editorial-admin-empty p {
+  margin: 12px 0 0;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   Tablet
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .editorial-admin-hero-inner {
+    display: block;
+  }
+
+  .editorial-admin-hero p {
+    margin-top: 22px;
+    text-align: left;
+  }
+
+  .editorial-admin-stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .editorial-admin-stat-card:nth-child(2) {
+    border-right: 0;
+  }
+
+  .editorial-admin-overview-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .editorial-admin-overview-grid article {
+    border-bottom: 1px solid var(--ui-black);
+  }
+
+  .editorial-admin-overview-grid article:nth-child(2) {
+    border-right: 0;
+  }
+
+  .editorial-admin-overview-grid article:nth-child(3),
+  .editorial-admin-overview-grid article:nth-child(4) {
+    border-bottom: 0;
+  }
+}
+
+/* =========================================================
+   Mobile
+   ========================================================= */
+
+@media (max-width: 560px) {
+  .editorial-admin-content-width {
+    width: calc(100% - 28px);
+  }
+
+  .editorial-admin-hero {
+    padding: 52px 0 40px;
+  }
+
+  .editorial-admin-hero h1 {
+    font-size: clamp(3rem, 15vw, 5rem);
+  }
+
+  .editorial-admin-main {
+    padding: 28px 0 64px;
+  }
+
+  .editorial-admin-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editorial-admin-stat-card {
+    min-height: 150px;
+    border-right: 1px solid var(--ui-black);
+  }
+
+  .editorial-admin-section-header {
+    display: block;
+    padding: 22px 20px;
+  }
+
+  .editorial-admin-section-header h2 {
+    font-size: 2rem;
+  }
+
+  .editorial-admin-section-header > span {
+    display: block;
+    margin-top: 16px;
+  }
+
+  .editorial-admin-overview-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .editorial-admin-overview-grid article {
+    min-height: 170px;
+    border-right: 0;
+    border-bottom: 1px solid var(--ui-black);
+  }
+
+  .editorial-admin-overview-grid article:nth-child(2),
+  .editorial-admin-overview-grid article:nth-child(3) {
+    border-right: 0;
+    border-bottom: 1px solid var(--ui-black);
+  }
+
+  .editorial-admin-overview-grid article:last-child {
+    border-bottom: 0;
+  }
+
+  .editorial-admin-table th,
+  .editorial-admin-table td {
+    padding: 14px 16px;
+  }
+}

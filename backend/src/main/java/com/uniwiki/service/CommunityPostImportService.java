@@ -20,7 +20,12 @@ public class CommunityPostImportService {
         int saved = 0;
         int duplicates = 0;
         for (CommunityPostImportItemDto post : posts) {
-            if (repository.existsBySourceUrl(post.sourceUrl())) {
+            RawCommunityPost existing = repository.findBySourceUrl(post.sourceUrl()).orElse(null);
+            if (existing != null) {
+                existing.refresh(
+                        post.boardType(), post.title(), post.content(),
+                        post.likesCount(), post.commentsCount(),
+                        post.commentsJson() == null ? "[]" : post.commentsJson());
                 duplicates++;
                 continue;
             }

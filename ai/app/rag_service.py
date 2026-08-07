@@ -55,7 +55,12 @@ class RagAnswerService:
                 sources=[],
             )
 
-        context, used_results = self._build_context(relevant_results)
+        context_results = (
+            self.search_service.expand_results(relevant_results)
+            if hasattr(self.search_service, "expand_results")
+            else relevant_results
+        )
+        context, used_results = self._build_context(context_results)
         answer = self.language_model.generate(
             RAG_INSTRUCTIONS,
             f"질문:\n{request.question}\n\n위키 컨텍스트:\n{context}",

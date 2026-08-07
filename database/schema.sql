@@ -30,6 +30,7 @@ CREATE TABLE wiki_posts (
     summary TEXT,
     status ENUM('DRAFT', 'PENDING', 'APPROVED', 'REJECTED') NOT NULL DEFAULT 'APPROVED',
     view_count BIGINT NOT NULL DEFAULT 0,
+    pinned_order INT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
 
@@ -63,6 +64,9 @@ CREATE TABLE questions (
     author_id BIGINT NOT NULL,
     title VARCHAR(200) NOT NULL,
     content TEXT NOT NULL,
+    source_type VARCHAR(30),
+    source_url VARCHAR(1000),
+    external_like_count BIGINT NOT NULL DEFAULT 0,
     status ENUM('OPEN', 'RESOLVED', 'CLOSED') NOT NULL DEFAULT 'OPEN',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -129,6 +133,21 @@ CREATE TABLE answer_wiki_promotions (
         ON DELETE CASCADE,
 
     CONSTRAINT fk_promotion_wiki_post
+        FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id)
+        ON DELETE CASCADE
+);
+
+CREATE TABLE question_wiki_promotions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    question_id BIGINT NOT NULL UNIQUE,
+    wiki_post_id BIGINT NOT NULL UNIQUE,
+    promoted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_question_promotion_question
+        FOREIGN KEY (question_id) REFERENCES questions(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_question_promotion_wiki
         FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id)
         ON DELETE CASCADE
 );
@@ -253,10 +272,12 @@ CREATE TABLE raw_official_documents (
 CREATE TABLE official_wiki_documents (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     raw_document_id BIGINT NOT NULL UNIQUE,
-    wiki_post_id BIGINT NOT NULL UNIQUE,
+    wiki_post_id BIGINT NOT NULL,
+    topic_key VARCHAR(255),
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     CONSTRAINT fk_official_wiki_raw FOREIGN KEY (raw_document_id) REFERENCES raw_official_documents(id),
-    CONSTRAINT fk_official_wiki_post FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id) ON DELETE CASCADE
+    CONSTRAINT fk_official_wiki_post FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id) ON DELETE CASCADE,
+    INDEX idx_official_wiki_topic (topic_key, wiki_post_id)
 );
 
 CREATE TABLE official_attachments (

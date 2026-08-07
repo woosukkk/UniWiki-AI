@@ -260,9 +260,12 @@ public class WikiPostService {
 
     private Comparator<WikiPost> referenceDateComparator() {
         return Comparator
+                .comparingInt((WikiPost post) -> post.getPinnedOrder() == null
+                        ? Integer.MAX_VALUE : post.getPinnedOrder())
+                .thenComparing(Comparator
                 .comparingInt(this::referenceYear).reversed()
                 .thenComparing(Comparator.comparingInt(this::referenceTerm).reversed())
-                .thenComparing(WikiPost::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder()));
+                .thenComparing(WikiPost::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())));
     }
 
     private int referenceYear(WikiPost wikiPost) {
