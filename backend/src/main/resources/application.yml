@@ -24,6 +24,9 @@ server:
   forward-headers-strategy: framework
 
 uniwiki:
+  admin:
+    bootstrap-enabled: ${ADMIN_BOOTSTRAP_ENABLED:false}
+    bootstrap-email: ${ADMIN_BOOTSTRAP_EMAIL:}
   jwt:
     secret: ${JWT_SECRET:local-development-jwt-secret-change-before-deploy}
     expiration-ms: ${JWT_EXPIRATION_MS:2592000000}
