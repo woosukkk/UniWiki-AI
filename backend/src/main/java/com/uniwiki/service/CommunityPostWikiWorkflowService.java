@@ -86,6 +86,7 @@ public class CommunityPostWikiWorkflowService {
                 ? rawTitle
                 : rawTitle + " 관련 정보가 궁금합니다";
         if (title.length() > 200) title = title.substring(0, 200);
+        final String publishedTitle = title;
 
         String content = raw.getContent() + "\n\n"
                 + "---\n"
@@ -93,20 +94,27 @@ public class CommunityPostWikiWorkflowService {
                 + "경험이나 공식 근거를 포함한 답변을 남겨주세요.\n"
                 + "추천 " + raw.getLikesCount() + "개 · 댓글 " + raw.getCommentsCount() + "개";
 
-        Question question = questionRepository.save(new Question(
-                author,
-                title,
-                content,
-                "EVERYTIME",
-                raw.getSourceUrl(),
-                raw.getLikesCount()
-        ));
+        Question question = questionRepository
+                .findBySourceTypeAndSourceUrl("EVERYTIME", raw.getSourceUrl())
+                .map(existing -> {
+                    existing.updateImportedContent(publishedTitle, content, raw.getLikesCount());
+                    return existing;
+                })
+                .orElseGet(() -> questionRepository.save(new Question(
+                        author,
+                        publishedTitle,
+                        content,
+                        "EVERYTIME",
+                        raw.getSourceUrl(),
+                        raw.getLikesCount()
+                )));
 
         parseComments(raw.getCommentsJson()).stream()
                 .map(String::trim)
                 .filter(comment -> !comment.isBlank())
                 .filter(comment -> !containsAbusiveLanguage(comment))
                 .limit(30)
+                .filter(comment -> !answerRepository.existsByQuestion_IdAndContent(question.getId(), comment))
                 .forEach(comment -> answerRepository.save(new Answer(question, author, comment)));
     }
 

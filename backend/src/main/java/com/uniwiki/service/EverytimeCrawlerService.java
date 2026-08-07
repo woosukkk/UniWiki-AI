@@ -133,9 +133,9 @@ public class EverytimeCrawlerService {
                         }
                     }
 
-                    Element titleElement = contentRoot.selectFirst(".title, h3, h1");
-                    String title = titleElement == null ? "" : titleElement.text();
-                    String content = contentRoot.select("p.text, p.medium, div.text, div.content, p").text();
+                    CommunityPostSnapshot snapshot = extractCommunityPost(contentRoot, detailDocument);
+                    String title = snapshot.title();
+                    String content = snapshot.content();
                     
                     if (title.isEmpty() && content.isEmpty()) {
                         content = contentRoot.text();
@@ -150,23 +150,8 @@ public class EverytimeCrawlerService {
                         title = content.length() > 45 ? content.substring(0, 45) + "..." : content;
                     }
 
-                    int likesCount = 0;
-                    Element voteEl = contentRoot.selectFirst(".vote");
-                    if (voteEl != null && !voteEl.text().isEmpty()) {
-                        try {
-                            likesCount = Integer.parseInt(voteEl.text());
-                        } catch (NumberFormatException ignored) {}
-                    }
-
-                    int commentsCount = 0;
-                    Element commentEl = contentRoot.selectFirst(".comment");
-                    if (commentEl != null) {
-                        String digits = commentEl.text().replaceAll("[^0-9]", "");
-                        if (!digits.isBlank()) commentsCount = Integer.parseInt(digits);
-                    }
-                    if (commentsCount == 0 && detailDocument != null) {
-                        commentsCount = detailDocument.select("div.comments article, div.comments div.comment").size();
-                    }
+                    int likesCount = snapshot.likesCount();
+                    int commentsCount = snapshot.comments().size();
                     
                     pagePosts.add(new com.uniwiki.dto.CommunityPostImportItemDto(
                             sourceUrl,
@@ -175,7 +160,7 @@ public class EverytimeCrawlerService {
                             content, 
                             likesCount,
                             commentsCount,
-                            serializeComments(detailDocument)
+                            serializeComments(snapshot.comments())
                     ));
                 }
 
@@ -382,23 +367,82 @@ public class EverytimeCrawlerService {
             }
         }
     }
-    private String serializeComments(Document detailDocument) {
-        if (detailDocument == null) return "[]";
+    CommunityPostSnapshot extractCommunityPost(Element listArticle, Document detailDocument) {
+        Element article = detailDocument == null ? listArticle : findPostRoot(detailDocument, listArticle);
+        Element cleanArticle = article == null ? null : article.clone();
+        if (cleanArticle != null) {
+            cleanArticle.select("div.comments, section.comments, ul.comments").remove();
+        }
+        String title = textOfFirst(cleanArticle,
+                "h1.title, h2.title, h3.title, h1.large, h2.large, h3.large, p.title");
+        String content = textOfFirst(cleanArticle,
+                "p.large, p.text, div.content, p.medium");
+        if (content.isBlank()) {
+            content = cleanArticle == null ? "" : cleanArticle.ownText().trim();
+        }
 
-        java.util.List<String> comments = detailDocument
-                .select("div.comments article p.text, div.comments article div.text, "
-                        + "div.comments div.comment p.text, div.comments div.comment div.text")
-                .eachText()
-                .stream()
-                .map(String::trim)
+        int likesCount = numberOfFirst(article,
+                "ul.status > li.vote, li.vote, span.vote, button.vote, .status .vote, [class~=vote]");
+        java.util.List<String> comments = extractComments(detailDocument);
+        return new CommunityPostSnapshot(title, content, likesCount, comments);
+    }
+
+    private Element findPostRoot(Document detailDocument, Element fallback) {
+        Element root = detailDocument.selectFirst(
+                "#container > div.wrap.articles > article > a.article, "
+                        + "div.wrap.articles > article > a.article, article.item, main article a.article");
+        return root == null ? fallback : root;
+    }
+
+    private java.util.List<String> extractComments(Document detailDocument) {
+        if (detailDocument == null) return java.util.List.of();
+
+        Elements commentRoots = detailDocument.select(
+                "div.comments > article, section.comments > article, div.wrap.comments > article, "
+                        + "article.comment, div.comments > div.comment, section.comments > div.comment, "
+                        + "ul.comments > li.comment");
+        return commentRoots.stream()
+                .map(comment -> {
+                    Element text = comment.selectFirst(
+                            "div.wrap > p.text, p.text, div.text, p");
+                    return text == null ? "" : text.text().trim();
+                })
                 .filter(comment -> !comment.isBlank())
+                .filter(comment -> !comment.equals("삭제된 댓글입니다."))
                 .distinct()
                 .limit(30)
                 .toList();
+    }
+
+    private String textOfFirst(Element root, String selector) {
+        if (root == null) return "";
+        Element element = root.selectFirst(selector);
+        return element == null ? "" : element.text().trim();
+    }
+
+    private int numberOfFirst(Element root, String selector) {
+        String text = textOfFirst(root, selector);
+        java.util.regex.Matcher matcher = java.util.regex.Pattern.compile("-?\\d[\\d,]*").matcher(text);
+        if (!matcher.find()) return 0;
+        try {
+            return Math.max(0, Integer.parseInt(matcher.group().replace(",", "")));
+        } catch (NumberFormatException ignored) {
+            return 0;
+        }
+    }
+
+    private String serializeComments(java.util.List<String> comments) {
         try {
             return objectMapper.writeValueAsString(comments);
         } catch (Exception ignored) {
             return "[]";
         }
     }
+
+    record CommunityPostSnapshot(
+            String title,
+            String content,
+            int likesCount,
+            java.util.List<String> comments
+    ) { }
 }

@@ -18,4 +18,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select q from Question q where q.id = :questionId")
     Optional<Question> findByIdForUpdate(@Param("questionId") Long questionId);
+
+    Optional<Question> findBySourceTypeAndSourceUrl(String sourceType, String sourceUrl);
 }

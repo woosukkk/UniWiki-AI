@@ -71,6 +71,11 @@ public class Question {
         this.content = content;
     }
 
+    public void updateImportedContent(String title, String content, long externalLikeCount) {
+        update(title, content);
+        this.externalLikeCount = Math.max(0, externalLikeCount);
+    }
+
     // 질문 종료 처리
     public void close() {
         this.status = QuestionStatus.CLOSED;
