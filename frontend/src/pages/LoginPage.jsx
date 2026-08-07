@@ -5,6 +5,7 @@ import {
   useNavigate,
 } from 'react-router-dom';
 
+import { api } from '../api.js';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 export function LoginPage() {
@@ -49,10 +50,11 @@ export function LoginPage() {
     setSubmitting(true);
 
     try {
-      await login({
+      const response = await api.login({
         email: form.email.trim(),
         password: form.password,
       });
+      login(response);
 
       const destination =
         location.state?.from?.pathname || '/';
