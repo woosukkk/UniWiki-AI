@@ -48,6 +48,7 @@ for file in \
   migration-data-categories.sql \
   migration-wiki-content-mediumtext.sql \
   migration-wiki-view-count-default.sql \
+  migration-community-questions.sql \
   seed-sejong-software.sql \
   seed-sejong-academic-policies.sql \
   seed-sejong-student-support.sql \
