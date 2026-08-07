@@ -313,7 +313,21 @@ public class OfficialSourcePipelineService {
 
         Set<String> selected = new LinkedHashSet<>(recent);
         selected.addAll(unseen);
+        if (source.getListUrl().contains("/kor/intro/notice3.do")) {
+            selected.addAll(courseMaterialNoticeUrls());
+        }
         return selected;
+    }
+
+    private Set<String> courseMaterialNoticeUrls() {
+        return new LinkedHashSet<>(List.of(
+                "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805695&mode=view",
+                "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805814&mode=view",
+                "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805910&mode=view",
+                "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=853683&mode=view",
+                "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=863048&mode=view",
+                "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=891086&mode=view"
+        ));
     }
 
     private boolean isAcademicCatalog(OfficialSource source) {
