@@ -45,8 +45,6 @@ public class QuestionDto {
         private final String authorNickname;
         private final String title;
         private final String content;
-        private final String sourceType;
-        private final String sourceUrl;
         private final long externalLikeCount;
         private final QuestionStatus status;
         private final LocalDateTime createdAt;
@@ -58,8 +56,6 @@ public class QuestionDto {
                 String authorNickname,
                 String title,
                 String content,
-                String sourceType,
-                String sourceUrl,
                 long externalLikeCount,
                 QuestionStatus status,
                 LocalDateTime createdAt,
@@ -70,8 +66,6 @@ public class QuestionDto {
             this.authorNickname = authorNickname;
             this.title = title;
             this.content = content;
-            this.sourceType = sourceType;
-            this.sourceUrl = sourceUrl;
             this.externalLikeCount = externalLikeCount;
             this.status = status;
             this.createdAt = createdAt;
@@ -86,8 +80,6 @@ public class QuestionDto {
                     question.getAuthor().getNickname(),
                     question.getTitle(),
                     question.getContent(),
-                    question.getSourceType(),
-                    question.getSourceUrl(),
                     question.getExternalLikeCount(),
                     question.getStatus(),
                     question.getCreatedAt(),

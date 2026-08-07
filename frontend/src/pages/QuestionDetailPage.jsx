@@ -486,9 +486,6 @@ export function QuestionDetailPage() {
                   )}
                 </span>
 
-                {question.sourceType === 'EVERYTIME' && (
-                  <span className="editorial-question-source-badge">에타 질문</span>
-                )}
               </div>
 
               <h1>{question.title}</h1>
@@ -535,16 +532,6 @@ export function QuestionDetailPage() {
 
               <p>{question.content}</p>
 
-              {question.sourceType === 'EVERYTIME' && question.sourceUrl && (
-                <a
-                  className="editorial-question-source-link"
-                  href={question.sourceUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  원문 출처 확인 ↗
-                </a>
-              )}
 
               <div className="editorial-question-body-actions">
                 <LikeButton

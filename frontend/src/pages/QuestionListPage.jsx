@@ -529,10 +529,6 @@ export function QuestionListPage() {
                             )}
                           </span>
 
-                          {question.sourceType === 'EVERYTIME' && (
-                            <span className="editorial-question-source-badge">에타 질문</span>
-                          )}
-
                           <span>
                             {question.authorNickname}
                           </span>

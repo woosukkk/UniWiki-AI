@@ -77,7 +77,6 @@ uniwiki:
     board-end-page: ${EVERYTIME_BOARD_END_PAGE:3}
   everytime-community:
     interval-ms: ${EVERYTIME_COMMUNITY_INTERVAL_MS:10000}
-    minimum-score: ${EVERYTIME_COMMUNITY_MINIMUM_SCORE:50}
     author-id: ${EVERYTIME_COMMUNITY_AUTHOR_ID:1}
   lecture-review-workflow:
     interval-ms: ${LECTURE_REVIEW_WORKFLOW_INTERVAL_MS:10000}

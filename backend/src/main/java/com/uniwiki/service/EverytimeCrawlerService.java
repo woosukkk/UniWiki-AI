@@ -168,29 +168,6 @@ public class EverytimeCrawlerService {
                         commentsCount = detailDocument.select("div.comments article, div.comments div.comment").size();
                     }
                     
-                    // 키워드 필터링 (OR 조건)
-                    if (titleKeywords != null && !titleKeywords.isEmpty()) {
-                        boolean match = false;
-                        for (String kw : titleKeywords) {
-                            if (title.contains(kw.trim())) {
-                                match = true;
-                                break;
-                            }
-                        }
-                        if (!match) continue; // 제목 키워드 중 하나라도 포함되지 않으면 스킵
-                    }
-                    
-                    if (contentKeywords != null && !contentKeywords.isEmpty()) {
-                        boolean match = false;
-                        for (String kw : contentKeywords) {
-                            if (content.contains(kw.trim())) {
-                                match = true;
-                                break;
-                            }
-                        }
-                        if (!match) continue; // 내용 키워드 중 하나라도 포함되지 않으면 스킵
-                    }
-                    
                     pagePosts.add(new com.uniwiki.dto.CommunityPostImportItemDto(
                             sourceUrl,
                             boardType != null ? boardType : "알 수 없는 게시판", 
