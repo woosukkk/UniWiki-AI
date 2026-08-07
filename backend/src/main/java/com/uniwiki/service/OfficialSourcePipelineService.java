@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.net.URI;
 import java.io.IOException;
@@ -84,7 +85,6 @@ public class OfficialSourcePipelineService {
                 .toList();
     }
 
-    @Transactional(noRollbackFor = IllegalStateException.class)
     public OfficialSourceDto.CollectionResult collect(Long sourceId) {
         OfficialSource source = sourceRepository.findById(sourceId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공식 출처입니다."));
@@ -97,35 +97,11 @@ public class OfficialSourcePipelineService {
             int failed = 0;
             for (String articleUrl : articleUrls) {
                 try {
-                    Document articlePage = fetch(articleUrl);
-                    String title = requiredText(articlePage, source.getTitleSelector(), "제목");
-                    title = catalogTitle(source, articleUrl, title);
-                    List<OfficialAttachmentService.CollectedAttachment> attachments =
-                            attachmentService.collect(articlePage);
-                    String content = requiredContent(articlePage, source.getContentSelector())
-                            + attachmentService.render(attachments);
-                    String hash = hash(title + "\n" + content);
-                    RawOfficialDocument raw = rawRepository
-                            .findByOfficialSource_IdAndSourceUrl(source.getId(), articleUrl)
-                            .orElse(null);
-                    if (raw == null) {
-                        raw = rawRepository.save(new RawOfficialDocument(source, articleUrl, title, content, hash));
-                        attachmentService.synchronize(raw, attachments);
-                        createOrUpdateWiki(raw);
-                        created++;
-                    } else if (raw.updateIfChanged(title, content, hash)) {
-                        attachmentService.synchronize(raw, attachments);
-                        createOrUpdateWiki(raw);
-                        changed++;
-                    } else if (source.isAutoPublish()
-                            && raw.getProcessingStatus() != OfficialDocumentStatus.PUBLISHED) {
-                        attachmentService.synchronize(raw, attachments);
-                        createOrUpdateWiki(raw);
-                        changed++;
-                    } else {
-                        attachmentService.synchronize(raw, attachments);
-                        unchanged++;
-                    }
+                    ArticleCollectionOutcome outcome = selfProvider.getObject()
+                            .collectArticle(sourceId, articleUrl);
+                    if (outcome == ArticleCollectionOutcome.CREATED) created++;
+                    else if (outcome == ArticleCollectionOutcome.CHANGED) changed++;
+                    else unchanged++;
                 } catch (Exception exception) {
                     failed++;
                     log.warn("Official source article failed: source={}, url={}, error={}",
@@ -133,11 +109,49 @@ public class OfficialSourcePipelineService {
                 }
             }
             source.markSuccess();
+            sourceRepository.save(source);
             return new OfficialSourceDto.CollectionResult(articleUrls.size(), created, changed, unchanged, failed);
         } catch (Exception exception) {
             source.markFailure(exception.getMessage());
+            sourceRepository.save(source);
             throw new IllegalStateException("공식 출처 수집에 실패했습니다: " + exception.getMessage(), exception);
         }
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public ArticleCollectionOutcome collectArticle(Long sourceId, String articleUrl) throws Exception {
+        OfficialSource source = sourceRepository.findById(sourceId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공식 출처입니다."));
+        Document articlePage = fetch(articleUrl);
+        String title = requiredText(articlePage, source.getTitleSelector(), "제목");
+        title = catalogTitle(source, articleUrl, title);
+        List<OfficialAttachmentService.CollectedAttachment> attachments =
+                attachmentService.collect(articlePage);
+        String content = requiredContent(articlePage, source.getContentSelector())
+                + attachmentService.render(attachments);
+        String hash = hash(title + "\n" + content);
+        RawOfficialDocument raw = rawRepository
+                .findByOfficialSource_IdAndSourceUrl(sourceId, articleUrl)
+                .orElse(null);
+        if (raw == null) {
+            raw = rawRepository.save(new RawOfficialDocument(source, articleUrl, title, content, hash));
+            attachmentService.synchronize(raw, attachments);
+            createOrUpdateWiki(raw);
+            return ArticleCollectionOutcome.CREATED;
+        }
+        if (raw.updateIfChanged(title, content, hash)
+                || source.isAutoPublish()
+                && raw.getProcessingStatus() != OfficialDocumentStatus.PUBLISHED) {
+            attachmentService.synchronize(raw, attachments);
+            createOrUpdateWiki(raw);
+            return ArticleCollectionOutcome.CHANGED;
+        }
+        attachmentService.synchronize(raw, attachments);
+        return ArticleCollectionOutcome.UNCHANGED;
+    }
+
+    public enum ArticleCollectionOutcome {
+        CREATED, CHANGED, UNCHANGED
     }
 
     @Transactional(readOnly = true)
