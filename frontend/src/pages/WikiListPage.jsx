@@ -7,6 +7,7 @@ import { WikiCard } from '../components/WikiCard.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 const PAGE_SIZE = 9;
+const PAGE_BUTTON_COUNT = 10;
 
 const COMMUNITY_WIKI_HUB = {
   id: 'community',
@@ -92,6 +93,16 @@ export function WikiListPage() {
 
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
+  const pageGroupStart =
+    Math.floor((currentPage - 1) / PAGE_BUTTON_COUNT) * PAGE_BUTTON_COUNT + 1;
+  const pageGroupEnd = Math.min(
+    totalPages,
+    pageGroupStart + PAGE_BUTTON_COUNT - 1,
+  );
+  const visiblePageNumbers = Array.from(
+    { length: pageGroupEnd - pageGroupStart + 1 },
+    (_, index) => pageGroupStart + index,
+  );
   const visiblePosts = filteredPosts.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
@@ -185,7 +196,7 @@ export function WikiListPage() {
           {totalPages > 1 && (
             <nav className="pagination" aria-label="위키 페이지 이동">
               <button disabled={currentPage === 1} onClick={() => updateParams({ page: currentPage - 1 })}>이전</button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+              {visiblePageNumbers.map((pageNumber) => (
                 <button
                   className={pageNumber === currentPage ? 'active' : ''}
                   key={pageNumber}
