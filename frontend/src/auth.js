@@ -24,6 +24,19 @@ export function saveAuthentication(response) {
   return user;
 }
 
+export function updateStoredUser(response) {
+  if (!response?.id || !response?.email) return null;
+  const user = {
+    id: response.id,
+    email: response.email,
+    nickname: response.nickname,
+    role: response.role,
+  };
+  localStorage.setItem('uniwiki-user', JSON.stringify(user));
+  window.dispatchEvent(new Event(AUTH_CHANGED_EVENT));
+  return user;
+}
+
 export function clearAuthentication() {
   localStorage.removeItem('uniwiki-token');
   localStorage.removeItem('uniwiki-user');
