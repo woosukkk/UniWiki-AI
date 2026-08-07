@@ -10,10 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class CommunityPostWikiWorkflowService {
+
+    private static final Pattern ABUSIVE = Pattern.compile(
+            "(씨발|시발|ㅅㅂ|병신|ㅂㅅ|개새끼|개년|좆|존나|지랄|꺼져|닥쳐)",
+            Pattern.CASE_INSENSITIVE
+    );
 
     private final RawCommunityPostRepository rawRepository;
     private final EverytimeWikiDocumentRepository documentRepository;
@@ -30,13 +36,19 @@ public class CommunityPostWikiWorkflowService {
     @Transactional
     public Result processPending() {
         List<RawCommunityPost> unmigrated = rawRepository.findUnmigrated();
+        int rejected = 0;
+        int accepted = 0;
         for (RawCommunityPost raw : unmigrated) {
-            if (!raw.isProcessed()) {
-                raw.accept(0, EverytimeContentType.SCHOOL_LIFE, raw.getContent());
+            if (containsAbusiveLanguage(raw.getTitle()) || containsAbusiveLanguage(raw.getContent())) {
+                raw.reject(0, "ABUSIVE_CONTENT");
+                rejected++;
+                continue;
             }
+            raw.accept(0, EverytimeContentType.SCHOOL_LIFE, raw.getContent());
             publishQuestion(raw);
+            accepted++;
         }
-        return new Result(unmigrated.size(), unmigrated.size(), 0);
+        return new Result(unmigrated.size(), accepted, rejected);
     }
 
     @Transactional
@@ -93,8 +105,13 @@ public class CommunityPostWikiWorkflowService {
         parseComments(raw.getCommentsJson()).stream()
                 .map(String::trim)
                 .filter(comment -> !comment.isBlank())
+                .filter(comment -> !containsAbusiveLanguage(comment))
                 .limit(30)
                 .forEach(comment -> answerRepository.save(new Answer(question, author, comment)));
+    }
+
+    private boolean containsAbusiveLanguage(String text) {
+        return text != null && ABUSIVE.matcher(text).find();
     }
 
     private List<String> parseComments(String commentsJson) {
