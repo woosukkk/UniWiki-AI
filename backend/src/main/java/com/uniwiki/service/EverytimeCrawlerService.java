@@ -108,7 +108,7 @@ public class EverytimeCrawlerService {
 
                     Element contentRoot = article;
                     Document detailDocument = null;
-                    if (article.text().isBlank()) {
+                    if (!sourceUrl.equals(currentUrl)) {
                         driver.get(sourceUrl);
                         new WebDriverWait(driver, Duration.ofSeconds(10))
                                 .until(ExpectedConditions.presenceOfElementLocated(By.tagName("body")));
