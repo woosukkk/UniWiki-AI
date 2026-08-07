@@ -17,6 +17,7 @@ import './styles/mypage.css';
 import './styles/auth.css';
 import './styles/admin.css';
 import './styles/responsive.css';
+import './styles/integration.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

@@ -1,0 +1,261 @@
+/* Editorial treatment for feature-rich pages retained from develop. */
+.wiki-page,
+.coverage-page,
+.admin-page {
+  width: min(var(--ui-content-max-width), calc(100% - (var(--ui-page-padding) * 2)));
+  margin: 0 auto;
+  padding: 72px 0 112px;
+  color: var(--ui-black);
+  font-family: var(--ui-font-sans);
+}
+
+.wiki-page-heading,
+.coverage-heading,
+.admin-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 48px;
+  margin-bottom: 48px;
+  padding-bottom: 36px;
+  border-bottom: 2px solid var(--ui-black);
+}
+
+.wiki-page-heading h1,
+.coverage-heading h1,
+.admin-heading h1 {
+  margin: 12px 0 0;
+  font-size: clamp(2.7rem, 6vw, 5.8rem);
+  font-weight: 900;
+  line-height: 0.98;
+  letter-spacing: -0.065em;
+}
+
+.wiki-page-heading p,
+.coverage-heading p {
+  max-width: 560px;
+  color: var(--ui-gray-500);
+  line-height: 1.8;
+}
+
+.section-kicker,
+.coverage-heading span,
+.coverage-section-title span,
+.coverage-kicker,
+.admin-heading > span {
+  color: var(--ui-blue);
+  font-family: var(--ui-font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.wiki-page .button,
+.admin-heading button {
+  min-height: 46px;
+  padding: 0 22px;
+  border: 1px solid var(--ui-black);
+  color: var(--ui-white);
+  background: var(--ui-black);
+  font-family: var(--ui-font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.wiki-source-tabs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-bottom: 0;
+  border: 1px solid var(--ui-black);
+}
+
+.wiki-source-tabs button,
+.wiki-content-tabs button,
+.coverage-toolbar button,
+.pagination button {
+  border: 0;
+  color: var(--ui-gray-500);
+  background: var(--ui-white);
+  font-family: var(--ui-font-mono);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.wiki-source-tabs button {
+  min-height: 58px;
+  border-right: 1px solid var(--ui-black);
+  font-size: 0.78rem;
+}
+
+.wiki-source-tabs button:last-child { border-right: 0; }
+.wiki-source-tabs button.active,
+.wiki-content-tabs button.active,
+.coverage-toolbar button.active,
+.pagination button.active {
+  color: var(--ui-white);
+  background: var(--ui-blue);
+}
+
+.wiki-content-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 16px;
+  border: 1px solid var(--ui-black);
+  border-top: 0;
+  background: var(--ui-gray-100);
+}
+
+.wiki-content-tabs button,
+.coverage-toolbar button {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--ui-gray-300);
+}
+
+.wiki-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 28px 0 42px;
+  padding: 24px;
+  border: 1px solid var(--ui-black);
+  box-shadow: 7px 7px 0 var(--ui-blue);
+}
+
+.wiki-search { display: flex; flex: 1; }
+.wiki-search input,
+.wiki-filters select {
+  min-height: 48px;
+  border: 1px solid var(--ui-black);
+  border-radius: 0;
+  background: var(--ui-white);
+  font: inherit;
+}
+.wiki-search input { flex: 1; padding: 0 16px; border-right: 0; }
+.wiki-filters { display: flex; gap: 10px; }
+.wiki-filters select { padding: 0 38px 0 14px; }
+
+.wiki-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.wiki-empty,
+.activity-empty {
+  padding: 72px 24px;
+  text-align: center;
+  border: 1px solid var(--ui-black);
+  background: var(--ui-gray-50);
+}
+
+.pagination { display: flex; justify-content: center; gap: 4px; margin-top: 48px; }
+.pagination button { min-width: 42px; min-height: 42px; border: 1px solid var(--ui-black); }
+.pagination button:disabled { cursor: not-allowed; opacity: 0.35; }
+
+.coverage-summary,
+.admin-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-bottom: 24px;
+  border: 1px solid var(--ui-black);
+}
+
+.coverage-summary article,
+.admin-metrics article {
+  min-height: 132px;
+  padding: 26px;
+  border-right: 1px solid var(--ui-black);
+}
+.coverage-summary article:last-child { border-right: 0; }
+.coverage-summary strong,
+.admin-metrics strong { display: block; margin-bottom: 12px; font-size: 2rem; }
+.coverage-summary span,
+.admin-metrics span { color: var(--ui-gray-500); font-family: var(--ui-font-mono); font-size: 0.7rem; }
+.admin-metrics .metric-warning { color: var(--ui-red); background: #fff1f0; }
+
+.trust-evidence-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  margin-bottom: 32px;
+  background: var(--ui-black);
+}
+.trust-evidence-summary span { flex: 1; padding: 16px 20px; color: var(--ui-white); background: var(--ui-gray-900); }
+
+.coverage-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  border: 1px solid var(--ui-black);
+  box-shadow: 9px 9px 0 var(--ui-blue);
+}
+.coverage-map-panel { min-width: 0; padding: 28px; background: var(--ui-gray-100); }
+.coverage-toolbar { display: flex; flex-wrap: wrap; gap: 6px; }
+.coverage-map { width: 100%; height: auto; }
+.coverage-detail { padding: 36px 30px; color: var(--ui-white); background: var(--ui-black); }
+.coverage-detail > strong { display: block; margin: 16px 0; color: var(--ui-blue-light); font-size: 3rem; }
+.coverage-detail p { color: var(--ui-gray-300); line-height: 1.7; }
+.trust-metric { margin-top: 16px; }
+.trust-metric > span,
+.trust-metric > b { font-size: 0.72rem; }
+
+.coverage-bars { margin-top: 72px; }
+.coverage-section-title { margin-bottom: 24px; }
+.coverage-section-title h2 { margin: 8px 0 0; font-size: 2rem; }
+.coverage-bars article {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr) 90px;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--ui-gray-300);
+}
+.coverage-track { height: 8px; background: var(--ui-gray-200); }
+.coverage-track i { display: block; height: 100%; background: var(--ui-blue); }
+.coverage-note { color: var(--ui-gray-500); font-size: 0.78rem; }
+
+.admin-heading { align-items: center; }
+.admin-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.admin-metrics article:nth-child(3n) { border-right: 0; }
+.admin-metrics article:nth-child(-n + 3) { border-bottom: 1px solid var(--ui-black); }
+.sync-monitor { margin-top: 40px; border: 1px solid var(--ui-black); }
+.sync-monitor > div:first-child { padding: 28px; border-bottom: 1px solid var(--ui-black); }
+.sync-monitor h2 { margin: 0 0 8px; font-size: 1.75rem; }
+.sync-monitor p { margin: 0; color: var(--ui-gray-500); }
+.sync-table-wrap { overflow-x: auto; }
+.sync-table-wrap table { width: 100%; border-collapse: collapse; }
+.sync-table-wrap th,
+.sync-table-wrap td { padding: 15px; text-align: left; border-bottom: 1px solid var(--ui-gray-200); }
+.sync-table-wrap th { color: var(--ui-white); background: var(--ui-black); font-family: var(--ui-font-mono); font-size: 0.68rem; }
+.sync-status { padding: 5px 8px; font-family: var(--ui-font-mono); font-size: 0.68rem; font-weight: 700; }
+.sync-completed { color: #176b3a; background: #e2f5e9; }
+.sync-failed { color: #a52622; background: #fde6e5; }
+.sync-pending { color: #6a4b00; background: #fff0bd; }
+
+@media (max-width: 960px) {
+  .wiki-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .wiki-toolbar,
+  .coverage-heading { align-items: stretch; flex-direction: column; }
+  .coverage-grid { grid-template-columns: 1fr; }
+  .admin-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-metrics article { border: 0; border-bottom: 1px solid var(--ui-black); border-right: 1px solid var(--ui-black); }
+}
+
+@media (max-width: 640px) {
+  .wiki-page,
+  .coverage-page,
+  .admin-page { width: calc(100% - 32px); padding: 48px 0 80px; }
+  .wiki-page-heading,
+  .admin-heading { align-items: stretch; flex-direction: column; }
+  .wiki-grid,
+  .coverage-summary,
+  .admin-metrics { grid-template-columns: 1fr; }
+  .wiki-toolbar,
+  .wiki-filters { flex-direction: column; }
+  .wiki-source-tabs { grid-template-columns: 1fr; }
+  .coverage-summary article,
+  .admin-metrics article { border-right: 0; border-bottom: 1px solid var(--ui-black); }
+  .coverage-bars article { grid-template-columns: 1fr; gap: 9px; }
+}
