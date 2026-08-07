@@ -40,6 +40,7 @@ uniwiki:
     max-attempts: 5
   official-sources:
     bootstrap-enabled: ${OFFICIAL_SOURCE_BOOTSTRAP_ENABLED:false}
+    topic-rebuild-enabled: ${OFFICIAL_TOPIC_REBUILD_ENABLED:false}
     collect-on-startup: ${OFFICIAL_SOURCE_COLLECT_ON_STARTUP:false}
     scheduler-enabled: ${OFFICIAL_SOURCE_SCHEDULER_ENABLED:false}
     interval-ms: ${OFFICIAL_SOURCE_INTERVAL_MS:3600000}
