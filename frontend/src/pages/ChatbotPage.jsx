@@ -17,7 +17,7 @@ const welcomeMessage = {
 };
 
 const suggestedQuestions = [
-  '컴퓨터공학과 졸업요건을 알려줘',
+  '소프트웨어학과 졸업요건을 알려줘',
   '수강신청 정정 기간은 언제야?',
   '교내 장학금 종류를 알려줘',
   '복수전공 신청 방법을 알려줘',
@@ -434,7 +434,7 @@ export function ChatbotPage() {
                   ref={textareaRef}
                   id="ai-question"
                   maxLength="1000"
-                  placeholder="예: 컴퓨터공학과 졸업요건을 알려줘"
+                  placeholder="예: 소프트웨어학과 졸업요건을 알려줘"
                   value={question}
                   onChange={(event) =>
                     setQuestion(

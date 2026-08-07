@@ -36,7 +36,7 @@ const serviceItems = [
 const popularWikiItems = [
   {
     category: '학사정보',
-    title: '컴퓨터공학과 졸업요건',
+    title: '소프트웨어학과 졸업요건',
     description: '졸업 학점, 필수 과목, 졸업 작품 요건을 한눈에 확인하세요.',
     views: '1.2K',
     to: '/wiki',
