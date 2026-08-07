@@ -78,6 +78,7 @@ public class PinnedWikiBootstrap implements ApplicationRunner {
                 - [SW중심대학사업단 공지](https://sw.sejong.ac.kr/sw/notice.do)
                 - [TOSC 공지](https://tosc.sejong.ac.kr/ko/cusomter_support/notice)
                 - [uDream 비교과·진로 프로그램](https://udream.sejong.ac.kr/Career/CareerTask/ProgramList.aspx)
+                - [세종대학교 학사안내 전체](https://www.sejong.ac.kr/kor/academics/academic-calendar.do)
 
                 ## 처리 범위
 

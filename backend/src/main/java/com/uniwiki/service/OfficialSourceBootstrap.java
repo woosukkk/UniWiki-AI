@@ -118,7 +118,10 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
                         TOSC_TITLE_SELECTOR, TOSC_CONTENT_SELECTOR),
                 new DefaultSource("세종대학교 uDream 비교과·진로 프로그램", "진로·취업", careerCategoryId,
                         "https://udream.sejong.ac.kr/Career/CareerTask/ProgramList.aspx",
-                        UDREAM_PROGRAM_LIST_SELECTOR, "#Title", "#programInfo, #Info")
+                        UDREAM_PROGRAM_LIST_SELECTOR, "#Title", "#programInfo, #Info"),
+                new DefaultSource("세종대학교 학사안내 전체", "학사", academicCategoryId,
+                        "https://www.sejong.ac.kr/kor/academics/academic-calendar.do",
+                        "a[href^='/kor/academics/']", ".page-title", "#cms-content")
         );
     }
 

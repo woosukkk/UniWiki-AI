@@ -41,6 +41,22 @@ class OfficialSourcePipelineServiceTest {
     }
 
     @Test
+    void addsAcademicYearToCatalogTitles() {
+        OfficialSource source = new OfficialSource(null, "학사안내 전체",
+                "https://www.sejong.ac.kr/kor/academics/academic-calendar.do",
+                "a[href^='/kor/academics/']", ".page-title", "#cms-content", true);
+
+        assertThat(service.catalogTitle(source,
+                "https://www.sejong.ac.kr/kor/academics/freshman-scholarship_2027.do",
+                "신입생장학금"))
+                .isEqualTo("2027학년도 신입생장학금");
+        assertThat(service.catalogTitle(source,
+                "https://www.sejong.ac.kr/kor/academics/curriculum2025.do",
+                "연도별 교과과정"))
+                .isEqualTo("2025학년도 교과과정");
+    }
+
+    @Test
     void removesPaginationParametersFromArticleIdentity() {
         assertThat(service.canonicalArticleUrl(
                 "https://www.sejong.ac.kr/kor/intro/notice3.do"
