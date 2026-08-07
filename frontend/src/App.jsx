@@ -9,6 +9,7 @@ import { LoginPage } from './pages/LoginPage.jsx';
 import { SignupPage } from './pages/SignupPage.jsx';
 import { WikiDetailPage } from './pages/WikiDetailPage.jsx';
 import { WikiListPage } from './pages/WikiListPage.jsx';
+import { CommunityWikiPage } from './pages/CommunityWikiPage.jsx';
 import { WikiFormPage } from './pages/WikiFormPage.jsx';
 import { QuestionDetailPage } from './pages/QuestionDetailPage.jsx';
 import { QuestionFormPage } from './pages/QuestionFormPage.jsx';
@@ -619,6 +620,7 @@ function App() {
       <Route element={<MainLayout />}>
         <Route index element={<HomePage />} />
         <Route path="wiki" element={<WikiListPage />} />
+        <Route path="wiki/community" element={<CommunityWikiPage />} />
         <Route path="wiki/:wikiPostId" element={<WikiDetailPage />} />
         <Route path="questions" element={<QuestionListPage />} />
         <Route path="questions/:questionId" element={<QuestionDetailPage />} />

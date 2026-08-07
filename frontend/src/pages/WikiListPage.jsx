@@ -8,6 +8,17 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 const PAGE_SIZE = 9;
 
+const COMMUNITY_WIKI_HUB = {
+  id: 'community',
+  communityHub: true,
+  categoryName: '질문 게시판',
+  title: '함께 만든 위키',
+  summary: '질문 게시판에서 위키로 선정된 질문과 답변을 날짜별로 확인합니다.',
+  authorNickname: 'UniWiki 구성원',
+  viewCount: 0,
+  createdAt: '2026-01-01T00:00:00',
+};
+
 function referenceYear(post) {
   const match = `${post.title || ''} ${post.summary || ''}`.match(/20\d{2}/);
   return match ? Number(match[0]) : Number.MIN_SAFE_INTEGER;
@@ -31,15 +42,19 @@ export function WikiListPage() {
     setLoading(true);
     setError('');
     try {
-      const [posts, categoryList] = await Promise.all([
+      const [posts, categoryList, communityEntries] = await Promise.all([
         api.searchWikiPosts(
           keyword,
           source === 'everytime' ? 'EVERYTIME' : 'OFFICIAL',
           source === 'everytime' ? 'LECTURE_REVIEW' : null,
         ),
         api.getCategories(),
+        api.getCommunityWiki(),
       ]);
-      setWikiPosts(posts);
+      const promotedWikiIds = new Set(
+        communityEntries.map((entry) => entry.wikiPostId),
+      );
+      setWikiPosts(posts.filter((post) => !promotedWikiIds.has(post.id)));
       setCategories(categoryList);
     } catch (requestError) {
       setError(requestError.message);
@@ -57,7 +72,7 @@ export function WikiListPage() {
     const filtered = categoryId
       ? wikiPosts.filter((post) => String(post.categoryId) === categoryId)
       : wikiPosts;
-    return [...filtered].sort((left, right) => {
+    const sorted = [...filtered].sort((left, right) => {
       const leftPinned = left.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
       const rightPinned = right.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
       if (leftPinned !== rightPinned) return leftPinned - rightPinned;
@@ -69,6 +84,10 @@ export function WikiListPage() {
         ? right.viewCount - left.viewCount
         : new Date(right.createdAt) - new Date(left.createdAt);
     });
+    if (!keyword && !categoryId) {
+      sorted.splice(2, 0, COMMUNITY_WIKI_HUB);
+    }
+    return sorted;
   }, [wikiPosts, categoryId, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));

@@ -9,9 +9,11 @@ function formatDate(value) {
 }
 
 export function WikiCard({ wikiPost, index = 0 }) {
+  const target = wikiPost.communityHub ? '/wiki/community' : `/wiki/${wikiPost.id}`;
+
   return (
     <article className="editorial-wiki-card">
-      <Link to={`/wiki/${wikiPost.id}`}>
+      <Link to={target}>
         <div className="editorial-wiki-card-index">
           {String(index + 1).padStart(2, '0')}
         </div>
