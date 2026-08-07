@@ -9,6 +9,8 @@ import java.util.List;
 public interface AnswerWikiPromotionRepository
         extends JpaRepository<AnswerWikiPromotion, Long> {
 
+    boolean existsByAnswer_Id(Long answerId);
+
     @Query("""
             SELECT promotion
             FROM AnswerWikiPromotion promotion

@@ -1623,3 +1623,21 @@
     justify-content: space-between;
   }
 }
+
+.editorial-question-body-actions
+  .editorial-question-promote-button {
+  border-color: #184c36;
+  color: #184c36;
+}
+
+.editorial-question-body-actions
+  .editorial-question-promote-button:hover:not(:disabled) {
+  color: #fff;
+  background: #184c36;
+}
+
+.editorial-question-body-actions
+  .editorial-question-promote-button:disabled {
+  cursor: default;
+  opacity: .58;
+}

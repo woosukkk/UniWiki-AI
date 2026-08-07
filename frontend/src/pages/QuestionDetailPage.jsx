@@ -45,6 +45,7 @@ export function QuestionDetailPage() {
   const {
     user,
     isAuthenticated,
+    isAdmin,
   } = useAuth();
 
   const [question, setQuestion] = useState(null);
@@ -84,6 +85,8 @@ export function QuestionDetailPage() {
 
   const [answerLikes, setAnswerLikes] =
     useState({});
+  const [questionPromoted, setQuestionPromoted] = useState(false);
+  const [questionPromotionBusy, setQuestionPromotionBusy] = useState(false);
 
   const loadQuestion = useCallback(async () => {
     setLoading(true);
@@ -106,10 +109,12 @@ export function QuestionDetailPage() {
         questionData,
         answerList,
         questionLikeStatus,
+        communityEntries,
       ] = await Promise.all([
         api.getQuestion(questionId),
         api.getAnswers(questionId),
         questionLikeRequest,
+        isAdmin ? api.getCommunityWiki() : Promise.resolve([]),
       ]);
 
       const answerLikeEntries = await Promise.all(
@@ -154,12 +159,28 @@ export function QuestionDetailPage() {
       setAnswerLikes(
         Object.fromEntries(answerLikeEntries),
       );
+      setQuestionPromoted(
+        communityEntries.some((entry) => entry.questionId === Number(questionId)),
+      );
     } catch (requestError) {
       setError(requestError.message);
     } finally {
       setLoading(false);
     }
-  }, [questionId, isAuthenticated]);
+  }, [questionId, isAuthenticated, isAdmin]);
+
+  async function promoteQuestion() {
+    setActionError('');
+    setQuestionPromotionBusy(true);
+    try {
+      await api.promoteQuestionToWiki(questionId);
+      setQuestionPromoted(true);
+    } catch (requestError) {
+      setActionError(requestError.message);
+    } finally {
+      setQuestionPromotionBusy(false);
+    }
+  }
 
   useEffect(() => {
     loadQuestion();
@@ -552,6 +573,21 @@ export function QuestionDetailPage() {
                   busy={questionLike.busy}
                   onClick={toggleQuestionLike}
                 />
+
+                {isAdmin && (
+                  <button
+                    className="editorial-question-promote-button"
+                    type="button"
+                    disabled={questionPromoted || questionPromotionBusy}
+                    onClick={promoteQuestion}
+                  >
+                    {questionPromoted
+                      ? '함께 만든 위키 선정 완료'
+                      : questionPromotionBusy
+                        ? '선정 중...'
+                        : '이 질문을 위키로 선정'}
+                  </button>
+                )}
 
                 {isAuthor && (
                   <div>

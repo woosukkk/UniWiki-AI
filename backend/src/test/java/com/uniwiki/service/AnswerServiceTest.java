@@ -37,6 +37,9 @@ class AnswerServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private QuestionWikiPromotionService questionWikiPromotionService;
+
     @InjectMocks
     private AnswerService answerService;
 

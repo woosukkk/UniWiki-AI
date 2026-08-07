@@ -70,11 +70,15 @@ export function CommunityWikiPage() {
               </header>
               <div className="community-wiki-links">
                 {dayEntries.map((entry) => (
-                  <Link to={`/questions/${entry.questionId}`} key={entry.selectedAnswerId}>
+                  <Link to={`/questions/${entry.questionId}`} key={`${entry.questionId}-${entry.wikiPostId}`}>
                     <span className="community-wiki-question-label">SELECTED Q&amp;A</span>
                     <h2>{entry.questionTitle}</h2>
                     <p>{entry.questionContent}</p>
-                    <blockquote>{entry.selectedAnswerContent}</blockquote>
+                    {entry.answerContents?.length > 0 && (
+                      <blockquote>
+                        {entry.answerContents.length}개 답변 · {entry.answerContents[0]}
+                      </blockquote>
+                    )}
                     <span className="community-wiki-open">질문과 전체 답변 보기 →</span>
                   </Link>
                 ))}

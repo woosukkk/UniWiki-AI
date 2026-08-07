@@ -5,6 +5,7 @@ import com.uniwiki.repository.AnswerRepository;
 import com.uniwiki.repository.AnswerWikiPromotionRepository;
 import com.uniwiki.repository.CategoryRepository;
 import com.uniwiki.repository.WikiPostRepository;
+import com.uniwiki.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,6 +37,9 @@ class AnswerWikiPromotionServiceTest {
 
     @Mock
     private WikiPostRepository wikiPostRepository;
+
+    @Mock
+    private UserRepository userRepository;
 
     @Mock
     private WikiVectorSyncService vectorSyncService;
@@ -90,6 +94,49 @@ class AnswerWikiPromotionServiceTest {
         assertThat(promotionCaptor.getValue().getStatus())
                 .isEqualTo(AnswerPromotionStatus.COMPLETED);
         verify(vectorSyncService).enqueueUpsert(wikiPost);
+    }
+
+    @Test
+    void adminCanPromoteSpecificAnswer() {
+        User admin = User.builder()
+                .id(9L)
+                .email("admin@example.com")
+                .password("password")
+                .nickname("admin")
+                .role("ADMIN")
+                .build();
+        Question question = new Question(author, "Course registration", "How do I register?");
+        Answer answer = new Answer(question, author, "Use the registration menu.");
+        ReflectionTestUtils.setField(answer, "id", 7L);
+        when(userRepository.findById(9L)).thenReturn(Optional.of(admin));
+        when(promotionRepository.existsByAnswer_Id(7L)).thenReturn(false);
+        when(answerRepository.findById(7L)).thenReturn(Optional.of(answer));
+        when(categoryRepository.findByName("FAQ")).thenReturn(Optional.of(category));
+        when(category.getId()).thenReturn(11L);
+        when(category.getName()).thenReturn("FAQ");
+        when(wikiPostRepository.save(any(WikiPost.class))).thenAnswer(invocation -> {
+            WikiPost wikiPost = invocation.getArgument(0);
+            ReflectionTestUtils.setField(wikiPost, "id", 20L);
+            return wikiPost;
+        });
+
+        var response = promotionService.promoteByAdmin(9L, 7L);
+
+        assertThat(response.getId()).isEqualTo(20L);
+        assertThat(response.getTitle()).isEqualTo("Course registration");
+        verify(promotionRepository).save(any(AnswerWikiPromotion.class));
+        verify(vectorSyncService).enqueueUpsert(any(WikiPost.class));
+    }
+
+    @Test
+    void nonAdminCannotPromoteAnswer() {
+        when(userRepository.findById(1L)).thenReturn(Optional.of(author));
+
+        assertThatThrownBy(() -> promotionService.promoteByAdmin(1L, 7L))
+                .isInstanceOf(org.springframework.web.server.ResponseStatusException.class)
+                .hasMessageContaining("403 FORBIDDEN");
+
+        verifyNoInteractions(answerRepository, promotionRepository, wikiPostRepository);
     }
 
     @Test

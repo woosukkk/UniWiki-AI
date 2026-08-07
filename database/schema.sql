@@ -137,6 +137,21 @@ CREATE TABLE answer_wiki_promotions (
         ON DELETE CASCADE
 );
 
+CREATE TABLE question_wiki_promotions (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    question_id BIGINT NOT NULL UNIQUE,
+    wiki_post_id BIGINT NOT NULL UNIQUE,
+    promoted_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT fk_question_promotion_question
+        FOREIGN KEY (question_id) REFERENCES questions(id)
+        ON DELETE CASCADE,
+
+    CONSTRAINT fk_question_promotion_wiki
+        FOREIGN KEY (wiki_post_id) REFERENCES wiki_posts(id)
+        ON DELETE CASCADE
+);
+
 CREATE TABLE wiki_vector_sync_jobs (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     wiki_post_id BIGINT NOT NULL,
