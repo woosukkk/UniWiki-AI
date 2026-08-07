@@ -14,6 +14,8 @@ public interface AnswerRepository extends JpaRepository<Answer, Long> {
 
     Optional<Answer> findByQuestion_IdAndAcceptedTrue(Long questionId);
 
+    boolean existsByQuestion_IdAndContent(Long questionId, String content);
+
     @Query(value = """
             SELECT a.*
             FROM answers a

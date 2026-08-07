@@ -8,20 +8,51 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
-export function WikiCard({ wikiPost }) {
+export function WikiCard({ wikiPost, index = 0 }) {
+  const target = wikiPost.communityHub ? '/wiki/community' : `/wiki/${wikiPost.id}`;
+
   return (
-    <article className="wiki-card">
-      <Link to={`/wiki/${wikiPost.id}`}>
-        <div className="wiki-card-meta">
-          <span className="wiki-category">{wikiPost.categoryName}</span>
-          <span>{formatDate(wikiPost.createdAt)}</span>
+    <article className="editorial-wiki-card">
+      <Link to={target}>
+        <div className="editorial-wiki-card-index">
+          {String(index + 1).padStart(2, '0')}
         </div>
-        <h2>{wikiPost.title}</h2>
-        <p>{wikiPost.summary || '요약이 아직 등록되지 않은 문서입니다.'}</p>
-        <footer>
-          <span>{wikiPost.authorNickname}</span>
-          <span>조회 {wikiPost.viewCount.toLocaleString()}</span>
-        </footer>
+
+        <div className="editorial-wiki-card-main">
+          <div className="editorial-wiki-card-meta">
+            <span className="editorial-wiki-category">
+              {wikiPost.categoryName}
+            </span>
+
+            <span>{formatDate(wikiPost.createdAt)}</span>
+          </div>
+
+          <h2>{wikiPost.title}</h2>
+
+          <p>
+            {wikiPost.summary ||
+              '아직 요약이 등록되지 않은 문서입니다.'}
+          </p>
+        </div>
+
+        <div className="editorial-wiki-card-footer">
+          <div>
+            <span>AUTHOR</span>
+            <strong>{wikiPost.authorNickname}</strong>
+          </div>
+
+          <div>
+            <span>VIEWS</span>
+            <strong>{wikiPost.viewCount.toLocaleString()}</strong>
+          </div>
+        </div>
+
+        <span
+          className="editorial-wiki-card-arrow"
+          aria-hidden="true"
+        >
+          ↗
+        </span>
       </Link>
     </article>
   );

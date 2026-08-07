@@ -20,16 +20,25 @@ public class OfficialWikiDocument {
     @JoinColumn(name = "raw_document_id", nullable = false, unique = true)
     private RawOfficialDocument rawDocument;
 
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "wiki_post_id", nullable = false, unique = true)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "wiki_post_id", nullable = false)
     private WikiPost wikiPost;
+
+    @Column(name = "topic_key", length = 255)
+    private String topicKey;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public OfficialWikiDocument(RawOfficialDocument rawDocument, WikiPost wikiPost) {
+    public OfficialWikiDocument(RawOfficialDocument rawDocument, WikiPost wikiPost, String topicKey) {
         this.rawDocument = rawDocument;
         this.wikiPost = wikiPost;
+        this.topicKey = topicKey;
+    }
+
+    public void mergeInto(WikiPost wikiPost, String topicKey) {
+        this.wikiPost = wikiPost;
+        this.topicKey = topicKey;
     }
 
     @PrePersist

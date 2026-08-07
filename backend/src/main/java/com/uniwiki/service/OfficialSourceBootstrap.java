@@ -26,8 +26,14 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
             ".b-td-title .b-title-box > a[href*='mode=view'][href*='articleNo=']";
     private static final String DEPARTMENT_LIST_SELECTOR =
             "a[data-article-no][href*='mode=view']";
+    private static final String TOSC_LIST_SELECTOR =
+            "a[href*='/cusomter_support/notice/view/']";
+    private static final String UDREAM_PROGRAM_LIST_SELECTOR =
+            "li[onclick*='goView']";
     private static final String TITLE_SELECTOR = ".b-title-box > .b-title";
     private static final String CONTENT_SELECTOR = ".b-content-box";
+    private static final String TOSC_TITLE_SELECTOR = "meta[property=og:title]";
+    private static final String TOSC_CONTENT_SELECTOR = "meta[property=og:description]";
 
     private final OfficialSourceRepository sourceRepository;
     private final CategoryRepository categoryRepository;
@@ -54,7 +60,15 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
         for (DefaultSource definition : defaultSources()) {
             OfficialSource existing = sourceRepository.findByName(definition.name()).orElse(null);
             if (existing != null) {
-                existing.enableAutoPublish();
+                Category category = resolveCategory(definition);
+                if (category == null) {
+                    log.warn("Skipping official source update because category is missing: source={}, category={}",
+                            definition.name(), definition.categoryName());
+                    continue;
+                }
+                existing.updateConfiguration(
+                        category, definition.listUrl(), definition.articleLinkSelector(),
+                        definition.titleSelector(), definition.contentSelector(), true);
                 sourceRepository.save(existing);
                 continue;
             }
@@ -66,12 +80,12 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
             }
             sourceRepository.save(new OfficialSource(
                     category,
-                    definition.name(),
-                    definition.listUrl(),
-                    definition.articleLinkSelector(),
-                    TITLE_SELECTOR,
-                    CONTENT_SELECTOR,
-                    true
+                definition.name(),
+                definition.listUrl(),
+                definition.articleLinkSelector(),
+                definition.titleSelector(),
+                definition.contentSelector(),
+                true
             ));
             registered++;
         }
@@ -85,13 +99,29 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
     private List<DefaultSource> defaultSources() {
         return List.of(
                 new DefaultSource("세종대학교 학사공지", "학사", academicCategoryId,
-                        "https://www.sejong.ac.kr/kor/intro/notice3.do", MAIN_LIST_SELECTOR),
+                        "https://www.sejong.ac.kr/kor/intro/notice3.do", MAIN_LIST_SELECTOR,
+                        TITLE_SELECTOR, CONTENT_SELECTOR),
                 new DefaultSource("세종대학교 취업공지", "진로·취업", careerCategoryId,
-                        "https://www.sejong.ac.kr/kor/intro/notice6.do", MAIN_LIST_SELECTOR),
+                        "https://www.sejong.ac.kr/kor/intro/notice6.do", MAIN_LIST_SELECTOR,
+                        TITLE_SELECTOR, CONTENT_SELECTOR),
                 new DefaultSource("세종대학교 장학공지", "장학·지원", scholarshipCategoryId,
-                        "https://www.sejong.ac.kr/kor/intro/notice7.do", MAIN_LIST_SELECTOR),
+                        "https://www.sejong.ac.kr/kor/intro/notice7.do", MAIN_LIST_SELECTOR,
+                        TITLE_SELECTOR, CONTENT_SELECTOR),
                 new DefaultSource("세종대학교 소프트웨어학과 공지", "학교생활", campusLifeCategoryId,
-                        "https://dept.sejong.ac.kr/softwaredpt/board/notice.do", DEPARTMENT_LIST_SELECTOR)
+                        "https://dept.sejong.ac.kr/softwaredpt/board/notice.do", DEPARTMENT_LIST_SELECTOR,
+                        TITLE_SELECTOR, CONTENT_SELECTOR),
+                new DefaultSource("세종대학교 SW중심대학사업단 공지", "프로젝트", null,
+                        "https://sw.sejong.ac.kr/sw/notice.do", MAIN_LIST_SELECTOR,
+                        TITLE_SELECTOR, CONTENT_SELECTOR),
+                new DefaultSource("세종대학교 TOSC 공지", "인증제도", null,
+                        "https://tosc.sejong.ac.kr/ko/cusomter_support/notice", TOSC_LIST_SELECTOR,
+                        TOSC_TITLE_SELECTOR, TOSC_CONTENT_SELECTOR),
+                new DefaultSource("세종대학교 uDream 비교과·진로 프로그램", "진로·취업", careerCategoryId,
+                        "https://udream.sejong.ac.kr/Career/CareerTask/ProgramList.aspx",
+                        UDREAM_PROGRAM_LIST_SELECTOR, "#Title", "#programInfo, #Info"),
+                new DefaultSource("세종대학교 학사안내 전체", "학사", academicCategoryId,
+                        "https://www.sejong.ac.kr/kor/academics/academic-calendar.do",
+                        "a[href^='/kor/academics/']", ".page-title", "#cms-content")
         );
     }
 
@@ -108,6 +138,8 @@ public class OfficialSourceBootstrap implements ApplicationRunner {
             String categoryName,
             Long categoryId,
             String listUrl,
-            String articleLinkSelector
+            String articleLinkSelector,
+            String titleSelector,
+            String contentSelector
     ) { }
 }

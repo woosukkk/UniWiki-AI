@@ -31,6 +31,8 @@ public interface WikiPostRepository extends JpaRepository<WikiPost, Long> {
 
     java.util.Optional<WikiPost> findByIdAndStatus(Long id, WikiPostStatus status);
 
+    java.util.Optional<WikiPost> findByTitle(String title);
+
     // 카테고리별 최신순 조회
     List<WikiPost> findByCategory_IdOrderByCreatedAtDesc(Long categoryId);
 

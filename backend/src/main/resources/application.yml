@@ -30,7 +30,7 @@ uniwiki:
     allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   promotion:
     like-threshold: 3
-    category-name: FAQ
+    category-name: 함께 만들어낸 위키
     cron: "0 0 3 * * *"
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL:http://localhost:8000}
@@ -43,6 +43,8 @@ uniwiki:
     scheduler-enabled: ${OFFICIAL_SOURCE_SCHEDULER_ENABLED:false}
     interval-ms: ${OFFICIAL_SOURCE_INTERVAL_MS:3600000}
     max-articles-per-run: ${OFFICIAL_SOURCE_MAX_ARTICLES:20}
+    max-list-pages-per-run: ${OFFICIAL_SOURCE_MAX_LIST_PAGES:300}
+    max-recent-articles-per-run: ${OFFICIAL_SOURCE_MAX_RECENT_ARTICLES:20}
     author-id: ${OFFICIAL_SOURCE_AUTHOR_ID:1}
     author-email: ${OFFICIAL_SOURCE_AUTHOR_EMAIL:official-source@local.invalid}
     allowed-host-suffixes: ${OFFICIAL_SOURCE_ALLOWED_HOST_SUFFIXES:sejong.ac.kr}
@@ -77,7 +79,7 @@ uniwiki:
     board-end-page: ${EVERYTIME_BOARD_END_PAGE:3}
   everytime-community:
     interval-ms: ${EVERYTIME_COMMUNITY_INTERVAL_MS:10000}
-    minimum-score: ${EVERYTIME_COMMUNITY_MINIMUM_SCORE:50}
+    author-id: ${EVERYTIME_COMMUNITY_AUTHOR_ID:1}
   lecture-review-workflow:
     interval-ms: ${LECTURE_REVIEW_WORKFLOW_INTERVAL_MS:10000}
     author-id: ${LECTURE_REVIEW_AUTHOR_ID:1}

@@ -28,7 +28,7 @@ public class AnswerWikiPromotionService {
     @Value("${uniwiki.promotion.like-threshold:3}")
     private long likeThreshold;
 
-    @Value("${uniwiki.promotion.category-name:FAQ}")
+    @Value("${uniwiki.promotion.category-name:함께 만들어낸 위키}")
     private String categoryName;
 
     @Transactional

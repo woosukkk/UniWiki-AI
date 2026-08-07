@@ -2,7 +2,7 @@ import numpy as np
 from fastapi.testclient import TestClient
 
 from app.main import app, get_search_service
-from app.models import SemanticSearchResult
+from app.models import SemanticSearchRequest, SemanticSearchResult
 from app.search_service import SemanticSearchService
 
 
@@ -68,3 +68,28 @@ def test_rejects_blank_search_query() -> None:
     response = client.post("/api/search/wiki-posts", json={"query": "   "})
 
     assert response.status_code == 422
+
+
+def test_hybrid_ranking_prefers_exact_title_and_deduplicates_documents() -> None:
+    class HybridVectorStore(FakeVectorStore):
+        def search(self, query_embedding, top_k, category_id=None):
+            return [
+                SemanticSearchResult(chunkId="wrong-0", wikiPostId=8, title="푸른등대 장학사업",
+                                     content="기부 장학생 안내", categoryId=6, chunkIndex=0, score=0.8),
+                SemanticSearchResult(chunkId="wrong-1", wikiPostId=8, title="푸른등대 장학사업",
+                                     content="신청 조건", categoryId=6, chunkIndex=1, score=0.79),
+            ]
+
+        def all_records(self, category_id=None):
+            return [
+                SemanticSearchResult(chunkId="exact-0", wikiPostId=9, title="교내장학금",
+                                     content="교내 장학금 종류와 선발 조건", categoryId=6, chunkIndex=0, score=0.0)
+            ]
+
+    service = SemanticSearchService(FakeEmbedder(), HybridVectorStore(), default_top_k=5)
+    results = service.search(SemanticSearchRequest(
+        query="교내장학금 종류와 조건 알려줘", topK=5
+    )).results
+
+    assert results[0].wiki_post_id == 9
+    assert len([result for result in results if result.wiki_post_id == 8]) == 1

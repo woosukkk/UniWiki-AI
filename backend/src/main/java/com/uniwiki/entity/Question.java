@@ -28,6 +28,15 @@ public class Question {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "source_type", length = 30)
+    private String sourceType;
+
+    @Column(name = "source_url", length = 1000)
+    private String sourceUrl;
+
+    @Column(name = "external_like_count", nullable = false)
+    private long externalLikeCount;
+
     // Enum 값을 문자열 형태로 DB에 저장
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -44,13 +53,27 @@ public class Question {
         this.author = author;
         this.title = title;
         this.content = content;
+        this.externalLikeCount = 0;
         this.status = QuestionStatus.OPEN;
+    }
+
+    public Question(User author, String title, String content,
+                    String sourceType, String sourceUrl, long externalLikeCount) {
+        this(author, title, content);
+        this.sourceType = sourceType;
+        this.sourceUrl = sourceUrl;
+        this.externalLikeCount = Math.max(0, externalLikeCount);
     }
 
     // 질문 수정
     public void update(String title, String content) {
         this.title = title;
         this.content = content;
+    }
+
+    public void updateImportedContent(String title, String content, long externalLikeCount) {
+        update(title, content);
+        this.externalLikeCount = Math.max(0, externalLikeCount);
     }
 
     // 질문 종료 처리

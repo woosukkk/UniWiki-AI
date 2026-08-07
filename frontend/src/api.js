@@ -50,6 +50,7 @@ export const api = {
     params: { keyword, source, contentType },
   }),
   getWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}` }),
+  getCommunityWiki: () => request({ url: '/api/wiki-posts/community' }),
   getWikiPostLikes: (wikiPostId, authenticated = false) => request({ url: `/api/wiki-posts/${wikiPostId}/likes${authenticated ? '' : '/count'}` }),
   likeWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}/likes`, method: 'POST' }),
   unlikeWikiPost: (wikiPostId) => request({ url: `/api/wiki-posts/${wikiPostId}/likes`, method: 'DELETE' }),

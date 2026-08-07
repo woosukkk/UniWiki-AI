@@ -1,5 +1,14 @@
-import { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import {
+  useEffect,
+  useState,
+} from 'react';
+
+import {
+  Link,
+  useNavigate,
+  useParams,
+} from 'react-router-dom';
+
 import { api } from '../api.js';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
 import { LoadingSpinner } from '../components/LoadingSpinner.jsx';
@@ -15,24 +24,38 @@ const emptyForm = {
 export function WikiFormPage() {
   const { wikiPostId } = useParams();
   const navigate = useNavigate();
+
   const editing = Boolean(wikiPostId);
+
   const [form, setForm] = useState(emptyForm);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] =
+    useState(false);
+
   const [error, setError] = useState('');
 
   useEffect(() => {
     let active = true;
+
     async function loadForm() {
       setLoading(true);
+
       try {
-        const [categoryList, wikiPost] = await Promise.all([
-          api.getCategories(),
-          editing ? api.getWikiPost(wikiPostId) : Promise.resolve(null),
-        ]);
-        if (!active) return;
+        const [categoryList, wikiPost] =
+          await Promise.all([
+            api.getCategories(),
+            editing
+              ? api.getWikiPost(wikiPostId)
+              : Promise.resolve(null),
+          ]);
+
+        if (!active) {
+          return;
+        }
+
         setCategories(categoryList);
+
         if (wikiPost) {
           setForm({
             categoryId: String(wikiPost.categoryId),
@@ -42,29 +65,52 @@ export function WikiFormPage() {
             status: wikiPost.status,
           });
         } else if (categoryList.length > 0) {
-          setForm((current) => ({ ...current, categoryId: String(categoryList[0].id) }));
+          setForm((current) => ({
+            ...current,
+            categoryId: String(categoryList[0].id),
+          }));
         }
       } catch (requestError) {
-        if (active) setError(requestError.message);
+        if (active) {
+          setError(requestError.message);
+        }
       } finally {
-        if (active) setLoading(false);
+        if (active) {
+          setLoading(false);
+        }
       }
     }
+
     loadForm();
-    return () => { active = false; };
+
+    return () => {
+      active = false;
+    };
   }, [editing, wikiPostId]);
 
   function updateField(event) {
-    setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
+    setForm((current) => ({
+      ...current,
+      [event.target.name]: event.target.value,
+    }));
   }
 
   async function handleSubmit(event) {
     event.preventDefault();
     setError('');
-    if (!form.categoryId || !form.title.trim() || !form.content.trim()) {
-      setError('카테고리, 제목과 본문을 모두 입력해 주세요.');
+
+    if (
+      !form.categoryId ||
+      !form.title.trim() ||
+      !form.content.trim()
+    ) {
+      setError(
+        '카테고리, 제목과 본문을 모두 입력해주세요.',
+      );
+
       return;
     }
+
     const payload = {
       categoryId: Number(form.categoryId),
       title: form.title.trim(),
@@ -72,12 +118,20 @@ export function WikiFormPage() {
       summary: form.summary.trim() || null,
       status: form.status,
     };
+
     setSubmitting(true);
+
     try {
       const saved = editing
-        ? await api.updateWikiPost(wikiPostId, payload)
+        ? await api.updateWikiPost(
+            wikiPostId,
+            payload,
+          )
         : await api.createWikiPost(payload);
-      navigate(`/wiki/${saved.id}`, { replace: true });
+
+      navigate(`/wiki/${saved.id}`, {
+        replace: true,
+      });
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -85,46 +139,226 @@ export function WikiFormPage() {
     }
   }
 
-  if (loading) return <main className="wiki-page container"><LoadingSpinner label="작성 화면을 준비하는 중입니다" /></main>;
-  if (error && categories.length === 0) return <main className="wiki-page container"><ErrorMessage message={error} /></main>;
+  if (loading) {
+    return (
+      <main className="editorial-wiki-form-state">
+        <LoadingSpinner label="작성 화면을 준비하는 중입니다" />
+      </main>
+    );
+  }
+
+  if (error && categories.length === 0) {
+    return (
+      <main className="editorial-wiki-form-state">
+        <ErrorMessage message={error} />
+      </main>
+    );
+  }
 
   return (
-    <main className="wiki-form-page container">
-      <Link className="back-button" to={editing ? `/wiki/${wikiPostId}` : '/wiki'}>← 돌아가기</Link>
-      <section className="wiki-form-card">
-        <span className="section-kicker">{editing ? 'EDIT WIKI' : 'NEW WIKI'}</span>
-        <h1>{editing ? '위키 문서 수정' : '새 위키 문서 작성'}</h1>
-        {error && <div className="auth-error" role="alert">{error}</div>}
-        <form className="wiki-form" onSubmit={handleSubmit}>
-          <div className="wiki-form-row">
-            <label>카테고리
-              <select name="categoryId" value={form.categoryId} onChange={updateField} required>
-                {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-              </select>
-            </label>
-            <label>공개 상태
-              <select name="status" value={form.status} onChange={updateField}>
-                <option value="APPROVED">공개</option>
-                <option value="DRAFT">임시 저장</option>
-                <option value="PENDING">검토 대기</option>
-              </select>
-            </label>
-          </div>
-          <label>제목
-            <input name="title" maxLength="200" value={form.title} onChange={updateField} required />
-          </label>
-          <label>요약 <span>{form.summary.length}/500</span>
-            <textarea className="wiki-summary-input" name="summary" maxLength="500" value={form.summary} onChange={updateField} />
-          </label>
-          <label>본문
-            <textarea className="wiki-content-input" name="content" value={form.content} onChange={updateField} required />
-          </label>
-          <div className="form-actions">
-            <Link className="text-button" to={editing ? `/wiki/${wikiPostId}` : '/wiki'}>취소</Link>
-            <button className="button" disabled={submitting}>{submitting ? '저장 중...' : editing ? '수정 완료' : '위키 등록'}</button>
-          </div>
-        </form>
+    <div className="editorial-wiki-form-page">
+      <section className="editorial-wiki-form-hero">
+        <div className="editorial-wiki-content-width">
+          <Link
+            className="editorial-wiki-back-link"
+            to={
+              editing
+                ? `/wiki/${wikiPostId}`
+                : '/wiki'
+            }
+          >
+            ← BACK
+          </Link>
+
+          <span className="editorial-wiki-label">
+            {editing ? 'EDIT WIKI' : 'NEW WIKI'}
+          </span>
+
+          <h1>
+            {editing
+              ? '위키 문서 수정'
+              : '새로운 지식을 기록하세요.'}
+          </h1>
+
+          <p>
+            정확한 정보와 출처를 기반으로
+            학생들이 함께 사용할 수 있는 문서를 작성합니다.
+          </p>
+        </div>
       </section>
-    </main>
+
+      <section className="editorial-wiki-form-section">
+        <div className="editorial-wiki-content-width editorial-wiki-form-layout">
+          <aside className="editorial-wiki-form-guide">
+            <span>WRITING GUIDE</span>
+
+            <h2>
+              좋은 위키 문서를
+              <br />
+              만드는 방법
+            </h2>
+
+            <ol>
+              <li>
+                <span>01</span>
+                <p>
+                  제목만 읽어도 내용을 알 수 있게 작성하세요.
+                </p>
+              </li>
+
+              <li>
+                <span>02</span>
+                <p>
+                  공식 자료나 직접 확인한 정보를 사용하세요.
+                </p>
+              </li>
+
+              <li>
+                <span>03</span>
+                <p>
+                  긴 내용은 문단으로 구분해 읽기 쉽게 만드세요.
+                </p>
+              </li>
+
+              <li>
+                <span>04</span>
+                <p>
+                  개인적인 추측과 확인되지 않은 정보는 제외하세요.
+                </p>
+              </li>
+            </ol>
+          </aside>
+
+          <section className="editorial-wiki-form-card">
+            {error && (
+              <div
+                className="editorial-wiki-form-error"
+                role="alert"
+              >
+                {error}
+              </div>
+            )}
+
+            <form
+              className="editorial-wiki-form"
+              onSubmit={handleSubmit}
+            >
+              <div className="editorial-wiki-form-row">
+                <label>
+                  <span>CATEGORY</span>
+
+                  <select
+                    name="categoryId"
+                    value={form.categoryId}
+                    onChange={updateField}
+                    required
+                  >
+                    {categories.map((category) => (
+                      <option
+                        key={category.id}
+                        value={category.id}
+                      >
+                        {category.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label>
+                  <span>STATUS</span>
+
+                  <select
+                    name="status"
+                    value={form.status}
+                    onChange={updateField}
+                  >
+                    <option value="APPROVED">
+                      공개
+                    </option>
+
+                    <option value="DRAFT">
+                      임시 저장
+                    </option>
+
+                    <option value="PENDING">
+                      검토 대기
+                    </option>
+                  </select>
+                </label>
+              </div>
+
+              <label>
+                <span>TITLE</span>
+
+                <input
+                  name="title"
+                  maxLength="200"
+                  value={form.title}
+                  onChange={updateField}
+                  placeholder="문서 제목을 입력하세요"
+                  required
+                />
+              </label>
+
+              <label>
+                <span>
+                  SUMMARY
+                  <small>
+                    {form.summary.length}/500
+                  </small>
+                </span>
+
+                <textarea
+                  className="editorial-wiki-summary-input"
+                  name="summary"
+                  maxLength="500"
+                  value={form.summary}
+                  onChange={updateField}
+                  placeholder="문서의 핵심 내용을 짧게 정리해주세요"
+                />
+              </label>
+
+              <label>
+                <span>CONTENT</span>
+
+                <textarea
+                  className="editorial-wiki-content-input"
+                  name="content"
+                  value={form.content}
+                  onChange={updateField}
+                  placeholder="정확하고 구체적인 정보를 작성해주세요"
+                  required
+                />
+              </label>
+
+              <div className="editorial-wiki-form-actions">
+                <Link
+                  to={
+                    editing
+                      ? `/wiki/${wikiPostId}`
+                      : '/wiki'
+                  }
+                >
+                  CANCEL
+                </Link>
+
+                <button
+                  type="submit"
+                  disabled={submitting}
+                >
+                  {submitting
+                    ? 'SAVING...'
+                    : editing
+                      ? 'SAVE CHANGES'
+                      : 'PUBLISH WIKI'}
+
+                  <span>→</span>
+                </button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </section>
+    </div>
   );
 }

@@ -7,13 +7,29 @@ import { WikiCard } from '../components/WikiCard.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 
 const PAGE_SIZE = 9;
+const PAGE_BUTTON_COUNT = 10;
+
+const COMMUNITY_WIKI_HUB = {
+  id: 'community',
+  communityHub: true,
+  categoryName: '질문 게시판',
+  title: '함께 만든 위키',
+  summary: '질문 게시판에서 위키로 선정된 질문과 답변을 날짜별로 확인합니다.',
+  authorNickname: 'UniWiki 구성원',
+  viewCount: 0,
+  createdAt: '2026-01-01T00:00:00',
+};
+
+function referenceYear(post) {
+  const match = `${post.title || ''} ${post.summary || ''}`.match(/20\d{2}/);
+  return match ? Number(match[0]) : Number.MIN_SAFE_INTEGER;
+}
 
 export function WikiListPage() {
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword') || '';
-  const source = searchParams.get('source') || 'official';
-  const contentType = searchParams.get('type') || 'all';
+  const source = 'official';
   const categoryId = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'latest';
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
@@ -27,24 +43,26 @@ export function WikiListPage() {
     setLoading(true);
     setError('');
     try {
-      const [posts, categoryList] = await Promise.all([
+      const [posts, categoryList, communityEntries] = await Promise.all([
         api.searchWikiPosts(
           keyword,
           source === 'everytime' ? 'EVERYTIME' : 'OFFICIAL',
-          source === 'everytime' && contentType !== 'all'
-            ? contentType.replaceAll('-', '_').toUpperCase()
-            : null,
+          source === 'everytime' ? 'LECTURE_REVIEW' : null,
         ),
         api.getCategories(),
+        api.getCommunityWiki(),
       ]);
-      setWikiPosts(posts);
+      const promotedWikiIds = new Set(
+        communityEntries.map((entry) => entry.wikiPostId),
+      );
+      setWikiPosts(posts.filter((post) => !promotedWikiIds.has(post.id)));
       setCategories(categoryList);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
       setLoading(false);
     }
-  }, [keyword, source, contentType]);
+  }, [keyword, source]);
 
   useEffect(() => {
     setSearchInput(keyword);
@@ -55,13 +73,36 @@ export function WikiListPage() {
     const filtered = categoryId
       ? wikiPosts.filter((post) => String(post.categoryId) === categoryId)
       : wikiPosts;
-    return [...filtered].sort((left, right) => sort === 'views'
-      ? right.viewCount - left.viewCount
-      : new Date(right.createdAt) - new Date(left.createdAt));
+    const sorted = [...filtered].sort((left, right) => {
+      const leftPinned = left.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
+      const rightPinned = right.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
+      if (leftPinned !== rightPinned) return leftPinned - rightPinned;
+
+      const yearDifference = referenceYear(right) - referenceYear(left);
+      if (yearDifference !== 0) return yearDifference;
+
+      return sort === 'views'
+        ? right.viewCount - left.viewCount
+        : new Date(right.createdAt) - new Date(left.createdAt);
+    });
+    if (!keyword && !categoryId) {
+      sorted.splice(2, 0, COMMUNITY_WIKI_HUB);
+    }
+    return sorted;
   }, [wikiPosts, categoryId, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
+  const pageGroupStart =
+    Math.floor((currentPage - 1) / PAGE_BUTTON_COUNT) * PAGE_BUTTON_COUNT + 1;
+  const pageGroupEnd = Math.min(
+    totalPages,
+    pageGroupStart + PAGE_BUTTON_COUNT - 1,
+  );
+  const visiblePageNumbers = Array.from(
+    { length: pageGroupEnd - pageGroupStart + 1 },
+    (_, index) => pageGroupStart + index,
+  );
   const visiblePosts = filteredPosts.slice(
     (currentPage - 1) * PAGE_SIZE,
     currentPage * PAGE_SIZE,
@@ -97,32 +138,7 @@ export function WikiListPage() {
           className={source === 'official' ? 'active' : ''}
           onClick={() => updateParams({ source: '', type: '', category: '', page: '' })}
         >공식·학교 위키</button>
-        <button
-          className={source === 'everytime' ? 'active' : ''}
-          onClick={() => updateParams({ source: 'everytime', type: '', category: '', page: '' })}
-        >에브리타임 자료</button>
       </nav>
-
-      {source === 'everytime' && (
-        <nav className="wiki-content-tabs" aria-label="에브리타임 자료 분류">
-          {[
-            ['all', '전체'],
-            ['lecture-review', '강의평'],
-            ['academic', '수강·학사'],
-            ['scholarship', '장학·지원'],
-            ['facilities', '시설·통학·학식'],
-            ['career', '진로·취업'],
-            ['club-event', '동아리·행사'],
-            ['school-life', '학교생활 팁'],
-          ].map(([value, label]) => (
-            <button
-              key={value}
-              className={contentType === value ? 'active' : ''}
-              onClick={() => updateParams({ type: value === 'all' ? '' : value, page: '' })}
-            >{label}</button>
-          ))}
-        </nav>
-      )}
 
       <section className="wiki-toolbar" aria-label="위키 검색 및 필터">
         <form className="wiki-search" onSubmit={submitSearch}>
@@ -169,12 +185,18 @@ export function WikiListPage() {
       ) : (
         <>
           <section className="wiki-grid" aria-label="위키 문서 목록">
-            {visiblePosts.map((wikiPost) => <WikiCard key={wikiPost.id} wikiPost={wikiPost} />)}
+            {visiblePosts.map((wikiPost, index) => (
+              <WikiCard
+                key={wikiPost.id}
+                wikiPost={wikiPost}
+                index={(currentPage - 1) * PAGE_SIZE + index}
+              />
+            ))}
           </section>
           {totalPages > 1 && (
             <nav className="pagination" aria-label="위키 페이지 이동">
               <button disabled={currentPage === 1} onClick={() => updateParams({ page: currentPage - 1 })}>이전</button>
-              {Array.from({ length: totalPages }, (_, index) => index + 1).map((pageNumber) => (
+              {visiblePageNumbers.map((pageNumber) => (
                 <button
                   className={pageNumber === currentPage ? 'active' : ''}
                   key={pageNumber}

@@ -26,6 +26,13 @@
 | 세종대학교 취업공지 | 진로·취업 | `https://www.sejong.ac.kr/kor/intro/notice6.do` |
 | 세종대학교 장학공지 | 장학·지원 | `https://www.sejong.ac.kr/kor/intro/notice7.do` |
 | 세종대학교 소프트웨어학과 공지 | 학교생활 | `https://dept.sejong.ac.kr/softwaredpt/board/notice.do` |
+| 세종대학교 SW중심대학사업단 공지 | 프로젝트 | `https://sw.sejong.ac.kr/sw/notice.do` |
+| 세종대학교 TOSC 공지 | 인증제도 | `https://tosc.sejong.ac.kr/ko/cusomter_support/notice` |
+
+목록 페이지를 순회하면서 기존에 저장되지 않은 게시물을 회차별 최대
+`OFFICIAL_SOURCE_MAX_ARTICLES`개씩 역순으로 백필한다. 첫 페이지의 최근 게시물은
+`OFFICIAL_SOURCE_MAX_RECENT_ARTICLES`개까지 매번 다시 확인하므로 변경된 공지도 갱신된다.
+한 번의 실행에서 순회할 목록 페이지 수는 `OFFICIAL_SOURCE_MAX_LIST_PAGES`로 제한한다.
 
 카테고리 ID가 설정돼 있으면 ID를 우선 사용하고, 없으면 정상 한글 이름으로 조회한다. 둘 다 찾지 못하면 해당 출처는 건너뛰고 경고 로그를 남긴다. `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`이면 등록 직후 활성 출처를 한 번 수집한다.
 

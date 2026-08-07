@@ -45,6 +45,7 @@ public class QuestionDto {
         private final String authorNickname;
         private final String title;
         private final String content;
+        private final long externalLikeCount;
         private final QuestionStatus status;
         private final LocalDateTime createdAt;
         private final LocalDateTime updatedAt;
@@ -55,6 +56,7 @@ public class QuestionDto {
                 String authorNickname,
                 String title,
                 String content,
+                long externalLikeCount,
                 QuestionStatus status,
                 LocalDateTime createdAt,
                 LocalDateTime updatedAt
@@ -64,6 +66,7 @@ public class QuestionDto {
             this.authorNickname = authorNickname;
             this.title = title;
             this.content = content;
+            this.externalLikeCount = externalLikeCount;
             this.status = status;
             this.createdAt = createdAt;
             this.updatedAt = updatedAt;
@@ -77,6 +80,7 @@ public class QuestionDto {
                     question.getAuthor().getNickname(),
                     question.getTitle(),
                     question.getContent(),
+                    question.getExternalLikeCount(),
                     question.getStatus(),
                     question.getCreatedAt(),
                     question.getUpdatedAt()
