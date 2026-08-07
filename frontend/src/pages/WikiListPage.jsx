@@ -8,6 +8,11 @@ import { useAuth } from '../contexts/AuthContext.jsx';
 
 const PAGE_SIZE = 9;
 
+function referenceYear(post) {
+  const match = `${post.title || ''} ${post.summary || ''}`.match(/20\d{2}/);
+  return match ? Number(match[0]) : Number.MIN_SAFE_INTEGER;
+}
+
 export function WikiListPage() {
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -56,6 +61,10 @@ export function WikiListPage() {
       const leftPinned = left.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
       const rightPinned = right.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
       if (leftPinned !== rightPinned) return leftPinned - rightPinned;
+
+      const yearDifference = referenceYear(right) - referenceYear(left);
+      if (yearDifference !== 0) return yearDifference;
+
       return sort === 'views'
         ? right.viewCount - left.viewCount
         : new Date(right.createdAt) - new Date(left.createdAt);
