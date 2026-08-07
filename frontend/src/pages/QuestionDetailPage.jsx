@@ -90,6 +90,18 @@ export function QuestionDetailPage() {
     setError('');
 
     try {
+      const questionLikeRequest = (
+        isAuthenticated
+          ? api.getQuestionLikeStatus(questionId)
+          : api.getQuestionLikes(questionId)
+      ).catch(async () => {
+        try {
+          return await api.getQuestionLikes(questionId);
+        } catch {
+          return { likeCount: 0, liked: false };
+        }
+      });
+
       const [
         questionData,
         answerList,
@@ -97,9 +109,7 @@ export function QuestionDetailPage() {
       ] = await Promise.all([
         api.getQuestion(questionId),
         api.getAnswers(questionId),
-        isAuthenticated
-          ? api.getQuestionLikeStatus(questionId)
-          : api.getQuestionLikes(questionId),
+        questionLikeRequest,
       ]);
 
       const answerLikeEntries = await Promise.all(
