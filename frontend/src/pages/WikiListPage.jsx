@@ -52,9 +52,14 @@ export function WikiListPage() {
     const filtered = categoryId
       ? wikiPosts.filter((post) => String(post.categoryId) === categoryId)
       : wikiPosts;
-    return [...filtered].sort((left, right) => sort === 'views'
-      ? right.viewCount - left.viewCount
-      : new Date(right.createdAt) - new Date(left.createdAt));
+    return [...filtered].sort((left, right) => {
+      const leftPinned = left.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
+      const rightPinned = right.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
+      if (leftPinned !== rightPinned) return leftPinned - rightPinned;
+      return sort === 'views'
+        ? right.viewCount - left.viewCount
+        : new Date(right.createdAt) - new Date(left.createdAt);
+    });
   }, [wikiPosts, categoryId, sort]);
 
   const totalPages = Math.max(1, Math.ceil(filteredPosts.length / PAGE_SIZE));

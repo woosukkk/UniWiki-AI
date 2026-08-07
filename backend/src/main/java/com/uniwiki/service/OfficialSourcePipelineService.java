@@ -39,6 +39,7 @@ public class OfficialSourcePipelineService {
     private final WikiPostRepository wikiPostRepository;
     private final WikiVectorSyncService vectorSyncService;
     private final OfficialAttachmentService attachmentService;
+    private final OfficialTopicKeyResolver topicKeyResolver;
 
     @Value("${uniwiki.official-sources.allowed-host-suffixes:sejong.ac.kr}")
     private String allowedHostSuffixes;
@@ -157,6 +158,17 @@ public class OfficialSourcePipelineService {
     }
 
     @Transactional
+    public int rebuildTopicWikis() {
+        if (!documentRepository.existsByTopicKeyIsNull()
+                && !documentRepository.existsByTopicKeyLike("TOSC:%:%")) {
+            return 0;
+        }
+        List<RawOfficialDocument> documents = rawRepository.findAllByOrderByLastCollectedAtDesc();
+        documents.forEach(this::createOrUpdateWiki);
+        return documents.size();
+    }
+
+    @Transactional
     public Long approveDocument(Long rawDocumentId) {
         RawOfficialDocument raw = rawRepository.findById(rawDocumentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공식 원시 자료입니다."));
@@ -172,27 +184,73 @@ public class OfficialSourcePipelineService {
     private void createOrUpdateWiki(RawOfficialDocument raw) {
         OfficialSource source = raw.getOfficialSource();
         WikiPostStatus status = source.isAutoPublish() ? WikiPostStatus.APPROVED : WikiPostStatus.DRAFT;
-        String content = "# " + raw.getTitle() + "\n\n" + raw.getContent() + "\n\n"
-                + "## 공식 출처\n\n"
-                + "- 출처: " + source.getName() + "\n"
-                + "- 원문: " + raw.getSourceUrl() + "\n"
-                + "- 원문 해시: `" + raw.getContentHash() + "`\n";
-        String summary = source.getName() + "에서 수집한 공식 자료입니다.";
-        OfficialWikiDocument existing = documentRepository.findByRawDocument_Id(raw.getId()).orElse(null);
-        WikiPost wikiPost;
-        if (existing == null) {
+        String topicKey = topicKeyResolver.resolve(source, raw.getTitle(), raw.getSourceUrl());
+        OfficialWikiDocument rawLink = documentRepository.findByRawDocument_Id(raw.getId()).orElse(null);
+        List<OfficialWikiDocument> topicLinks = documentRepository.findByTopicKeyOrderByIdAsc(topicKey);
+
+        WikiPost previousRawWiki = rawLink == null ? null : rawLink.getWikiPost();
+        WikiPost wikiPost = topicLinks.isEmpty()
+                ? (rawLink == null ? null : rawLink.getWikiPost())
+                : topicLinks.get(0).getWikiPost();
+        if (wikiPost == null) {
             User author = userRepository.findByEmail(authorEmail)
                     .or(() -> userRepository.findById(authorId))
                     .orElseThrow(() -> new IllegalStateException("공식 위키 작성자를 찾을 수 없습니다."));
             wikiPost = wikiPostRepository.save(new WikiPost(
-                    source.getCategory(), author, truncate(raw.getTitle(), 200), content, summary, status));
-            documentRepository.save(new OfficialWikiDocument(raw, wikiPost));
-        } else {
-            wikiPost = existing.getWikiPost();
-            wikiPost.update(source.getCategory(), truncate(raw.getTitle(), 200), content, summary, status);
+                    source.getCategory(), author, truncate(raw.getTitle(), 200), raw.getContent(),
+                    source.getName() + "에서 수집한 공식 자료입니다.", status));
         }
-        raw.markProcessed(status == WikiPostStatus.APPROVED);
+
+        if (rawLink == null) {
+            rawLink = documentRepository.save(new OfficialWikiDocument(raw, wikiPost, topicKey));
+        } else {
+            rawLink.mergeInto(wikiPost, topicKey);
+        }
+
+        Set<WikiPost> duplicates = new LinkedHashSet<>();
+        if (previousRawWiki != null && !previousRawWiki.getId().equals(wikiPost.getId())) {
+            duplicates.add(previousRawWiki);
+        }
+        for (OfficialWikiDocument link : topicLinks) {
+            if (!link.getWikiPost().getId().equals(wikiPost.getId())) {
+                duplicates.add(link.getWikiPost());
+                link.mergeInto(wikiPost, topicKey);
+            }
+        }
+        documentRepository.flush();
+        for (WikiPost duplicate : duplicates) {
+            if (documentRepository.findByWikiPost_IdOrderByRawDocument_IdAsc(duplicate.getId()).isEmpty()) {
+                vectorSyncService.enqueueDelete(duplicate.getId());
+                wikiPostRepository.delete(duplicate);
+            }
+        }
+
+        List<OfficialWikiDocument> mergedLinks = documentRepository
+                .findByWikiPost_IdOrderByRawDocument_IdAsc(wikiPost.getId());
+        String title = topicKeyResolver.displayTitle(topicKey, raw.getTitle());
+        String content = renderMergedContent(title, mergedLinks);
+        String summary = mergedLinks.size() == 1
+                ? source.getName() + "에서 수집한 공식 자료입니다."
+                : source.getName() + "의 관련 공지 " + mergedLinks.size() + "건을 하나로 통합한 공식 자료입니다.";
+        wikiPost.update(source.getCategory(), truncate(title, 200), content, summary, status);
+        mergedLinks.forEach(link -> link.getRawDocument().markProcessed(status == WikiPostStatus.APPROVED));
         if (status == WikiPostStatus.APPROVED) vectorSyncService.enqueueUpsert(wikiPost);
+    }
+
+    private String renderMergedContent(String title, List<OfficialWikiDocument> links) {
+        StringBuilder content = new StringBuilder("# ").append(title).append("\n");
+        for (OfficialWikiDocument link : links) {
+            RawOfficialDocument document = link.getRawDocument();
+            content.append("\n## ").append(document.getTitle()).append("\n\n")
+                    .append(document.getContent()).append("\n\n")
+                    .append("- 원문: ").append(document.getSourceUrl()).append("\n")
+                    .append("- 원문 해시: `").append(document.getContentHash()).append("`\n");
+        }
+        content.append("\n## 공식 출처\n\n");
+        links.stream().map(OfficialWikiDocument::getRawDocument).forEach(document ->
+                content.append("- [").append(document.getTitle()).append("](")
+                        .append(document.getSourceUrl()).append(")\n"));
+        return content.toString();
     }
 
     private Document fetch(String url) throws Exception {

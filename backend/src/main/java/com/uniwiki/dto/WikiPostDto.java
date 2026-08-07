@@ -72,6 +72,7 @@ public class WikiPostDto {
 
         private final WikiPostStatus status;
         private final Long viewCount;
+        private final Integer pinnedOrder;
 
         private final LocalDateTime createdAt;
         private final LocalDateTime updatedAt;
@@ -91,6 +92,7 @@ public class WikiPostDto {
 
             this.status = wikiPost.getStatus();
             this.viewCount = wikiPost.getViewCount();
+            this.pinnedOrder = wikiPost.getPinnedOrder();
 
             this.createdAt = wikiPost.getCreatedAt();
             this.updatedAt = wikiPost.getUpdatedAt();
@@ -114,6 +116,7 @@ public class WikiPostDto {
 
         private final WikiPostStatus status;
         private final Long viewCount;
+        private final Integer pinnedOrder;
 
         private final LocalDateTime createdAt;
         private final LocalDateTime updatedAt;
@@ -132,6 +135,7 @@ public class WikiPostDto {
 
             this.status = wikiPost.getStatus();
             this.viewCount = wikiPost.getViewCount();
+            this.pinnedOrder = wikiPost.getPinnedOrder();
 
             this.createdAt = wikiPost.getCreatedAt();
             this.updatedAt = wikiPost.getUpdatedAt();

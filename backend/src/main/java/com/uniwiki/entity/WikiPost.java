@@ -44,6 +44,9 @@ public class WikiPost {
     @Column(name = "view_count", nullable = false)
     private Long viewCount;
 
+    @Column(name = "pinned_order")
+    private Integer pinnedOrder;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -89,6 +92,10 @@ public class WikiPost {
 
     public void publish() {
         this.status = WikiPostStatus.APPROVED;
+    }
+
+    public void pin(int order) {
+        this.pinnedOrder = order > 0 ? order : null;
     }
 
     @PrePersist
