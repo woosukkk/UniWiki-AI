@@ -3,9 +3,9 @@ import { Route, Routes } from 'react-router-dom';
 import { api } from './api.js';
 import { useAuth } from './contexts/AuthContext.jsx';
 import { MainLayout } from './layouts/MainLayout.jsx';
+import { HomePage } from './pages/HomePage.jsx';
 import { NotFoundPage } from './pages/NotFoundPage.jsx';
 import { LoginPage } from './pages/LoginPage.jsx';
-import { PlaceholderPage } from './pages/PlaceholderPage.jsx';
 import { SignupPage } from './pages/SignupPage.jsx';
 import { WikiDetailPage } from './pages/WikiDetailPage.jsx';
 import { WikiListPage } from './pages/WikiListPage.jsx';
@@ -617,7 +617,7 @@ function App() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        <Route index element={<PlaceholderPage title="UniWiki" description="대학 생활 정보를 함께 만들고 찾아보세요." />} />
+        <Route index element={<HomePage />} />
         <Route path="wiki" element={<WikiListPage />} />
         <Route path="wiki/:wikiPostId" element={<WikiDetailPage />} />
         <Route path="questions" element={<QuestionListPage />} />

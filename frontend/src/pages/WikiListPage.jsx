@@ -169,7 +169,13 @@ export function WikiListPage() {
       ) : (
         <>
           <section className="wiki-grid" aria-label="위키 문서 목록">
-            {visiblePosts.map((wikiPost) => <WikiCard key={wikiPost.id} wikiPost={wikiPost} />)}
+            {visiblePosts.map((wikiPost, index) => (
+              <WikiCard
+                key={wikiPost.id}
+                wikiPost={wikiPost}
+                index={(currentPage - 1) * PAGE_SIZE + index}
+              />
+            ))}
           </section>
           {totalPages > 1 && (
             <nav className="pagination" aria-label="위키 페이지 이동">
