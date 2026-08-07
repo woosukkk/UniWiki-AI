@@ -429,6 +429,7 @@ public class OfficialSourcePipelineService {
                 .filter(parameter -> !parameter.startsWith("article.offset="))
                 .filter(parameter -> !parameter.startsWith("articleLimit="))
                 .filter(parameter -> !parameter.startsWith("p="))
+                .sorted()
                 .collect(Collectors.joining("&"));
         try {
             return new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(),
