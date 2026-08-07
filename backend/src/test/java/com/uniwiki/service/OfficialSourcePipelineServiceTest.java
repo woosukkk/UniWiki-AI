@@ -57,6 +57,22 @@ class OfficialSourcePipelineServiceTest {
     }
 
     @Test
+    void mapsKnownCourseMaterialNoticesToSemesterTitles() {
+        OfficialSource source = new OfficialSource(null, "학사공지",
+                "https://www.sejong.ac.kr/kor/intro/notice3.do",
+                "a", "h1", ".content", true);
+
+        assertThat(service.catalogTitle(source,
+                "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=805695&mode=view",
+                "수강신청 안내"))
+                .isEqualTo("2024-1 수강편람 및 강의시간표");
+        assertThat(service.catalogTitle(source,
+                "https://www.sejong.ac.kr/kor/intro/notice3.do?articleNo=891086&mode=view",
+                "수강편람 안내"))
+                .isEqualTo("2026-2 수강편람 및 강의시간표");
+    }
+
+    @Test
     void removesPaginationParametersFromArticleIdentity() {
         assertThat(service.canonicalArticleUrl(
                 "https://www.sejong.ac.kr/kor/intro/notice3.do"

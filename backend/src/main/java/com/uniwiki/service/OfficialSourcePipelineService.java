@@ -396,6 +396,10 @@ public class OfficialSourcePipelineService {
     }
 
     String catalogTitle(OfficialSource source, String sourceUrl, String title) {
+        String courseMaterialTerm = courseMaterialTerm(sourceUrl);
+        if (courseMaterialTerm != null) {
+            return courseMaterialTerm + " 수강편람 및 강의시간표";
+        }
         if (!isAcademicCatalog(source)) return title;
         Matcher freshman = Pattern.compile("freshman-scholarship_(20\\d{2})\\.do")
                 .matcher(sourceUrl);
@@ -404,6 +408,16 @@ public class OfficialSourcePipelineService {
                 .matcher(sourceUrl);
         if (curriculum.find()) return curriculum.group(1) + "학년도 교과과정";
         return title;
+    }
+
+    private String courseMaterialTerm(String sourceUrl) {
+        if (sourceUrl.contains("articleNo=805695")) return "2024-1";
+        if (sourceUrl.contains("articleNo=805814")) return "2024-2";
+        if (sourceUrl.contains("articleNo=805910")) return "2025-1";
+        if (sourceUrl.contains("articleNo=853683")) return "2025-2";
+        if (sourceUrl.contains("articleNo=863048")) return "2026-1";
+        if (sourceUrl.contains("articleNo=891086")) return "2026-2";
+        return null;
     }
 
     String canonicalArticleUrl(String value) {
