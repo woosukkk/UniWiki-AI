@@ -5,11 +5,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Collection;
 import org.springframework.data.jpa.repository.Query;
 
 public interface OfficialAttachmentRepository extends JpaRepository<OfficialAttachment, Long> {
     List<OfficialAttachment> findByRawDocument_Id(Long rawDocumentId);
     Optional<OfficialAttachment> findByRawDocument_IdAndSourceUrl(Long rawDocumentId, String sourceUrl);
+    void deleteByRawDocument_IdIn(Collection<Long> rawDocumentIds);
 
     @Query("""
             select a.rawDocument.officialSource.category.id, a.extractionStatus, count(a)

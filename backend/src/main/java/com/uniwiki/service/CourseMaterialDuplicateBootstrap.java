@@ -3,6 +3,7 @@ package com.uniwiki.service;
 import com.uniwiki.entity.OfficialWikiDocument;
 import com.uniwiki.entity.WikiPost;
 import com.uniwiki.repository.OfficialWikiDocumentRepository;
+import com.uniwiki.repository.OfficialAttachmentRepository;
 import com.uniwiki.repository.RawOfficialDocumentRepository;
 import com.uniwiki.repository.WikiPostRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class CourseMaterialDuplicateBootstrap implements ApplicationRunner {
 
     private final WikiPostRepository wikiPostRepository;
     private final OfficialWikiDocumentRepository documentRepository;
+    private final OfficialAttachmentRepository attachmentRepository;
     private final RawOfficialDocumentRepository rawDocumentRepository;
     private final WikiVectorSyncService vectorSyncService;
 
@@ -58,6 +60,8 @@ public class CourseMaterialDuplicateBootstrap implements ApplicationRunner {
                 vectorSyncService.enqueueDelete(duplicate.getId());
                 wikiPostRepository.delete(duplicate);
                 wikiPostRepository.flush();
+                attachmentRepository.deleteByRawDocument_IdIn(rawDocumentIds);
+                attachmentRepository.flush();
                 rawDocumentRepository.deleteAllById(rawDocumentIds);
                 removed++;
             }
