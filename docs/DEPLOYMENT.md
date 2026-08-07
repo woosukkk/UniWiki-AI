@@ -30,6 +30,7 @@ Backend environment variables:
 | `DB_USERNAME` | yes | Application DB user |
 | `DB_PASSWORD` | yes | Application DB password |
 | `JWT_SECRET` | yes | Random value of at least 32 characters |
+| `JWT_EXPIRATION_MS` | no | Login token lifetime in milliseconds; defaults to 30 days |
 | `CORS_ALLOWED_ORIGINS` | yes | Vercel URL; comma-separated values are supported |
 | `AI_SERVICE_BASE_URL` | yes | Private or public AI service URL |
 | `PORT` | platform | HTTP port assigned by the platform |

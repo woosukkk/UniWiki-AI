@@ -9,6 +9,9 @@ export function getStoredUser() {
 }
 
 export function saveAuthentication(response) {
+  if (!response?.token || !response?.id || !response?.email) {
+    throw new Error('로그인 응답에 인증 정보가 없습니다.');
+  }
   const user = {
     id: response.id,
     email: response.email,

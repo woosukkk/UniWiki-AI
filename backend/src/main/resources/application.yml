@@ -26,6 +26,7 @@ server:
 uniwiki:
   jwt:
     secret: ${JWT_SECRET:local-development-jwt-secret-change-before-deploy}
+    expiration-ms: ${JWT_EXPIRATION_MS:2592000000}
   cors:
     allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   promotion:
