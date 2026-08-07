@@ -85,6 +85,18 @@ public class OfficialSource {
         this.autoPublish = true;
     }
 
+    public void updateConfiguration(Category category, String listUrl,
+                                    String articleLinkSelector, String titleSelector,
+                                    String contentSelector, boolean autoPublish) {
+        this.category = category;
+        this.listUrl = listUrl;
+        this.articleLinkSelector = articleLinkSelector;
+        this.titleSelector = titleSelector;
+        this.contentSelector = contentSelector;
+        this.autoPublish = autoPublish;
+        this.active = true;
+    }
+
     @PrePersist
     private void prePersist() {
         LocalDateTime now = LocalDateTime.now();

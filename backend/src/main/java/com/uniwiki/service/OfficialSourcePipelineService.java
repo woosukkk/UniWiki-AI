@@ -46,6 +46,12 @@ public class OfficialSourcePipelineService {
     @Value("${uniwiki.official-sources.max-articles-per-run:20}")
     private int maxArticlesPerRun;
 
+    @Value("${uniwiki.official-sources.max-list-pages-per-run:300}")
+    private int maxListPagesPerRun;
+
+    @Value("${uniwiki.official-sources.max-recent-articles-per-run:20}")
+    private int maxRecentArticlesPerRun;
+
     @Value("${uniwiki.official-sources.author-id:1}")
     private Long authorId;
 
@@ -78,16 +84,7 @@ public class OfficialSourcePipelineService {
         OfficialSource source = sourceRepository.findById(sourceId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 공식 출처입니다."));
         try {
-            Document listPage = fetch(source.getListUrl());
-            Set<String> articleUrls = new LinkedHashSet<>();
-            for (Element link : listPage.select(source.getArticleLinkSelector())) {
-                String url = link.absUrl("href");
-                if (url.isBlank()) continue;
-                requireAllowedUrl(url);
-                if (url.length() > 500) continue;
-                articleUrls.add(url);
-                if (articleUrls.size() >= maxArticlesPerRun) break;
-            }
+            Set<String> articleUrls = discoverArticleUrls(source);
 
             int created = 0;
             int changed = 0;
@@ -217,6 +214,68 @@ public class OfficialSourcePipelineService {
         return document;
     }
 
+    private Set<String> discoverArticleUrls(OfficialSource source) throws Exception {
+        Set<String> recent = new LinkedHashSet<>();
+        Set<String> unseen = new LinkedHashSet<>();
+        Set<String> discovered = new LinkedHashSet<>();
+
+        for (int page = 1; page <= maxListPagesPerRun && unseen.size() < maxArticlesPerRun; page++) {
+            String listUrl = listPageUrl(source.getListUrl(), page);
+            Document listPage = fetch(listUrl);
+            Set<String> pageUrls = new LinkedHashSet<>();
+            for (Element link : listPage.select(source.getArticleLinkSelector())) {
+                String url = canonicalArticleUrl(link.absUrl("href"));
+                if (url.isBlank() || url.length() > 500 || !discovered.add(url)) continue;
+                requireAllowedUrl(url);
+                pageUrls.add(url);
+            }
+            if (pageUrls.isEmpty()) break;
+
+            for (String articleUrl : pageUrls) {
+                boolean exists = rawRepository
+                        .findByOfficialSource_IdAndSourceUrl(source.getId(), articleUrl)
+                        .isPresent();
+                if (!exists && unseen.size() < maxArticlesPerRun) {
+                    unseen.add(articleUrl);
+                } else if (page == 1 && recent.size() < maxRecentArticlesPerRun) {
+                    recent.add(articleUrl);
+                }
+            }
+        }
+
+        Set<String> selected = new LinkedHashSet<>(recent);
+        selected.addAll(unseen);
+        return selected;
+    }
+
+    String listPageUrl(String listUrl, int page) {
+        if (page <= 1) return listUrl;
+        if (listUrl.contains("tosc.sejong.ac.kr")) {
+            return listUrl + (listUrl.contains("?") ? "&" : "?") + "p=" + page;
+        }
+        int offset = (page - 1) * 100;
+        return listUrl + (listUrl.contains("?") ? "&" : "?")
+                + "mode=list&articleLimit=100&article.offset=" + offset;
+    }
+
+    String canonicalArticleUrl(String value) {
+        if (value == null || value.isBlank()) return "";
+        URI uri = URI.create(value.replace("&amp;", "&"));
+        String query = uri.getRawQuery();
+        if (query == null || query.isBlank()) return uri.toString();
+        String canonicalQuery = java.util.Arrays.stream(query.split("&"))
+                .filter(parameter -> !parameter.startsWith("article.offset="))
+                .filter(parameter -> !parameter.startsWith("articleLimit="))
+                .filter(parameter -> !parameter.startsWith("p="))
+                .collect(Collectors.joining("&"));
+        try {
+            return new URI(uri.getScheme(), uri.getAuthority(), uri.getPath(),
+                    canonicalQuery.isBlank() ? null : canonicalQuery, null).toString();
+        } catch (Exception exception) {
+            return value;
+        }
+    }
+
     private org.jsoup.Connection connection(String url) {
         return Jsoup.connect(url)
                 .userAgent("Mozilla/5.0 (compatible; UniWiki-AI official source monitor/1.0)")
@@ -241,17 +300,19 @@ public class OfficialSourcePipelineService {
         return Jsoup.parse(new String(response, StandardCharsets.UTF_8), url);
     }
 
-    private String requiredText(Document document, String selector, String label) {
+    String requiredText(Document document, String selector, String label) {
         Element element = document.selectFirst(selector);
-        if (element == null || element.text().isBlank()) {
+        String value = element == null ? "" : element.text();
+        if (value.isBlank() && element != null) value = element.attr("content");
+        if (value.isBlank()) {
             throw new IllegalArgumentException(label + " 선택자에 해당하는 내용이 없습니다: " + selector);
         }
-        return element.text().replaceAll("\\s+", " ").trim();
+        return value.replaceAll("\\s+", " ").trim();
     }
 
-    private String requiredContent(Document document, String selector) {
+    String requiredContent(Document document, String selector) {
         String text = document.select(selector).stream()
-                .map(Element::text)
+                .map(element -> element.text().isBlank() ? element.attr("content") : element.text())
                 .filter(value -> !value.isBlank())
                 .collect(Collectors.joining(" "))
                 .replaceAll("\\s+", " ")
