@@ -3,6 +3,7 @@ package com.uniwiki.service;
 import com.uniwiki.entity.OfficialWikiDocument;
 import com.uniwiki.entity.WikiPost;
 import com.uniwiki.repository.OfficialWikiDocumentRepository;
+import com.uniwiki.repository.RawOfficialDocumentRepository;
 import com.uniwiki.repository.WikiPostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ public class CourseMaterialDuplicateBootstrap implements ApplicationRunner {
 
     private final WikiPostRepository wikiPostRepository;
     private final OfficialWikiDocumentRepository documentRepository;
+    private final RawOfficialDocumentRepository rawDocumentRepository;
     private final WikiVectorSyncService vectorSyncService;
 
     @Override
@@ -40,16 +42,23 @@ public class CourseMaterialDuplicateBootstrap implements ApplicationRunner {
         int removed = 0;
         for (List<WikiPost> posts : grouped.values()) {
             if (posts.size() < 2) continue;
-            posts.sort(Comparator.comparing(WikiPost::getId));
+            // Keep the most recently created post. It is linked to the canonical
+            // article URL produced by the current collector; older rows used
+            // page/query variants that are no longer discovered.
+            posts.sort(Comparator.comparing(WikiPost::getId).reversed());
             WikiPost canonical = posts.get(0);
             for (WikiPost duplicate : posts.subList(1, posts.size())) {
-                for (OfficialWikiDocument link :
-                        documentRepository.findByWikiPost_IdOrderByRawDocument_IdAsc(duplicate.getId())) {
-                    link.mergeInto(canonical, link.getTopicKey());
-                }
+                List<OfficialWikiDocument> links =
+                        documentRepository.findByWikiPost_IdOrderByRawDocument_IdAsc(duplicate.getId());
+                List<Long> rawDocumentIds = links.stream()
+                        .map(link -> link.getRawDocument().getId())
+                        .toList();
+                documentRepository.deleteAll(links);
                 documentRepository.flush();
                 vectorSyncService.enqueueDelete(duplicate.getId());
                 wikiPostRepository.delete(duplicate);
+                wikiPostRepository.flush();
+                rawDocumentRepository.deleteAllById(rawDocumentIds);
                 removed++;
             }
         }
