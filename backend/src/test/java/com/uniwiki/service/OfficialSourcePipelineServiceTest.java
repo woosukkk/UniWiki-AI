@@ -10,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class OfficialSourcePipelineServiceTest {
 
     private final OfficialSourcePipelineService service =
-            new OfficialSourcePipelineService(null, null, null, null, null, null, null, null, null);
+            new OfficialSourcePipelineService(null, null, null, null, null, null, null, null, null, null);
 
     @Test
     void buildsListPageUrlsForSupportedBoards() {

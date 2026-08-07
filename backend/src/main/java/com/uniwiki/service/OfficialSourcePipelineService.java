@@ -10,6 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
@@ -34,6 +35,7 @@ import javax.net.ssl.SSLHandshakeException;
 public class OfficialSourcePipelineService {
 
     private final OfficialSourceRepository sourceRepository;
+    private final ObjectProvider<OfficialSourcePipelineService> selfProvider;
     private final RawOfficialDocumentRepository rawRepository;
     private final OfficialWikiDocumentRepository documentRepository;
     private final CategoryRepository categoryRepository;
@@ -145,11 +147,10 @@ public class OfficialSourcePipelineService {
                 .toList();
     }
 
-    @Transactional
     public void collectActiveSources() {
         for (OfficialSource source : sourceRepository.findByActiveTrueOrderByIdAsc()) {
             try {
-                OfficialSourceDto.CollectionResult result = collect(source.getId());
+                OfficialSourceDto.CollectionResult result = selfProvider.getObject().collect(source.getId());
                 log.info("Official source collection: source={}, discovered={}, created={}, changed={}, unchanged={}, failed={}",
                         source.getName(), result.discovered(), result.created(), result.changed(),
                         result.unchanged(), result.failed());
