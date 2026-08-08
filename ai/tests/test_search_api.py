@@ -156,3 +156,29 @@ def test_expands_casual_graduation_question_with_catalog_terms() -> None:
 def test_does_not_strip_department_suffix_as_particle() -> None:
     assert SemanticSearchService._strip_korean_particle("소프트웨어학과") == "소프트웨어학과"
     assert SemanticSearchService._strip_korean_particle("수강편람과") == "수강편람"
+
+
+def test_casual_words_do_not_dilute_graduation_title_match() -> None:
+    graduation = SemanticSearchResult(
+        chunkId="graduation-0", wikiPostId=20,
+        title="2026 소프트웨어학과 졸업 이수학점 안내",
+        content="수강편람 기준 전공필수와 교양필수 학점을 안내합니다.",
+        categoryId=2, chunkIndex=0, score=0.0,
+    )
+    internship = SemanticSearchResult(
+        chunkId="internship-0", wikiPostId=21,
+        title="현장실습 학점 인정 안내",
+        content="졸업 전 참여할 수 있는 현장실습의 신청 방법을 안내합니다.",
+        categoryId=2, chunkIndex=0, score=0.0,
+    )
+
+    expanded = SemanticSearchService._expand_query(
+        "소프트웨어학과 졸업하려면 뭐 필요해?"
+    )
+    graduation_score = SemanticSearchService._lexical_score(
+        expanded,
+        graduation,
+    )
+    internship_score = SemanticSearchService._lexical_score(expanded, internship)
+
+    assert graduation_score > internship_score

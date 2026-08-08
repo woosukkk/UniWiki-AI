@@ -129,7 +129,11 @@ class SemanticSearchService:
         tokens = [
             SemanticSearchService._strip_korean_particle(token)
             for token in re.findall(r"[0-9A-Za-z가-힣]+", query.lower())
-            if token not in {"알려줘", "알려주세요", "어디서", "어디", "확인", "관련", "정보", "뭐야"}
+            if token not in {
+                "알려줘", "알려주세요", "어디서", "어디", "확인", "관련", "정보",
+                "뭐야", "뭐", "필요해", "필요한", "어떻게", "돼", "되나요", "하려면",
+            }
+            and not token.endswith("하려면")
         ]
         tokens = [token for token in tokens if token]
         if not tokens:
