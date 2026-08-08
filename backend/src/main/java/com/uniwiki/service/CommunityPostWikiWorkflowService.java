@@ -116,6 +116,10 @@ public class CommunityPostWikiWorkflowService {
                 .limit(30)
                 .filter(comment -> !answerRepository.existsByQuestion_IdAndContent(question.getId(), comment))
                 .forEach(comment -> answerRepository.save(new Answer(question, author, comment)));
+
+        if (answerRepository.existsByQuestion_Id(question.getId())) {
+            question.close();
+        }
     }
 
     private boolean containsAbusiveLanguage(String text) {
