@@ -10,6 +10,7 @@ import {
   useParams,
 } from 'react-router-dom';
 
+import ReactMarkdown from 'react-markdown';
 import { api } from '../api.js';
 import { ConfirmDialog } from '../components/ConfirmDialog.jsx';
 import { ErrorMessage } from '../components/ErrorMessage.jsx';
@@ -27,16 +28,7 @@ function formatDate(value) {
   }).format(new Date(value));
 }
 
-function getContentParagraphs(content) {
-  if (!content) {
-    return [];
-  }
-
-  return content
-    .split(/\n{2,}/)
-    .map((paragraph) => paragraph.trim())
-    .filter(Boolean);
-}
+// Removed getContentParagraphs
 
 export function WikiDetailPage() {
   const { wikiPostId } = useParams();
@@ -124,9 +116,6 @@ export function WikiDetailPage() {
 
   const canManage =
     user?.id === wikiPost.authorId || isAdmin;
-
-  const contentParagraphs =
-    getContentParagraphs(wikiPost.content);
 
   async function deleteWikiPost() {
     setDeleting(true);
@@ -342,24 +331,7 @@ export function WikiDetailPage() {
             </section>
 
             <div className="editorial-wiki-content">
-              {contentParagraphs.length > 0 ? (
-                contentParagraphs.map(
-                  (paragraph, index) => (
-                    <section
-                      className="editorial-wiki-content-section"
-                      key={`${paragraph}-${index}`}
-                    >
-                      <span>
-                        {String(index + 1).padStart(2, '0')}
-                      </span>
-
-                      <p>{paragraph}</p>
-                    </section>
-                  ),
-                )
-              ) : (
-                <p>{wikiPost.content}</p>
-              )}
+              <ReactMarkdown>{wikiPost.content || ''}</ReactMarkdown>
             </div>
           </article>
 
