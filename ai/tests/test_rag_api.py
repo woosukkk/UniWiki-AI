@@ -17,15 +17,19 @@ class FakeSearchService:
 
 
 class FakeLanguageModel:
-    def __init__(self, answer="포털의 수강신청 메뉴에서 신청할 수 있습니다.", error=None):
+    def __init__(self, answer="포털의 수강신청 메뉴에서 신청할 수 있습니다.", error=None,
+                 rewrite="수강신청 신청 절차 포털 안내"):
         self.answer = answer
         self.error = error
+        self.rewrite = rewrite
         self.calls = []
 
     def generate(self, instructions, input_text):
         self.calls.append((instructions, input_text))
         if self.error:
             raise self.error
+        if "검색 질의 재작성기" in instructions:
+            return self.rewrite
         return self.answer
 
 
@@ -61,17 +65,18 @@ def test_generates_answer_from_retrieved_wiki_context() -> None:
     }
     assert search_service.request.top_k == 4
     assert search_service.request.category_id == 2
-    assert "수강신청 안내" in language_model.calls[0][1]
+    assert "수강신청 안내" in language_model.calls[-1][1]
 
 
-def test_does_not_call_llm_when_evidence_is_insufficient() -> None:
+def test_does_not_generate_answer_when_evidence_is_insufficient() -> None:
     _, language_model = override_service([search_result(score=0.2)])
     response = TestClient(app).post("/api/rag/answers", json={"question": "등록금은 얼마인가요?"})
     app.dependency_overrides.clear()
     assert response.status_code == 200
     assert response.json()["answer"] == INSUFFICIENT_EVIDENCE_ANSWER
     assert response.json()["grounded"] is False
-    assert language_model.calls == []
+    assert len(language_model.calls) == 1
+    assert "검색 질의 재작성기" in language_model.calls[0][0]
     assert response.json()["sources"] == []
 
 
@@ -118,7 +123,7 @@ def test_uses_expanded_chunks_from_selected_wiki_document() -> None:
 
     assert response.status_code == 200
     assert response.json()["retrievedChunkCount"] == 2
-    assert "[문서 2]" in language_model.calls[0][1]
+    assert "[문서 2]" in language_model.calls[-1][1]
 
 
 def test_returns_service_unavailable_when_api_key_is_missing() -> None:
@@ -172,3 +177,19 @@ def test_model_supported_verdict_is_removed_from_visible_answer() -> None:
     assert response.json()["grounded"] is True
     assert response.json()["answer"].startswith("**2026-2학기**")
     assert "판정:" not in response.json()["answer"]
+
+
+def test_rewrites_query_with_contextual_synonyms_before_search() -> None:
+    model = FakeLanguageModel(rewrite="장학금 공지 장학생 모집 안내")
+    search_service, _ = override_service([search_result()], model)
+
+    response = TestClient(app).post(
+        "/api/rag/answers",
+        json={"question": "장학금 공고 어디서 봐?"},
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert "장학금 공고 어디서 봐?" in search_service.request.query
+    assert "장학금 공지 장학생 모집 안내" in search_service.request.query
+    assert len(model.calls) == 2

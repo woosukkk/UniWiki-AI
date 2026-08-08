@@ -1,3 +1,6 @@
+from functools import lru_cache
+import re
+
 from app.llm import LanguageModel
 from app.models import (
     RagAnswerRequest,
@@ -7,7 +10,6 @@ from app.models import (
     SemanticSearchResult,
 )
 from app.search_service import SemanticSearchService
-import re
 
 
 INSUFFICIENT_EVIDENCE_ANSWER = "검색된 위키 문서만으로는 질문에 답하기 위한 근거가 충분하지 않습니다."
@@ -20,6 +22,12 @@ RAG_INSTRUCTIONS = """당신은 대학 위키 문서만을 근거로 답하는 �
 기간이나 일정은 문서 제목의 연도와 학기를 답변에 명시하세요.
 첫 줄에는 반드시 `판정: SUPPORTED` 또는 `판정: INSUFFICIENT` 중 하나만 작성하세요.
 그 다음 줄부터 사용자에게 보여줄 답변을 한국어로 간결하고 직접적으로 작성하세요."""
+
+QUERY_REWRITE_INSTRUCTIONS = """당신은 대학 공식 문서 검색 질의 재작성기입니다.
+사용자 질문의 의미, 고유명사, 학과명, 연도와 학기를 반드시 보존하세요.
+공식 공지에서 사용할 법한 동의어, 상위어, 관련 행정 용어를 자연스럽게 보충하세요.
+질문에 답하거나 새로운 사실을 추가하지 마세요.
+검색에 사용할 한 줄의 문구만 출력하고 설명, 목록, 따옴표는 출력하지 마세요."""
 
 
 class RagAnswerService:
@@ -38,9 +46,11 @@ class RagAnswerService:
         self.max_context_chars = max_context_chars
 
     def answer(self, request: RagAnswerRequest) -> RagAnswerResponse:
+        rewritten_query = self._rewrite_query(request.question)
+        search_query = self._combined_search_query(request.question, rewritten_query)
         search_response = self.search_service.search(
             SemanticSearchRequest(
-                query=request.question,
+                query=search_query,
                 topK=self.top_k,
                 categoryId=request.category_id,
             )
@@ -77,6 +87,21 @@ class RagAnswerService:
             retrievedChunkCount=len(used_results),
             sources=self._build_sources(used_results),
         )
+
+    @lru_cache(maxsize=256)
+    def _rewrite_query(self, question: str) -> str:
+        generated = self.language_model.generate(
+            QUERY_REWRITE_INSTRUCTIONS,
+            f"사용자 질문:\n{question}",
+        )
+        normalized = " ".join(generated.replace("`", "").replace('"', "").split())
+        return normalized[:500] or question
+
+    @staticmethod
+    def _combined_search_query(question: str, rewritten: str) -> str:
+        if rewritten.strip().lower() == question.strip().lower():
+            return question
+        return f"{question} {rewritten}"
 
     @staticmethod
     def _parse_grounding(generated: str) -> tuple[str, bool]:
