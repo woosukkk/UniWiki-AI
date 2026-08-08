@@ -5,6 +5,7 @@ import {
 
 import {
   Link,
+  useLocation,
   useNavigate,
   useParams,
 } from 'react-router-dom';
@@ -20,12 +21,19 @@ const initialForm = {
 
 export function QuestionFormPage() {
   const { questionId } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
 
   const editing = Boolean(questionId);
 
   const [form, setForm] =
-    useState(initialForm);
+    useState(() => {
+      const question = location.state?.question?.trim();
+
+      return question && !questionId
+        ? { title: question.slice(0, 200), content: question }
+        : initialForm;
+    });
 
   const [loading, setLoading] =
     useState(editing);

@@ -397,6 +397,22 @@
   line-height: 1.6;
 }
 
+.editorial-chat-question-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  color: var(--ui-white);
+  background: var(--ui-blue);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.editorial-chat-question-link:hover {
+  background: var(--ui-black);
+}
+
 .editorial-chat-inline-sources {
   display: flex;
   flex-direction: column;

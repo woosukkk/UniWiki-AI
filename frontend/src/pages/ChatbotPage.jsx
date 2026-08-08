@@ -112,6 +112,7 @@ export function ChatbotPage() {
         id: createMessageId('assistant'),
         role: 'assistant',
         answer: response.answer,
+        question: trimmedQuestion,
         grounded: response.grounded,
         sources: response.sources || [],
       };
@@ -373,6 +374,24 @@ export function ChatbotPage() {
                           찾지 못했습니다. 답변을
                           참고용으로만 확인해주세요.
                         </small>
+                      )}
+
+                    {message.role ===
+                      'assistant' &&
+                      message.grounded ===
+                        false &&
+                      !message.error && (
+                        <Link
+                          className="editorial-chat-question-link"
+                          to="/questions/new"
+                          state={{
+                            question:
+                              message.question,
+                          }}
+                        >
+                          질문 게시판에 물어보기
+                          <span>→</span>
+                        </Link>
                       )}
 
                     {message.sources?.length >
