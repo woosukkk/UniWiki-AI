@@ -151,3 +151,8 @@ def test_expands_casual_graduation_question_with_catalog_terms() -> None:
     assert "졸업 이수 학점" in expanded
     assert "수강편람" in expanded
     assert "교과과정" in expanded
+
+
+def test_does_not_strip_department_suffix_as_particle() -> None:
+    assert SemanticSearchService._strip_korean_particle("소프트웨어학과") == "소프트웨어학과"
+    assert SemanticSearchService._strip_korean_particle("수강편람과") == "수강편람"

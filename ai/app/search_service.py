@@ -160,6 +160,8 @@ class SemanticSearchService:
     @staticmethod
     def _strip_korean_particle(token):
         for suffix in SemanticSearchService.KOREAN_PARTICLE_SUFFIXES:
+            if suffix == "과" and token.endswith(("학과", "교과")):
+                continue
             if token.endswith(suffix) and len(token) - len(suffix) >= 2:
                 return token[:-len(suffix)]
         return token
