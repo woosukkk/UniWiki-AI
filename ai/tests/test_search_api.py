@@ -182,3 +182,24 @@ def test_casual_words_do_not_dilute_graduation_title_match() -> None:
     internship_score = SemanticSearchService._lexical_score(expanded, internship)
 
     assert graduation_score > internship_score
+
+
+def test_graduation_intent_title_outranks_semantically_related_document() -> None:
+    graduation = SemanticSearchResult(
+        chunkId="graduation-0", wikiPostId=20,
+        title="2026 소프트웨어학과 졸업 이수학점 안내",
+        content="수강편람 기준 졸업 이수학점을 안내합니다.",
+        categoryId=2, chunkIndex=0, score=0.35,
+    )
+    internship = SemanticSearchResult(
+        chunkId="internship-0", wikiPostId=21,
+        title="현장실습 학점 인정 안내",
+        content="졸업 전 현장실습 참여 방법을 안내합니다.",
+        categoryId=2, chunkIndex=0, score=0.99,
+    )
+    service = SemanticSearchService(FakeEmbedder(), FakeVectorStore(), 5)
+    query = service._expand_query("소프트웨어학과 졸업하려면 뭐 필요해?")
+
+    results = service._rerank(query, [internship, graduation], [], 5)
+
+    assert results[0].wiki_post_id == 20

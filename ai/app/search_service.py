@@ -88,6 +88,7 @@ class SemanticSearchService:
                 if lexical > 0
                 else vector
             )
+            score = min(1.0, score + self._intent_title_boost(query, result))
             ranked.append(result.model_copy(update={"score": score}))
         ranked.sort(
             key=lambda result: (result.score, min(len(result.content), 800)),
@@ -160,6 +161,18 @@ class SemanticSearchService:
         if query_years and any(year in title for year in query_years):
             points += 3.0
         return min(1.0, points / (len(tokens) * 4.0 + 3.0))
+
+    @staticmethod
+    def _intent_title_boost(query, result):
+        normalized_query = re.sub(r"\s+", "", query.lower())
+        normalized_title = re.sub(r"\s+", "", result.title.lower())
+        boost = 0.0
+        if "졸업" in normalized_query and "졸업" in normalized_title:
+            boost += 0.25
+        departments = set(re.findall(r"[가-힣]+학과", normalized_query))
+        if departments and any(department in normalized_title for department in departments):
+            boost += 0.15
+        return boost
 
     @staticmethod
     def _strip_korean_particle(token):
