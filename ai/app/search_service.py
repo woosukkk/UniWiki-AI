@@ -63,7 +63,11 @@ class SemanticSearchService:
         for result in candidates.values():
             lexical = self._lexical_score(query, result)
             vector = max(0.0, vector_scores.get(result.chunk_id, 0.0))
-            score = min(1.0, vector * 0.55 + lexical * 0.65)
+            score = (
+                min(1.0, vector * 0.3 + lexical * 0.8)
+                if lexical > 0
+                else vector
+            )
             ranked.append(result.model_copy(update={"score": score}))
         ranked.sort(
             key=lambda result: (result.score, min(len(result.content), 800)),
@@ -113,7 +117,11 @@ class SemanticSearchService:
         for token in tokens:
             compact = token.replace(" ", "")
             if compact in title:
-                points += 4.0
+                points += (
+                    12.0
+                    if len(compact) >= 4 and re.search(r"[가-힣]", compact)
+                    else 4.0
+                )
             elif len(title) >= 2 and title in compact:
                 points += 3.0
             elif any(compact[index:index + 3] in title for index in range(max(0, len(compact) - 2))):

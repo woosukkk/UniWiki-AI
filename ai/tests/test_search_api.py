@@ -111,3 +111,33 @@ def test_lexical_score_removes_korean_particles_for_title_matching() -> None:
     )
 
     assert score >= 0.5
+
+
+def test_exact_korean_title_keyword_beats_semantically_similar_document() -> None:
+    class CourseVectorStore(FakeVectorStore):
+        def search(self, query_embedding, top_k, category_id=None):
+            return [
+                SemanticSearchResult(
+                    chunkId="leave-0", wikiPostId=11,
+                    title="2026학년도 2학기 휴학·복학 추가 신청 안내",
+                    content="수강신청과 등록금 납부를 모두 완료해야 합니다.",
+                    categoryId=2, chunkIndex=0, score=0.9,
+                )
+            ]
+
+        def all_records(self, category_id=None):
+            return [
+                SemanticSearchResult(
+                    chunkId="course-0", wikiPostId=12,
+                    title="2026-2 수강편람 및 강의시간표",
+                    content="수강신청 일정과 개설 강좌를 확인합니다.",
+                    categoryId=2, chunkIndex=0, score=0.0,
+                )
+            ]
+
+    service = SemanticSearchService(FakeEmbedder(), CourseVectorStore(), default_top_k=5)
+    results = service.search(SemanticSearchRequest(
+        query="2026-2학기 수강편람과 수강신청 방법을 알려주세요.", topK=5
+    )).results
+
+    assert results[0].wiki_post_id == 12
