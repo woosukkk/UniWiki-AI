@@ -45,10 +45,16 @@ class SemanticSearchService:
             if supports_lexical else []
         )
         results = (
-            self._rerank(expanded_query, vector_results, lexical_records, top_k)
+            self._rerank(
+                expanded_query,
+                vector_results,
+                lexical_records,
+                max(top_k * 6, 30),
+            )
             if supports_lexical else vector_results[:top_k]
         )
         results = self._prefer_current_period(request.query, results)
+        results = results[:top_k]
         return SemanticSearchResponse(
             query=request.query,
             topK=top_k,
