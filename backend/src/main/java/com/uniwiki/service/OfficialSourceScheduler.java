@@ -11,7 +11,10 @@ import org.springframework.stereotype.Component;
 public class OfficialSourceScheduler {
     private final OfficialSourcePipelineService pipelineService;
 
-    @Scheduled(fixedDelayString = "${uniwiki.official-sources.interval-ms:3600000}")
+    @Scheduled(
+            fixedDelayString = "${uniwiki.official-sources.interval-ms:3600000}",
+            initialDelayString = "${uniwiki.official-sources.initial-delay-ms:60000}"
+    )
     public void collect() {
         pipelineService.collectActiveSources();
     }

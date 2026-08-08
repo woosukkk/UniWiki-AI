@@ -2,6 +2,11 @@ spring:
   application:
     name: uniwiki
 
+  task:
+    scheduling:
+      pool:
+        size: ${SCHEDULING_POOL_SIZE:4}
+
   datasource:
     # 사용자 로컬 PC에 설치된 MySQL을 바라보는 설정
 
@@ -48,6 +53,7 @@ uniwiki:
     collect-on-startup: ${OFFICIAL_SOURCE_COLLECT_ON_STARTUP:false}
     scheduler-enabled: ${OFFICIAL_SOURCE_SCHEDULER_ENABLED:false}
     interval-ms: ${OFFICIAL_SOURCE_INTERVAL_MS:3600000}
+    initial-delay-ms: ${OFFICIAL_SOURCE_INITIAL_DELAY_MS:60000}
     max-articles-per-run: ${OFFICIAL_SOURCE_MAX_ARTICLES:20}
     max-list-pages-per-run: ${OFFICIAL_SOURCE_MAX_LIST_PAGES:300}
     max-recent-articles-per-run: ${OFFICIAL_SOURCE_MAX_RECENT_ARTICLES:20}
