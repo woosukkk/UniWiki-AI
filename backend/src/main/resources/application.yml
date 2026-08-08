@@ -41,6 +41,8 @@ uniwiki:
     like-threshold: 3
     category-name: 함께 만든 위키
     cron: "0 0 3 * * *"
+  questions:
+    close-answered-on-startup: ${QUESTION_CLOSE_ANSWERED_ON_STARTUP:false}
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL:http://localhost:8000}
   vector-sync:

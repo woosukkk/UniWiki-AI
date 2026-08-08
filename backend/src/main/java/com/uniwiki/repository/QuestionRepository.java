@@ -5,6 +5,7 @@ import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -20,4 +21,15 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
     Optional<Question> findByIdForUpdate(@Param("questionId") Long questionId);
 
     Optional<Question> findBySourceTypeAndSourceUrl(String sourceType, String sourceUrl);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = """
+            update questions q
+               set q.status = 'CLOSED'
+             where q.status = 'OPEN'
+               and exists (
+                   select 1 from answers a where a.question_id = q.id
+               )
+            """, nativeQuery = true)
+    int closeAnsweredQuestions();
 }
