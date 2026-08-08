@@ -7,6 +7,7 @@ from app.models import (
     SemanticSearchResult,
 )
 from app.search_service import SemanticSearchService
+import re
 
 
 INSUFFICIENT_EVIDENCE_ANSWER = "검색된 위키 문서만으로는 질문에 답하기 위한 근거가 충분하지 않습니다."
@@ -96,10 +97,14 @@ class RagAnswerService:
     ) -> list[RagAnswerSource]:
         sources = []
         seen_wiki_post_ids = set()
+        seen_titles = set()
         for result in results:
-            if result.wiki_post_id in seen_wiki_post_ids:
+            normalized_title = re.sub(r"\s+", " ", result.title).strip().lower()
+            if (result.wiki_post_id in seen_wiki_post_ids
+                    or normalized_title in seen_titles):
                 continue
             seen_wiki_post_ids.add(result.wiki_post_id)
+            seen_titles.add(normalized_title)
             sources.append(
                 RagAnswerSource(
                     wikiPostId=result.wiki_post_id,

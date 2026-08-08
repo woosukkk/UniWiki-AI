@@ -76,10 +76,14 @@ class SemanticSearchService:
 
         deduplicated = []
         seen_wiki_posts = set()
+        seen_titles = set()
         for result in ranked:
-            if result.wiki_post_id in seen_wiki_posts:
+            normalized_title = re.sub(r"\s+", " ", result.title).strip().lower()
+            if (result.wiki_post_id in seen_wiki_posts
+                    or normalized_title in seen_titles):
                 continue
             seen_wiki_posts.add(result.wiki_post_id)
+            seen_titles.add(normalized_title)
             deduplicated.append(result)
             if len(deduplicated) >= top_k:
                 break
