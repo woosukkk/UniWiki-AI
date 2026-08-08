@@ -1,7 +1,7 @@
 package com.uniwiki.controller;
 
 import com.uniwiki.dto.AiAnswerDto;
-import com.uniwiki.service.AiAnswerService;
+import com.uniwiki.service.AiAnswerClient;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AiAnswerController {
 
-    private final AiAnswerService aiAnswerService;
+    private final AiAnswerClient aiAnswerClient;
 
     @PostMapping
     public ResponseEntity<AiAnswerDto.Response> answer(@Valid @RequestBody AiAnswerDto.Request request) {
-        return ResponseEntity.ok(aiAnswerService.answer(request));
+        return ResponseEntity.ok(aiAnswerClient.answer(request));
     }
 }

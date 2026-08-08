@@ -1,7 +1,7 @@
 package com.uniwiki.controller;
 
 import com.uniwiki.dto.AiSummaryDto;
-import com.uniwiki.service.AiSummaryService;
+import com.uniwiki.service.AiSummaryClient;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/ai/wiki-posts")
 @RequiredArgsConstructor
 public class AiSummaryController {
-    private final AiSummaryService aiSummaryService;
+    private final AiSummaryClient aiSummaryClient;
 
     @PostMapping("/{wikiPostId}/summary")
     public ResponseEntity<AiSummaryDto.Response> summarize(
             @PathVariable Long wikiPostId,
             @RequestParam(required = false) @Min(100) @Max(2000) Integer maxChars) {
-        return ResponseEntity.ok(aiSummaryService.summarize(wikiPostId, maxChars));
+        return ResponseEntity.ok(aiSummaryClient.summarize(wikiPostId, maxChars));
     }
 }
