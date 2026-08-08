@@ -15,6 +15,10 @@ class OfficialSourcePipelineServiceTest {
     @Test
     void buildsListPageUrlsForSupportedBoards() {
         assertThat(service.listPageUrl(
+                "https://www.sejong.ac.kr/kor/intro/notice3.do", 1))
+                .isEqualTo("https://www.sejong.ac.kr/kor/intro/notice3.do"
+                        + "?mode=list&articleLimit=100&article.offset=0");
+        assertThat(service.listPageUrl(
                 "https://www.sejong.ac.kr/kor/intro/notice3.do", 3))
                 .isEqualTo("https://www.sejong.ac.kr/kor/intro/notice3.do"
                         + "?mode=list&articleLimit=100&article.offset=200");
@@ -78,7 +82,7 @@ class OfficialSourcePipelineServiceTest {
                 "https://www.sejong.ac.kr/kor/intro/notice3.do"
                         + "?mode=view&articleNo=891086&article.offset=20&articleLimit=10"))
                 .isEqualTo("https://www.sejong.ac.kr/kor/intro/notice3.do"
-                        + "?mode=view&articleNo=891086");
+                        + "?articleNo=891086&mode=view");
         assertThat(service.canonicalArticleUrl(
                 "https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/64?p=2"))
                 .isEqualTo("https://tosc.sejong.ac.kr/ko/cusomter_support/notice/view/64");
@@ -95,6 +99,44 @@ class OfficialSourcePipelineServiceTest {
                 .isEqualTo("TOSC 시험 안내");
         assertThat(service.requiredContent(document, "meta[property=og:description]"))
                 .isEqualTo("시험 접수와 고사장 안내");
+    }
+
+    @Test
+    void preservesParagraphsLineBreaksListsAndTableRows() {
+        Document document = Jsoup.parse("""
+                <main class="content">
+                  <h2>Course registration</h2>
+                  <p>Period: August 10<br>From 10 AM</p>
+                  <ul><li>Check student ID</li><li>Check class time</li></ul>
+                  <table><tr><th>Type</th><th>Period</th></tr><tr><td>Registration</td><td>August</td></tr></table>
+                </main>
+                """);
+
+        assertThat(service.requiredContent(document, "main.content"))
+                .isEqualTo("""
+                        Course registration
+
+                        Period: August 10
+                        From 10 AM
+
+                        - Check student ID
+                        - Check class time
+
+                        Type Period
+
+                        Registration August
+                        """.trim());
+    }
+
+    @Test
+    void readsPublicationYearFromListEntry() {
+        Document document = Jsoup.parse("""
+                <table>
+                  <tr><td class="date">2024-01-03</td><td><a class="title">Notice</a></td></tr>
+                </table>
+                """);
+
+        assertThat(service.listEntryYear(document.selectFirst("a.title"))).isEqualTo(2024);
     }
 
     @Test

@@ -52,14 +52,8 @@ public class OfficialSourcePipelineService {
     @Value("${uniwiki.official-sources.allowed-host-suffixes:sejong.ac.kr}")
     private String allowedHostSuffixes;
 
-    @Value("${uniwiki.official-sources.max-articles-per-run:20}")
-    private int maxArticlesPerRun;
-
     @Value("${uniwiki.official-sources.max-list-pages-per-run:300}")
     private int maxListPagesPerRun;
-
-    @Value("${uniwiki.official-sources.max-recent-articles-per-run:20}")
-    private int maxRecentArticlesPerRun;
 
     @Value("${uniwiki.official-sources.author-id:1}")
     private Long authorId;
@@ -310,45 +304,50 @@ public class OfficialSourcePipelineService {
     }
 
     private Set<String> discoverArticleUrls(OfficialSource source) throws Exception {
-        Set<String> recent = new LinkedHashSet<>();
-        Set<String> unseen = new LinkedHashSet<>();
         Set<String> discovered = new LinkedHashSet<>();
 
-        for (int page = 1; page <= maxListPagesPerRun && unseen.size() < maxArticlesPerRun; page++) {
+        for (int page = 1; page <= maxListPagesPerRun; page++) {
             String listUrl = listPageUrl(source.getListUrl(), page);
             Document listPage = fetch(listUrl);
             Set<String> pageUrls = new LinkedHashSet<>();
+            int discoveredBeforePage = discovered.size();
+            boolean hasRecentEntry = false;
+            boolean hasUndatedEntry = false;
             for (Element link : listPage.select(source.getArticleLinkSelector())) {
                 String url = canonicalArticleUrl(articleUrl(source, link));
-                if (url.isBlank() || url.length() > 500 || !discovered.add(url)) continue;
+                if (url.isBlank() || url.length() > 500) continue;
                 requireAllowedUrl(url);
+                Integer year = listEntryYear(link);
+                if (year == null) hasUndatedEntry = true;
+                else if (year >= 2024) hasRecentEntry = true;
+                else continue;
+                if (!discovered.add(url)) continue;
                 pageUrls.add(url);
             }
-            if (pageUrls.isEmpty()) break;
 
             if (isAcademicCatalog(source)) {
-                unseen.addAll(pageUrls);
                 break;
             }
-
-            for (String articleUrl : pageUrls) {
-                boolean exists = rawRepository
-                        .findByOfficialSource_IdAndSourceUrl(source.getId(), articleUrl)
-                        .isPresent();
-                if (!exists) {
-                    if (unseen.size() < maxArticlesPerRun) unseen.add(articleUrl);
-                } else if (page == 1 && recent.size() < maxRecentArticlesPerRun) {
-                    recent.add(articleUrl);
-                }
-            }
+            if (pageUrls.isEmpty() && !hasRecentEntry && !hasUndatedEntry) break;
+            if (page > 1 && discovered.size() == discoveredBeforePage) break;
         }
 
-        Set<String> selected = new LinkedHashSet<>(recent);
-        selected.addAll(unseen);
         if (source.getListUrl().contains("/kor/intro/notice3.do")) {
-            selected.addAll(courseMaterialNoticeUrls());
+            discovered.addAll(courseMaterialNoticeUrls());
         }
-        return selected;
+        return discovered;
+    }
+
+    Integer listEntryYear(Element link) {
+        Element entry = link.closest("tr, li, article, .b-row-box, .board-list-item");
+        Element context = entry == null ? link.parent() : entry;
+        String text = context == null ? link.text() : context.text();
+        Matcher matcher = EXPLICIT_YEAR.matcher(text);
+        while (matcher.find()) {
+            int year = Integer.parseInt(matcher.group(1));
+            if (year >= 2000 && year <= 2100) return year;
+        }
+        return null;
     }
 
     private Set<String> courseMaterialNoticeUrls() {
@@ -385,14 +384,15 @@ public class OfficialSourcePipelineService {
     }
 
     String listPageUrl(String listUrl, int page) {
-        if (page <= 1) return listUrl;
         if (listUrl.contains("udream.sejong.ac.kr")) {
+            if (page <= 1) return listUrl;
             return listUrl + (listUrl.contains("?") ? "&" : "?") + "rp=" + page;
         }
         if (listUrl.contains("tosc.sejong.ac.kr")) {
+            if (page <= 1) return listUrl;
             return listUrl + (listUrl.contains("?") ? "&" : "?") + "p=" + page;
         }
-        int offset = (page - 1) * 100;
+        int offset = (Math.max(1, page) - 1) * 100;
         return listUrl + (listUrl.contains("?") ? "&" : "?")
                 + "mode=list&articleLimit=100&article.offset=" + offset;
     }
@@ -493,10 +493,11 @@ public class OfficialSourcePipelineService {
 
     String requiredContent(Document document, String selector) {
         String text = document.select(selector).stream()
-                .map(element -> element.text().isBlank() ? element.attr("content") : element.text())
+                .map(element -> element.text().isBlank()
+                        ? element.attr("content")
+                        : extractStructuredText(element))
                 .filter(value -> !value.isBlank())
-                .collect(Collectors.joining(" "))
-                .replaceAll("\\s+", " ")
+                .collect(Collectors.joining("\n\n"))
                 .trim();
         if (!text.isBlank()) return text;
 
@@ -515,6 +516,26 @@ public class OfficialSourcePipelineService {
             throw new IllegalArgumentException("본문 선택자에 해당하는 내용이 없습니다: " + selector);
         }
         return fallback.toString();
+    }
+
+    String extractStructuredText(Element element) {
+        Element copy = element.clone();
+        copy.select("script, style, noscript").remove();
+        copy.select("li").forEach(node -> {
+            node.prependText("- ");
+            node.appendText("\n");
+        });
+        copy.select("p, div, section, article, header, footer, h1, h2, h3, h4, h5, h6, tr")
+                .forEach(node -> node.appendText("\n\n"));
+        copy.select("th, td").forEach(node -> node.appendText("\t"));
+
+        return copy.wholeText()
+                .replace('\u00a0', ' ')
+                .replaceAll("(?m)[ \\t]+$", "")
+                .replaceAll("(?m)^[ \\t]+", "")
+                .replaceAll("[ \\t]+", " ")
+                .replaceAll("\\n{3,}", "\n\n")
+                .trim();
     }
 
     private void requireAllowedUrl(String value) {

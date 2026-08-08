@@ -22,7 +22,6 @@ uniwiki:
     bootstrap-enabled: true
     collect-on-startup: true
     scheduler-enabled: false
-    max-articles-per-run: 5
     author-id: 1
     author-email: official-source@local.invalid
     allowed-host-suffixes: sejong.ac.kr
