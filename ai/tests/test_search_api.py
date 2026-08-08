@@ -203,3 +203,33 @@ def test_graduation_intent_title_outranks_semantically_related_document() -> Non
     results = service._rerank(query, [internship, graduation], [], 5)
 
     assert results[0].wiki_post_id == 20
+
+
+def test_alumni_contact_question_does_not_expand_to_graduation_requirements() -> None:
+    expanded = SemanticSearchService._expand_query("졸업생과 연락할 수단이 있어?")
+
+    assert expanded == "졸업생과 연락할 수단이 있어?"
+    assert "졸업 이수 학점" not in expanded
+    assert "수강편람" not in expanded
+
+
+def test_lexical_match_uses_same_hybrid_scale_for_every_source() -> None:
+    community = SemanticSearchResult(
+        chunkId="community-0", wikiPostId=1377,
+        title="세종대학교 졸업생과 취업 준비 후배 연결 서비스",
+        content="재직 중인 졸업생을 찾아 게시판으로 질문할 수 있는 서비스입니다.",
+        categoryId=2, chunkIndex=0, score=0.35,
+    )
+    graduation = SemanticSearchResult(
+        chunkId="graduation-0", wikiPostId=47,
+        title="2026 소프트웨어학과 졸업 이수학점 안내",
+        content="졸업에 필요한 전공필수와 교양필수 학점을 안내합니다.",
+        categoryId=2, chunkIndex=0, score=0.99,
+    )
+    service = SemanticSearchService(FakeEmbedder(), FakeVectorStore(), 5)
+    query = service._expand_query("졸업생과 연락할 수단이 있어?")
+
+    results = service._rerank(query, [graduation, community], [], 5)
+
+    assert service._lexical_score(query, community) >= 0.35
+    assert results[0].wiki_post_id == 1377

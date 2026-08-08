@@ -57,7 +57,7 @@ class SemanticSearchService:
     def _expand_query(query):
         expanded_terms = []
         normalized = re.sub(r"\s+", "", query.lower())
-        if re.search(r"졸업|졸업하려|졸업조건|졸업기준", normalized):
+        if re.search(r"졸업(?!생)|졸업하려|졸업조건|졸업기준", normalized):
             expanded_terms.extend([
                 "졸업 요건",
                 "졸업 이수 학점",
@@ -83,11 +83,7 @@ class SemanticSearchService:
         for result in candidates.values():
             lexical = self._lexical_score(query, result)
             vector = max(0.0, vector_scores.get(result.chunk_id, 0.0))
-            score = (
-                min(1.0, vector * 0.3 + lexical * 0.8)
-                if lexical > 0
-                else vector
-            )
+            score = min(1.0, vector * 0.3 + lexical * 0.8)
             score = min(1.0, score + self._intent_title_boost(query, result))
             ranked.append(result.model_copy(update={"score": score}))
         ranked.sort(
@@ -149,6 +145,8 @@ class SemanticSearchService:
                 points += (
                     12.0
                     if len(compact) >= 4 and re.search(r"[가-힣]", compact)
+                    else 8.0
+                    if len(compact) >= 3 and re.search(r"[가-힣]", compact)
                     else 4.0
                 )
             elif len(title) >= 2 and title in compact:
@@ -167,7 +165,11 @@ class SemanticSearchService:
         normalized_query = re.sub(r"\s+", "", query.lower())
         normalized_title = re.sub(r"\s+", "", result.title.lower())
         boost = 0.0
-        if "졸업" in normalized_query and "졸업" in normalized_title:
+        graduation_intent = re.search(
+            r"졸업(?!생)|졸업하려|졸업조건|졸업기준",
+            normalized_query,
+        )
+        if graduation_intent and "졸업" in normalized_title:
             boost += 0.25
         departments = set(re.findall(r"[가-힣]+학과", normalized_query))
         if departments and any(department in normalized_title for department in departments):
