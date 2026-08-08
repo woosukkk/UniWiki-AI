@@ -40,7 +40,10 @@ def search_result(score=0.91, chunk_index=0):
 def override_service(results, language_model=None):
     search_service = FakeSearchService(results)
     language_model = language_model or FakeLanguageModel()
-    service = RagAnswerService(search_service, language_model, top_k=4, min_score=0.4, max_context_chars=1000)
+    service = RagAnswerService(
+        search_service, language_model, top_k=4, min_score=0.4,
+        partial_min_score=0.2, max_context_chars=1000,
+    )
     app.dependency_overrides[get_rag_service] = lambda: service
     return search_service, language_model
 
@@ -69,7 +72,7 @@ def test_generates_answer_from_retrieved_wiki_context() -> None:
 
 
 def test_does_not_generate_answer_when_evidence_is_insufficient() -> None:
-    _, language_model = override_service([search_result(score=0.2)])
+    _, language_model = override_service([search_result(score=0.1)])
     response = TestClient(app).post("/api/rag/answers", json={"question": "등록금은 얼마인가요?"})
     app.dependency_overrides.clear()
     assert response.status_code == 200
@@ -111,6 +114,7 @@ def test_uses_expanded_chunks_from_selected_wiki_document() -> None:
         language_model,
         top_k=4,
         min_score=0.4,
+        partial_min_score=0.2,
         max_context_chars=1000,
     )
     app.dependency_overrides[get_rag_service] = lambda: service
@@ -193,3 +197,35 @@ def test_rewrites_query_with_contextual_synonyms_before_search() -> None:
     assert "장학금 공고 어디서 봐?" in search_service.request.query
     assert "장학금 공지 장학생 모집 안내" in search_service.request.query
     assert len(model.calls) == 2
+
+
+def test_uses_low_confidence_related_document_as_limited_source() -> None:
+    model = FakeLanguageModel(
+        answer=(
+            "판정: SUPPORTED\n관련 위키에 따르면 GREEDY는 교내 개발 동아리·커뮤니티로 "
+            "팀 프로젝트 참여자를 모집했습니다."
+        ),
+        rewrite="GREEDY 그리디 교내 개발 동아리 커뮤니티",
+    )
+    partial = SemanticSearchResult(
+        chunkId="greedy-0",
+        wikiPostId=560,
+        title="GREEDY 관련 정보가 궁금합니다",
+        content="교내 개발 동아리/커뮤니티 그리디에서 팀 프로젝트 참여자를 모집합니다.",
+        categoryId=2,
+        chunkIndex=0,
+        score=0.221,
+    )
+    override_service([partial], model)
+
+    response = TestClient(app).post(
+        "/api/rag/answers",
+        json={"question": "그리디 동아리가 뭐야?"},
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["grounded"] is False
+    assert response.json()["sources"][0]["wikiPostId"] == 560
+    assert "GREEDY는 교내 개발 동아리" in response.json()["answer"]
+    assert "부분 근거 구간" in model.calls[-1][1]

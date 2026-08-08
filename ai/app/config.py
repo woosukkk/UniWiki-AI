@@ -25,6 +25,7 @@ class Settings:
     search_top_k: int = int(os.getenv("SEARCH_TOP_K", "5"))
     rag_top_k: int = int(os.getenv("RAG_TOP_K", "5"))
     rag_min_score: float = float(os.getenv("RAG_MIN_SCORE", "0.35"))
+    rag_partial_min_score: float = float(os.getenv("RAG_PARTIAL_MIN_SCORE", "0.20"))
     rag_max_context_chars: int = int(os.getenv("RAG_MAX_CONTEXT_CHARS", "12000"))
     openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
     openai_model: str = os.getenv("OPENAI_MODEL", "gpt-5.6-sol")
@@ -44,6 +45,8 @@ class Settings:
             raise ValueError("RAG_TOP_K must be between 1 and 20.")
         if not -1.0 <= self.rag_min_score <= 1.0:
             raise ValueError("RAG_MIN_SCORE must be between -1 and 1.")
+        if not -1.0 <= self.rag_partial_min_score <= self.rag_min_score:
+            raise ValueError("RAG_PARTIAL_MIN_SCORE must not exceed RAG_MIN_SCORE.")
         if self.rag_max_context_chars < 100:
             raise ValueError("RAG_MAX_CONTEXT_CHARS must be at least 100.")
         if self.openai_timeout_seconds <= 0:

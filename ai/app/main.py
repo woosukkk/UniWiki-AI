@@ -89,6 +89,7 @@ def get_rag_service() -> RagAnswerService:
         language_model=get_language_model(),
         top_k=settings.rag_top_k,
         min_score=settings.rag_min_score,
+        partial_min_score=settings.rag_partial_min_score,
         max_context_chars=settings.rag_max_context_chars,
     )
 

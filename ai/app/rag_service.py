@@ -37,12 +37,14 @@ class RagAnswerService:
         language_model: LanguageModel,
         top_k: int,
         min_score: float,
+        partial_min_score: float,
         max_context_chars: int,
     ) -> None:
         self.search_service = search_service
         self.language_model = language_model
         self.top_k = top_k
         self.min_score = min_score
+        self.partial_min_score = partial_min_score
         self.max_context_chars = max_context_chars
 
     def answer(self, request: RagAnswerRequest) -> RagAnswerResponse:
@@ -55,11 +57,17 @@ class RagAnswerService:
                 categoryId=request.category_id,
             )
         )
-        relevant_results = [
+        strong_results = [
             result
             for result in search_response.results
             if result.score >= self.min_score
         ]
+        partial_results = [
+            result
+            for result in search_response.results
+            if result.score >= self.partial_min_score
+        ]
+        relevant_results = strong_results or partial_results
         if not relevant_results:
             return RagAnswerResponse(
                 question=request.question,
@@ -75,15 +83,20 @@ class RagAnswerService:
             else relevant_results
         )
         context, used_results = self._build_context(context_results)
+        evidence_notice = (
+            "\n\n주의: 검색 점수가 부분 근거 구간입니다. "
+            "문서에 직접 적힌 사실만 소개하고 전체 정보라고 단정하지 마세요."
+            if not strong_results else ""
+        )
         generated = self.language_model.generate(
             RAG_INSTRUCTIONS,
-            f"질문:\n{request.question}\n\n위키 컨텍스트:\n{context}",
+            f"질문:\n{request.question}\n\n위키 컨텍스트:\n{context}{evidence_notice}",
         )
         answer, grounded = self._parse_grounding(generated)
         return RagAnswerResponse(
             question=request.question,
             answer=answer,
-            grounded=grounded,
+            grounded=grounded and bool(strong_results),
             retrievedChunkCount=len(used_results),
             sources=self._build_sources(used_results),
         )
