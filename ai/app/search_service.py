@@ -9,6 +9,11 @@ from app.vector_store import VectorStore
 
 
 class SemanticSearchService:
+    KOREAN_PARTICLE_SUFFIXES = (
+        "에서부터", "으로부터", "에게서", "까지", "부터", "처럼", "보다",
+        "에게", "한테", "께서", "으로", "에서", "와", "과", "은", "는",
+        "이", "가", "을", "를", "의", "도", "만", "로",
+    )
     def __init__(
         self,
         embedder: Embedder,
@@ -94,9 +99,11 @@ class SemanticSearchService:
     @staticmethod
     def _lexical_score(query, result):
         tokens = [
-            token for token in re.findall(r"[0-9A-Za-z가-힣]+", query.lower())
+            SemanticSearchService._strip_korean_particle(token)
+            for token in re.findall(r"[0-9A-Za-z가-힣]+", query.lower())
             if token not in {"알려줘", "알려주세요", "어디서", "어디", "확인", "관련", "정보", "뭐야"}
         ]
+        tokens = [token for token in tokens if token]
         if not tokens:
             return 0.0
         title = re.sub(r"\s+", "", result.title.lower())
@@ -117,3 +124,10 @@ class SemanticSearchService:
         if query_years and any(year in title for year in query_years):
             points += 3.0
         return min(1.0, points / (len(tokens) * 4.0 + 3.0))
+
+    @staticmethod
+    def _strip_korean_particle(token):
+        for suffix in SemanticSearchService.KOREAN_PARTICLE_SUFFIXES:
+            if token.endswith(suffix) and len(token) - len(suffix) >= 2:
+                return token[:-len(suffix)]
+        return token

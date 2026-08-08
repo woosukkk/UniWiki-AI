@@ -93,3 +93,21 @@ def test_hybrid_ranking_prefers_exact_title_and_deduplicates_documents() -> None
 
     assert results[0].wiki_post_id == 9
     assert len([result for result in results if result.wiki_post_id == 8]) == 1
+
+
+def test_lexical_score_removes_korean_particles_for_title_matching() -> None:
+    result = SemanticSearchResult(
+        chunkId="course-guide-0",
+        wikiPostId=10,
+        title="2026-2 수강편람 및 강의시간표",
+        content="수강신청 일정과 개설 강좌를 확인합니다.",
+        categoryId=2,
+        chunkIndex=0,
+        score=0.0,
+    )
+
+    score = SemanticSearchService._lexical_score(
+        "2026-2학기 수강편람과 수강신청 방법을 알려주세요.", result
+    )
+
+    assert score >= 0.5
