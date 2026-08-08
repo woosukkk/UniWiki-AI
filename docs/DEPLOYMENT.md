@@ -33,6 +33,7 @@ Selenium 수집기는 Chrome 로그인과 영속 브라우저 프로필이 필�
 | --- | --- |
 | `OPENAI_API_KEY` | 답변 생성 API 키 |
 | `OPENAI_MODEL` | 사용할 모델명 |
+| `RAG_PARTIAL_MIN_SCORE` | 부분 근거 최소 점수. 기본값 `0.20` |
 | `CHROMA_PERSIST_DIR` | 영속 볼륨 경로(예: `/data/chroma`) |
 | `PORT` | 플랫폼이 할당한 포트 |
 

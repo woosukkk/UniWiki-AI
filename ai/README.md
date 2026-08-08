@@ -90,7 +90,9 @@ GET    /api/vector-store/stats
 }
 ```
 
-`RAG_MIN_SCORE` 이상의 문서만 LLM 문맥에 포함합니다. 근거가 없으면 모델을 호출하지 않고 `grounded: false`와 빈 출처 목록을 반환합니다.
+질문은 먼저 LLM이 공식 문서에 적합한 검색어로 재작성하며, 원문과 재작성 문장을 함께 검색합니다. 재작성 결과는 최대 256개까지 메모리에 캐시합니다.
+
+`RAG_MIN_SCORE` 이상의 문서는 충분한 근거로 사용합니다. `RAG_PARTIAL_MIN_SCORE` 이상이지만 충분한 근거 기준보다 낮은 문서는 답변에 참고하되 `grounded: false`로 반환해 화면에 `LIMITED SOURCES`로 표시합니다. 부분 근거 기준에도 미치지 못하면 빈 출처와 근거 부족 응답을 반환합니다.
 
 ### 위키 요약
 
@@ -108,6 +110,7 @@ GET    /api/vector-store/stats
 | `SEARCH_TOP_K` | `5` | 검색 결과 수 |
 | `RAG_TOP_K` | `5` | RAG 후보 위키 수 |
 | `RAG_MIN_SCORE` | `0.35` | 최소 근거 점수 |
+| `RAG_PARTIAL_MIN_SCORE` | `0.20` | 제한적 참고 자료의 최소 점수 |
 | `RAG_MAX_CONTEXT_CHARS` | `12000` | 최대 문맥 길이 |
 | `CHROMA_PERSIST_DIR` | `ai/data/vectorstore/chroma` | 벡터 저장 경로 |
 | `OPENAI_MAX_OUTPUT_TOKENS` | `1000` | 답변 최대 출력량 |
