@@ -199,6 +199,25 @@ def test_rewrites_query_with_contextual_synonyms_before_search() -> None:
     assert len(model.calls) == 2
 
 
+def test_rewrite_cannot_invent_academic_period() -> None:
+    query = RagAnswerService._combined_search_query(
+        "When is the course correction period?",
+        "2026-1 course registration correction schedule",
+    )
+
+    assert "2026-1" not in query
+    assert "course registration correction schedule" in query
+
+
+def test_keeps_academic_period_explicitly_requested_by_user() -> None:
+    query = RagAnswerService._combined_search_query(
+        "When is the 2025-2 course correction period?",
+        "2025-2 course registration correction schedule",
+    )
+
+    assert "2025-2" in query
+
+
 def test_uses_low_confidence_related_document_as_limited_source() -> None:
     model = FakeLanguageModel(
         answer=(

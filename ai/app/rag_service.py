@@ -114,6 +114,12 @@ class RagAnswerService:
     def _combined_search_query(question: str, rewritten: str) -> str:
         if rewritten.strip().lower() == question.strip().lower():
             return question
+        if not re.search(r"20\d{2}", question):
+            rewritten = re.sub(
+                r"20\d{2}(?:\s*[-\uB144.]?\s*[12](?:\s*\uD559\uAE30)?)?",
+                "",
+                rewritten,
+            )
         return f"{question} {rewritten}"
 
     @staticmethod
