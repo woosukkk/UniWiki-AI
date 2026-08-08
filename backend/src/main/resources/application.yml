@@ -43,6 +43,8 @@ uniwiki:
     cron: "0 0 3 * * *"
   questions:
     close-answered-on-startup: ${QUESTION_CLOSE_ANSWERED_ON_STARTUP:false}
+  academic-regulation:
+    bootstrap-enabled: ${ACADEMIC_REGULATION_BOOTSTRAP_ENABLED:false}
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL:http://localhost:8000}
   vector-sync:
