@@ -7,16 +7,6 @@ const trustColors = {
   low: '#b4513f',
 };
 
-const contentTypeLabels = {
-  LECTURE_REVIEW: '강의평',
-  ACADEMIC: '학사',
-  SCHOLARSHIP: '장학',
-  FACILITIES: '시설',
-  CAREER: '진로·취업',
-  CLUB_EVENT: '동아리·행사',
-  SCHOOL_LIFE: '학교생활',
-};
-
 function trustLabel(level) {
   return { low: '확인 필요', medium: '보통', high: '높음' }[level] || level;
 }
@@ -98,7 +88,6 @@ export function DataVisualizationPage() {
 
       <section className="trust-evidence-summary">
         <span>첨부 추출 <b>{data.extractedAttachmentRecords}/{data.attachmentRecords}</b> ({attachmentRate}%)</span>
-        <span>에브리타임 자료 <b>{data.everytimeRecords.toLocaleString()}</b></span>
         <span>최근 갱신 <b>{formatDate(data.latestUpdatedAt)}</b></span>
       </section>
 
@@ -141,7 +130,6 @@ export function DataVisualizationPage() {
               <div className="trust-source-counts">
                 <span>공식 {selectedNode.officialCount}건</span>
                 <span>일반 위키 {selectedNode.otherCount}건</span>
-                <span>에타 {selectedNode.communityCount}건</span>
               </div>
               <MetricBar label="출처 품질" value={selectedNode.sourceScore} />
               <MetricBar label="최신성" value={selectedNode.freshnessScore} />
@@ -179,18 +167,6 @@ export function DataVisualizationPage() {
         <p className="coverage-note">문서 수는 신뢰도와 별도로 유지합니다. 10건 미만은 부족, 30건 미만은 보통으로 표시합니다.</p>
       </section>
 
-      {data.everytimeContentTypes.length > 0 && (
-        <section className="coverage-bars">
-          <div className="coverage-section-title"><span>COMMUNITY EVIDENCE</span><h2>에브리타임 자료 구성</h2></div>
-          {data.everytimeContentTypes.map((item) => (
-            <article key={item.type}>
-              <div><strong>{contentTypeLabels[item.type] || item.type}</strong></div>
-              <div className="coverage-track"><i style={{ width: `${Math.max(4, item.count / Math.max(1, data.everytimeRecords) * 100)}%` }} /></div>
-              <b>{item.count.toLocaleString()}건</b>
-            </article>
-          ))}
-        </section>
-      )}
     </main>
   );
 }

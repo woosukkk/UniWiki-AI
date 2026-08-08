@@ -29,7 +29,6 @@ export function WikiListPage() {
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get('keyword') || '';
-  const source = 'official';
   const categoryId = searchParams.get('category') || '';
   const sort = searchParams.get('sort') || 'latest';
   const page = Math.max(1, Number(searchParams.get('page')) || 1);
@@ -44,11 +43,7 @@ export function WikiListPage() {
     setError('');
     try {
       const [posts, categoryList, communityEntries] = await Promise.all([
-        api.searchWikiPosts(
-          keyword,
-          source === 'everytime' ? 'EVERYTIME' : 'OFFICIAL',
-          source === 'everytime' ? 'LECTURE_REVIEW' : null,
-        ),
+        api.searchWikiPosts(keyword, 'OFFICIAL', null),
         api.getCategories(),
         api.getCommunityWiki(),
       ]);
@@ -62,7 +57,7 @@ export function WikiListPage() {
     } finally {
       setLoading(false);
     }
-  }, [keyword, source]);
+  }, [keyword]);
 
   useEffect(() => {
     setSearchInput(keyword);
@@ -133,13 +128,6 @@ export function WikiListPage() {
         {isAuthenticated && <Link className="button" to="/wiki/new">위키 작성</Link>}
       </header>
 
-      <nav className="wiki-source-tabs" aria-label="위키 자료 출처">
-        <button
-          className={source === 'official' ? 'active' : ''}
-          onClick={() => updateParams({ source: '', type: '', category: '', page: '' })}
-        >공식·학교 위키</button>
-      </nav>
-
       <section className="wiki-toolbar" aria-label="위키 검색 및 필터">
         <form className="wiki-search" onSubmit={submitSearch}>
           <input
@@ -151,16 +139,14 @@ export function WikiListPage() {
           <button className="button button-small">검색</button>
         </form>
         <div className="wiki-filters">
-          {source === 'official' && (
-            <select
-              aria-label="카테고리 필터"
-              value={categoryId}
-              onChange={(event) => updateParams({ category: event.target.value, page: '' })}
-            >
-              <option value="">전체 카테고리</option>
-              {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
-            </select>
-          )}
+          <select
+            aria-label="카테고리 필터"
+            value={categoryId}
+            onChange={(event) => updateParams({ category: event.target.value, page: '' })}
+          >
+            <option value="">전체 카테고리</option>
+            {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+          </select>
           <select
             aria-label="정렬 기준"
             value={sort}
