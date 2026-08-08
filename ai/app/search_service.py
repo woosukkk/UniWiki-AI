@@ -1,4 +1,6 @@
 import re
+from datetime import date
+from difflib import SequenceMatcher
 
 from app.embedder import Embedder
 from app.models import (
@@ -46,6 +48,7 @@ class SemanticSearchService:
             self._rerank(expanded_query, vector_results, lexical_records, top_k)
             if supports_lexical else vector_results[:top_k]
         )
+        results = self._prefer_current_period(request.query, results)
         return SemanticSearchResponse(
             query=request.query,
             topK=top_k,
@@ -93,18 +96,65 @@ class SemanticSearchService:
 
         deduplicated = []
         seen_wiki_posts = set()
-        seen_titles = set()
+        seen_titles = []
         for result in ranked:
-            normalized_title = re.sub(r"\s+", " ", result.title).strip().lower()
+            normalized_title = self._canonical_title(result.title)
             if (result.wiki_post_id in seen_wiki_posts
-                    or normalized_title in seen_titles):
+                    or any(self._titles_are_duplicates(normalized_title, seen)
+                           for seen in seen_titles)):
                 continue
             seen_wiki_posts.add(result.wiki_post_id)
-            seen_titles.add(normalized_title)
+            seen_titles.append(normalized_title)
             deduplicated.append(result)
             if len(deduplicated) >= top_k:
                 break
         return deduplicated
+
+    @staticmethod
+    def _canonical_title(title):
+        return re.sub(r"[^0-9a-z가-힣]", "", title.lower())
+
+    @staticmethod
+    def _titles_are_duplicates(left, right):
+        if left == right:
+            return True
+        if min(len(left), len(right)) >= 24 and (
+                left[:24] == right[:24]
+                or SequenceMatcher(None, left, right).ratio() >= 0.92):
+            return True
+        return False
+
+    @staticmethod
+    def _prefer_current_period(query, results):
+        """Avoid mixing several academic periods when the user omitted one."""
+        if re.search(r"20\d{2}", query):
+            return results
+        if not re.search(r"기간|일정|날짜|언제|정정|마감|접수", query):
+            return results
+
+        dated = []
+        for result in results:
+            match = re.search(r"(20\d{2})(?:\s*[-년]\s*([12])(?:학기)?)?", result.title)
+            if match:
+                dated.append((result, int(match.group(1)), int(match.group(2) or 0)))
+        if not dated:
+            return results
+
+        current = date.today()
+        current_term = 1 if current.month < 7 else 2
+        available_years = [year for _, year, _ in dated if year <= current.year]
+        target_year = max(available_years, default=max(year for _, year, _ in dated))
+        available_terms = [
+            term for _, year, term in dated
+            if year == target_year and term and (year < current.year or term <= current_term)
+        ]
+        target_term = max(available_terms, default=0)
+
+        scoped = [
+            result for result, year, term in dated
+            if year == target_year and (not target_term or term in (0, target_term))
+        ]
+        return scoped or results
 
     def expand_results(self, results, max_chunks_per_document=8):
         if not hasattr(self.vector_store, "all_records"):

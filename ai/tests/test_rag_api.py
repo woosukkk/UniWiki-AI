@@ -137,3 +137,38 @@ def test_returns_gateway_timeout_for_llm_timeout() -> None:
 
 def test_rejects_blank_question() -> None:
     assert TestClient(app).post("/api/rag/answers", json={"question": "   "}).status_code == 422
+
+
+def test_model_insufficient_verdict_marks_answer_as_not_grounded() -> None:
+    model = FakeLanguageModel(
+        answer="판정: INSUFFICIENT\n제공된 문서에는 서비스의 목적과 운영 방식이 없습니다."
+    )
+    override_service([search_result()], model)
+
+    response = TestClient(app).post(
+        "/api/rag/answers",
+        json={"question": "우아한테크코스가 뭐야?"},
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["grounded"] is False
+    assert response.json()["answer"] == "제공된 문서에는 서비스의 목적과 운영 방식이 없습니다."
+
+
+def test_model_supported_verdict_is_removed_from_visible_answer() -> None:
+    model = FakeLanguageModel(
+        answer="판정: SUPPORTED\n**2026-2학기** 정정 기간은 9월 1일부터입니다."
+    )
+    override_service([search_result()], model)
+
+    response = TestClient(app).post(
+        "/api/rag/answers",
+        json={"question": "수강신청 정정 기간은 언제야?"},
+    )
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    assert response.json()["grounded"] is True
+    assert response.json()["answer"].startswith("**2026-2학기**")
+    assert "판정:" not in response.json()["answer"]

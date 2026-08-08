@@ -5,6 +5,7 @@ import {
 } from 'react';
 
 import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { api } from '../api.js';
 
 const welcomeMessage = {
@@ -321,7 +322,15 @@ export function ChatbotPage() {
                       </span>
                     </div>
 
-                    <p>{message.answer}</p>
+                    {message.role === 'assistant' ? (
+                      <div className="editorial-chat-message-answer">
+                        <ReactMarkdown skipHtml>
+                          {message.answer}
+                        </ReactMarkdown>
+                      </div>
+                    ) : (
+                      <p>{message.answer}</p>
+                    )}
 
                     {message.role ===
                       'assistant' && (

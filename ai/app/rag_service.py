@@ -16,7 +16,10 @@ RAG_INSTRUCTIONS = """당신은 대학 위키 문서만을 근거로 답하는 �
 제공된 컨텍스트에 명시된 정보만 사용하세요.
 컨텍스트에 없는 사실을 추측하거나 일반 지식으로 보완하지 마세요.
 근거가 부족하거나 서로 충돌하면 근거가 충분하지 않다고 명확히 답하세요.
-답변은 한국어로 간결하고 직접적으로 작성하세요."""
+질문의 핵심 대상에 대한 설명이 문서에 직접 있어야 근거가 충분한 것으로 판단하세요.
+기간이나 일정은 문서 제목의 연도와 학기를 답변에 명시하세요.
+첫 줄에는 반드시 `판정: SUPPORTED` 또는 `판정: INSUFFICIENT` 중 하나만 작성하세요.
+그 다음 줄부터 사용자에게 보여줄 답변을 한국어로 간결하고 직접적으로 작성하세요."""
 
 
 class RagAnswerService:
@@ -62,17 +65,38 @@ class RagAnswerService:
             else relevant_results
         )
         context, used_results = self._build_context(context_results)
-        answer = self.language_model.generate(
+        generated = self.language_model.generate(
             RAG_INSTRUCTIONS,
             f"질문:\n{request.question}\n\n위키 컨텍스트:\n{context}",
         )
+        answer, grounded = self._parse_grounding(generated)
         return RagAnswerResponse(
             question=request.question,
             answer=answer,
-            grounded=True,
+            grounded=grounded,
             retrievedChunkCount=len(used_results),
             sources=self._build_sources(used_results),
         )
+
+    @staticmethod
+    def _parse_grounding(generated: str) -> tuple[str, bool]:
+        verdict = re.match(
+            r"^\s*판정\s*:\s*(SUPPORTED|INSUFFICIENT)\s*\n?",
+            generated,
+            flags=re.IGNORECASE,
+        )
+        answer = generated[verdict.end():].strip() if verdict else generated.strip()
+        if verdict:
+            return answer, verdict.group(1).upper() == "SUPPORTED"
+
+        insufficient_patterns = (
+            "확인할 수 없습니다",
+            "알 수 없습니다",
+            "근거가 충분하지",
+            "설명은 없습니다",
+            "정보가 없습니다",
+        )
+        return answer, not any(pattern in answer for pattern in insufficient_patterns)
 
     def _build_context(
         self,
@@ -97,14 +121,16 @@ class RagAnswerService:
     ) -> list[RagAnswerSource]:
         sources = []
         seen_wiki_post_ids = set()
-        seen_titles = set()
+        seen_titles = []
         for result in results:
-            normalized_title = re.sub(r"\s+", " ", result.title).strip().lower()
+            normalized_title = SemanticSearchService._canonical_title(result.title)
             if (result.wiki_post_id in seen_wiki_post_ids
-                    or normalized_title in seen_titles):
+                    or any(SemanticSearchService._titles_are_duplicates(
+                        normalized_title, seen,
+                    ) for seen in seen_titles)):
                 continue
             seen_wiki_post_ids.add(result.wiki_post_id)
-            seen_titles.add(normalized_title)
+            seen_titles.append(normalized_title)
             sources.append(
                 RagAnswerSource(
                     wikiPostId=result.wiki_post_id,

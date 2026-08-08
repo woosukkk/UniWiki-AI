@@ -898,3 +898,29 @@
     padding: 20px;
   }
 }
+
+.editorial-chat-message-answer {
+  margin-top: 18px;
+  line-height: 1.85;
+  word-break: keep-all;
+}
+
+.editorial-chat-message-answer > :first-child {
+  margin-top: 0;
+}
+
+.editorial-chat-message-answer > :last-child {
+  margin-bottom: 0;
+}
+
+.editorial-chat-message-answer ul,
+.editorial-chat-message-answer ol {
+  margin: 10px 0;
+  padding-left: 1.5rem;
+}
+
+.editorial-chat-message-answer a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

@@ -1,4 +1,5 @@
 import numpy as np
+from datetime import date
 from fastapi.testclient import TestClient
 
 from app.main import app, get_search_service
@@ -233,3 +234,68 @@ def test_lexical_match_uses_same_hybrid_scale_for_every_source() -> None:
 
     assert service._lexical_score(query, community) >= 0.35
     assert results[0].wiki_post_id == 1377
+
+
+def test_period_question_without_year_uses_current_academic_period() -> None:
+    current_year = date.today().year
+    current_term = 1 if date.today().month < 7 else 2
+    other_year = current_year - 2
+    results = [
+        SemanticSearchResult(
+            chunkId="old-0", wikiPostId=30,
+            title=f"{other_year}-2 수강편람 및 강의시간표",
+            content="수강신청 정정 기간 안내", categoryId=2,
+            chunkIndex=0, score=0.8,
+        ),
+        SemanticSearchResult(
+            chunkId="current-0", wikiPostId=31,
+            title=f"{current_year}-{current_term} 수강편람 및 강의시간표",
+            content="수강신청 정정 기간 안내", categoryId=2,
+            chunkIndex=0, score=0.8,
+        ),
+    ]
+
+    scoped = SemanticSearchService._prefer_current_period(
+        "수강신청 정정 기간은 언제야?", results,
+    )
+
+    assert [result.wiki_post_id for result in scoped] == [31]
+
+
+def test_explicit_year_keeps_requested_period_results() -> None:
+    results = [
+        SemanticSearchResult(
+            chunkId="2024-0", wikiPostId=40,
+            title="2024-2 수강편람", content="정정 기간", categoryId=2,
+            chunkIndex=0, score=0.8,
+        ),
+        SemanticSearchResult(
+            chunkId="2026-0", wikiPostId=41,
+            title="2026-1 수강편람", content="정정 기간", categoryId=2,
+            chunkIndex=0, score=0.8,
+        ),
+    ]
+
+    assert SemanticSearchService._prefer_current_period(
+        "2024-2 수강신청 정정 기간", results,
+    ) == results
+
+
+def test_nearly_identical_titles_are_deduplicated() -> None:
+    service = SemanticSearchService(FakeEmbedder(), FakeVectorStore(), 5)
+    first = SemanticSearchResult(
+        chunkId="community-1", wikiPostId=50,
+        title="안녕하세요! 현재 우아한테크코스에서 세종대학교 졸업생을 찾습니다",
+        content="졸업생과 취업 준비생 연결", categoryId=2,
+        chunkIndex=0, score=0.9,
+    )
+    duplicate = SemanticSearchResult(
+        chunkId="community-2", wikiPostId=51,
+        title="안녕하세요 현재 우아한테크코스에서 세종대학교 졸업생을 찾습니다.",
+        content="졸업생과 취업 준비생 연결", categoryId=2,
+        chunkIndex=0, score=0.89,
+    )
+
+    results = service._rerank("우아한테크코스가 뭐야", [first, duplicate], [], 5)
+
+    assert len(results) == 1
