@@ -57,6 +57,8 @@ public class OfficialDataRetentionBootstrap implements ApplicationRunner {
 
         jdbcTemplate.update("DELETE FROM official_wiki_documents "
                 + "WHERE raw_document_id IN (SELECT id FROM legacy_official_raw_ids)");
+        jdbcTemplate.update("DELETE FROM official_attachments "
+                + "WHERE raw_document_id IN (SELECT id FROM legacy_official_raw_ids)");
         jdbcTemplate.update("DELETE FROM raw_official_documents "
                 + "WHERE id IN (SELECT id FROM legacy_official_raw_ids)");
         jdbcTemplate.update("DELETE FROM wiki_vector_sync_jobs "

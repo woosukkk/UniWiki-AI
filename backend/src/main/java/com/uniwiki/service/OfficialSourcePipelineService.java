@@ -35,6 +35,9 @@ import javax.net.ssl.SSLHandshakeException;
 @RequiredArgsConstructor
 public class OfficialSourcePipelineService {
 
+    private static final Pattern EXPLICIT_YEAR =
+            Pattern.compile("(?<!\\d)(19\\d{2}|20\\d{2})(?!\\d)");
+
     private final OfficialSourceRepository sourceRepository;
     private final ObjectProvider<OfficialSourcePipelineService> selfProvider;
     private final RawOfficialDocumentRepository rawRepository;
@@ -125,6 +128,11 @@ public class OfficialSourcePipelineService {
         Document articlePage = fetch(articleUrl);
         String title = requiredText(articlePage, source.getTitleSelector(), "제목");
         title = catalogTitle(source, articleUrl, title);
+        if (isBeforeRetentionYear(title)) {
+            log.debug("Skipped official article before 2024: source={}, title={}",
+                    source.getName(), title);
+            return ArticleCollectionOutcome.UNCHANGED;
+        }
         List<OfficialAttachmentService.CollectedAttachment> attachments =
                 attachmentService.collect(articlePage);
         String content = requiredContent(articlePage, source.getContentSelector())
@@ -152,6 +160,16 @@ public class OfficialSourcePipelineService {
 
     public enum ArticleCollectionOutcome {
         CREATED, CHANGED, UNCHANGED
+    }
+
+    private boolean isBeforeRetentionYear(String title) {
+        Matcher matcher = EXPLICIT_YEAR.matcher(title);
+        boolean foundYear = false;
+        while (matcher.find()) {
+            foundYear = true;
+            if (Integer.parseInt(matcher.group(1)) >= 2024) return false;
+        }
+        return foundYear;
     }
 
     @Transactional(readOnly = true)
