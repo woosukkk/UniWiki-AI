@@ -77,4 +77,21 @@ class QuestionWikiPromotionServiceTest {
                 .hasMessageContaining("403 FORBIDDEN");
         verifyNoInteractions(questionRepository, wikiPostRepository, vectorSyncService);
     }
+
+    @Test
+    void createsPromotionCategoryWhenItDoesNotExist() {
+        Question question = new Question(author, "학사 질문", "질문 내용");
+        when(userRepository.findById(77L)).thenReturn(Optional.of(admin));
+        when(promotionRepository.existsByQuestion_Id(9L)).thenReturn(false);
+        when(questionRepository.findById(9L)).thenReturn(Optional.of(question));
+        when(categoryRepository.findByName("함께 만든 위키")).thenReturn(Optional.empty());
+        when(categoryRepository.save(any(Category.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(answerRepository.findByQuestion_IdOrderByCreatedAtAsc(9L)).thenReturn(List.of());
+        when(wikiPostRepository.save(any(WikiPost.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        promotionService.promoteByAdmin(77L, 9L);
+
+        verify(categoryRepository).save(argThat(category ->
+                "함께 만든 위키".equals(category.getName())));
+    }
 }

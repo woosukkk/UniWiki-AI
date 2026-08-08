@@ -79,6 +79,7 @@ public class AnswerService {
     @Transactional
     public AnswerDto.Response accept(Long loginUserId, Long answerId) {
         Answer answer = findAnswer(answerId);
+        User actor = findUser(loginUserId);
         Long questionId = answer.getQuestion().getId();
         Question question = questionRepository.findByIdForUpdate(questionId)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -86,10 +87,10 @@ public class AnswerService {
                         "질문을 찾을 수 없습니다."
                 ));
 
-        if (!question.isAuthor(loginUserId)) {
+        if (!question.isAuthor(loginUserId) && !"ADMIN".equals(actor.getRole())) {
             throw new ResponseStatusException(
                     HttpStatus.FORBIDDEN,
-                    "질문 작성자만 답변을 채택할 수 있습니다."
+                    "질문 작성자 또는 관리자만 답변을 채택할 수 있습니다."
             );
         }
 

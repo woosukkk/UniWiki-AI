@@ -27,7 +27,7 @@ public class QuestionWikiPromotionService {
     private final QuestionWikiPromotionRepository promotionRepository;
     private final WikiVectorSyncService vectorSyncService;
 
-    @Value("${uniwiki.promotion.category-name:함께 만들어낸 위키}")
+    @Value("${uniwiki.promotion.category-name:함께 만든 위키}")
     private String categoryName;
 
     @Transactional
@@ -50,9 +50,10 @@ public class QuestionWikiPromotionService {
                         HttpStatus.NOT_FOUND, "질문을 찾을 수 없습니다."
                 ));
         Category category = categoryRepository.findByName(categoryName)
-                .orElseThrow(() -> new IllegalStateException(
-                        "위키 선정 카테고리를 찾을 수 없습니다: " + categoryName
-                ));
+                .orElseGet(() -> categoryRepository.save(new Category(
+                        categoryName,
+                        "질문 게시판에서 관리자가 선정한 질문과 답변"
+                )));
         List<Answer> answers = answerRepository
                 .findByQuestion_IdOrderByCreatedAtAsc(questionId);
         WikiPost wikiPost = wikiPostRepository.save(new WikiPost(

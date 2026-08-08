@@ -667,7 +667,7 @@ export function QuestionDetailPage() {
                           answer.authorId
                         }
                         canAccept={
-                          isAuthor &&
+                          (isAuthor || isAdmin) &&
                           !answer.accepted &&
                           !hasAcceptedAnswer
                         }

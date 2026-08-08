@@ -125,6 +125,7 @@ class AnswerServiceTest {
     void questionAuthorAcceptsAnswerAndClosesQuestion() {
         Answer answer = answer(101L, otherUser, "채택할 답변");
         when(answerRepository.findById(101L)).thenReturn(Optional.of(answer));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(author));
         when(questionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(question));
         when(answerRepository.findByQuestion_IdAndAcceptedTrue(10L))
                 .thenReturn(Optional.empty());
@@ -139,6 +140,7 @@ class AnswerServiceTest {
     void rejectsAcceptanceByUserWhoDidNotWriteQuestion() {
         Answer answer = answer(101L, otherUser, "채택 시도");
         when(answerRepository.findById(101L)).thenReturn(Optional.of(answer));
+        when(userRepository.findById(2L)).thenReturn(Optional.of(otherUser));
         when(questionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(question));
 
         assertThatThrownBy(() -> answerService.accept(2L, 101L))
@@ -149,11 +151,34 @@ class AnswerServiceTest {
     }
 
     @Test
+    void adminAcceptsAnswerAndClosesQuestion() {
+        User admin = User.builder()
+                .id(77L)
+                .email("manager@sju.ac.kr")
+                .password("password")
+                .nickname("관리자")
+                .role("ADMIN")
+                .build();
+        Answer answer = answer(101L, otherUser, "관리자가 채택할 답변");
+        when(answerRepository.findById(101L)).thenReturn(Optional.of(answer));
+        when(userRepository.findById(77L)).thenReturn(Optional.of(admin));
+        when(questionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(question));
+        when(answerRepository.findByQuestion_IdAndAcceptedTrue(10L))
+                .thenReturn(Optional.empty());
+
+        AnswerDto.Response response = answerService.accept(77L, 101L);
+
+        assertThat(response.isAccepted()).isTrue();
+        assertThat(question.getStatus()).isEqualTo(com.uniwiki.entity.QuestionStatus.CLOSED);
+    }
+
+    @Test
     void rejectsSecondAcceptedAnswerForQuestion() {
         Answer answer = answer(101L, otherUser, "새 답변");
         Answer acceptedAnswer = answer(102L, author, "기존 채택 답변");
         acceptedAnswer.accept();
         when(answerRepository.findById(101L)).thenReturn(Optional.of(answer));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(author));
         when(questionRepository.findByIdForUpdate(10L)).thenReturn(Optional.of(question));
         when(answerRepository.findByQuestion_IdAndAcceptedTrue(10L))
                 .thenReturn(Optional.of(acceptedAnswer));

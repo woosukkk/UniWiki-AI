@@ -39,7 +39,7 @@ uniwiki:
     allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
   promotion:
     like-threshold: 3
-    category-name: 함께 만들어낸 위키
+    category-name: 함께 만든 위키
     cron: "0 0 3 * * *"
   ai-service:
     base-url: ${AI_SERVICE_BASE_URL:http://localhost:8000}
