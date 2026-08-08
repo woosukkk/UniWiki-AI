@@ -100,24 +100,21 @@ class WikiPostServiceTest {
     }
 
     @Test
-    void publicListOrdersReferenceYearAndTermDescending() {
-        WikiPost oldGeneralPost = wikiPost(1L, "일반 학사 안내");
-        WikiPost post2024 = wikiPost(2L, "2024년 장학 공지 모음");
-        WikiPost post2026First = wikiPost(3L, "2026-1 소프트웨어학과 강의시간표");
-        WikiPost post2026Second = wikiPost(4L, "2026-2 소프트웨어학과 강의시간표");
-        WikiPost post2025 = wikiPost(5L, "2025년 학과 공지 모음");
+    void publicListKeepsPinnedPostsFirstAndThenUsesStorageOrder() {
+        WikiPost first = wikiPost(10L, "First stored");
+        WikiPost second = wikiPost(20L, "Second stored");
+        WikiPost pinned = wikiPost(30L, "Pinned");
+        ReflectionTestUtils.setField(pinned, "pinnedOrder", 1);
         when(wikiPostRepository.findAllByStatusOrderByCreatedAtDesc(WikiPostStatus.APPROVED))
-                .thenReturn(List.of(oldGeneralPost, post2024, post2026First, post2025, post2026Second));
+                .thenReturn(List.of(second, pinned, first));
 
         List<WikiPostDto.ListResponse> result = wikiPostService.getWikiPosts();
 
         org.junit.jupiter.api.Assertions.assertEquals(
                 List.of(
-                        "2026-2 소프트웨어학과 강의시간표",
-                        "2026-1 소프트웨어학과 강의시간표",
-                        "2025년 학과 공지 모음",
-                        "2024년 장학 공지 모음",
-                        "일반 학사 안내"
+                        "Pinned",
+                        "First stored",
+                        "Second stored"
                 ),
                 result.stream().map(WikiPostDto.ListResponse::getTitle).toList()
         );

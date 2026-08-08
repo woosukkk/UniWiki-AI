@@ -20,11 +20,6 @@ const COMMUNITY_WIKI_HUB = {
   createdAt: '2026-01-01T00:00:00',
 };
 
-function referenceYear(post) {
-  const match = `${post.title || ''} ${post.summary || ''}`.match(/20\d{2}/);
-  return match ? Number(match[0]) : Number.MIN_SAFE_INTEGER;
-}
-
 export function WikiListPage() {
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -73,12 +68,9 @@ export function WikiListPage() {
       const rightPinned = right.pinnedOrder ?? Number.MAX_SAFE_INTEGER;
       if (leftPinned !== rightPinned) return leftPinned - rightPinned;
 
-      const yearDifference = referenceYear(right) - referenceYear(left);
-      if (yearDifference !== 0) return yearDifference;
-
       return sort === 'views'
         ? right.viewCount - left.viewCount
-        : new Date(right.createdAt) - new Date(left.createdAt);
+        : Number(left.id) - Number(right.id);
     });
     if (!keyword && !categoryId) {
       sorted.splice(2, 0, COMMUNITY_WIKI_HUB);

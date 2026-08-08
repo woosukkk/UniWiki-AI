@@ -17,8 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Comparator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,8 +24,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class WikiPostService {
-
-    private static final Pattern REFERENCE_DATE_PATTERN = Pattern.compile("^(20\\d{2})(?:-(1|2)|년)");
 
     private final WikiPostRepository wikiPostRepository;
     private final LectureReviewWikiDraftRepository lectureReviewWikiDraftRepository;
@@ -66,7 +62,7 @@ public class WikiPostService {
     public List<WikiPostDto.ListResponse> getWikiPosts() {
         return wikiPostRepository.findAllByStatusOrderByCreatedAtDesc(WikiPostStatus.APPROVED)
                 .stream()
-                .sorted(referenceDateComparator())
+                .sorted(storageOrderComparator())
                 .map(WikiPostDto.ListResponse::new)
                 .toList();
     }
@@ -90,7 +86,7 @@ public class WikiPostService {
         return wikiPostRepository
                 .findByCategory_IdAndStatusOrderByCreatedAtDesc(categoryId, WikiPostStatus.APPROVED)
                 .stream()
-                .sorted(referenceDateComparator())
+                .sorted(storageOrderComparator())
                 .map(WikiPostDto.ListResponse::new)
                 .toList();
     }
@@ -253,28 +249,15 @@ public class WikiPostService {
                     case "EVERYTIME" -> selectedEverytimeIds.contains(post.getId());
                     default -> true;
                 })
-                .sorted(referenceDateComparator())
+                .sorted(storageOrderComparator())
                 .map(WikiPostDto.ListResponse::new)
                 .toList();
         }
 
-    private Comparator<WikiPost> referenceDateComparator() {
+    private Comparator<WikiPost> storageOrderComparator() {
         return Comparator
                 .comparingInt((WikiPost post) -> post.getPinnedOrder() == null
                         ? Integer.MAX_VALUE : post.getPinnedOrder())
-                .thenComparing(Comparator
-                .comparingInt(this::referenceYear).reversed()
-                .thenComparing(Comparator.comparingInt(this::referenceTerm).reversed())
-                .thenComparing(WikiPost::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())));
-    }
-
-    private int referenceYear(WikiPost wikiPost) {
-        Matcher matcher = REFERENCE_DATE_PATTERN.matcher(wikiPost.getTitle());
-        return matcher.find() ? Integer.parseInt(matcher.group(1)) : Integer.MIN_VALUE;
-    }
-
-    private int referenceTerm(WikiPost wikiPost) {
-        Matcher matcher = REFERENCE_DATE_PATTERN.matcher(wikiPost.getTitle());
-        return matcher.find() && matcher.group(2) != null ? Integer.parseInt(matcher.group(2)) : 0;
+                .thenComparing(WikiPost::getId, Comparator.nullsLast(Comparator.naturalOrder()));
     }
 }
