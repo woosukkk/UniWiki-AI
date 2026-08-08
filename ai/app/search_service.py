@@ -26,7 +26,8 @@ class SemanticSearchService:
 
     def search(self, request: SemanticSearchRequest) -> SemanticSearchResponse:
         top_k = request.top_k or self.default_top_k
-        query_text = f"질문: {request.query}"
+        expanded_query = self._expand_query(request.query)
+        query_text = f"질문: {expanded_query}"
         query_vectors = self.embedder.encode([query_text])
         if len(query_vectors) != 1:
             raise RuntimeError("검색 질문 임베딩 생성에 실패했습니다.")
@@ -42,7 +43,7 @@ class SemanticSearchService:
             if supports_lexical else []
         )
         results = (
-            self._rerank(request.query, vector_results, lexical_records, top_k)
+            self._rerank(expanded_query, vector_results, lexical_records, top_k)
             if supports_lexical else vector_results[:top_k]
         )
         return SemanticSearchResponse(
@@ -51,6 +52,25 @@ class SemanticSearchService:
             resultCount=len(results),
             results=results,
         )
+
+    @staticmethod
+    def _expand_query(query):
+        expanded_terms = []
+        normalized = re.sub(r"\s+", "", query.lower())
+        if re.search(r"졸업|졸업하려|졸업조건|졸업기준", normalized):
+            expanded_terms.extend([
+                "졸업 요건",
+                "졸업 이수 학점",
+                "전공필수",
+                "교양필수",
+                "수강편람",
+                "교과과정",
+            ])
+        if re.search(r"수강신청|과목신청|강의신청", normalized):
+            expanded_terms.extend(["수강신청", "수강편람", "강의시간표"])
+        if not expanded_terms:
+            return query
+        return f"{query} {' '.join(dict.fromkeys(expanded_terms))}"
 
     def _rerank(self, query, vector_results, lexical_records, top_k):
         vector_scores = {result.chunk_id: result.score for result in vector_results}

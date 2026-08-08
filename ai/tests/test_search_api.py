@@ -141,3 +141,13 @@ def test_exact_korean_title_keyword_beats_semantically_similar_document() -> Non
     )).results
 
     assert results[0].wiki_post_id == 12
+
+
+def test_expands_casual_graduation_question_with_catalog_terms() -> None:
+    expanded = SemanticSearchService._expand_query(
+        "소프트웨어학과 졸업하려면 뭐 필요해?"
+    )
+
+    assert "졸업 이수 학점" in expanded
+    assert "수강편람" in expanded
+    assert "교과과정" in expanded
