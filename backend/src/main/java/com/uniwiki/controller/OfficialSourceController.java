@@ -4,7 +4,9 @@ import com.uniwiki.config.LoginUserId;
 import com.uniwiki.dto.OfficialSourceDto;
 import com.uniwiki.entity.User;
 import com.uniwiki.repository.UserRepository;
+import com.uniwiki.repository.WikiPostRepository;
 import com.uniwiki.service.OfficialSourcePipelineService;
+import com.uniwiki.service.WikiVectorSyncService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.task.TaskExecutor;
@@ -21,14 +23,20 @@ public class OfficialSourceController {
     private final OfficialSourcePipelineService pipelineService;
     private final UserRepository userRepository;
     private final TaskExecutor taskExecutor;
+    private final WikiPostRepository wikiPostRepository;
+    private final WikiVectorSyncService vectorSyncService;
 
     public OfficialSourceController(
             OfficialSourcePipelineService pipelineService,
             UserRepository userRepository,
-            @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {
+            @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor,
+            WikiPostRepository wikiPostRepository,
+            WikiVectorSyncService vectorSyncService) {
         this.pipelineService = pipelineService;
         this.userRepository = userRepository;
         this.taskExecutor = taskExecutor;
+        this.wikiPostRepository = wikiPostRepository;
+        this.vectorSyncService = vectorSyncService;
     }
 
     @PostMapping
@@ -56,6 +64,16 @@ public class OfficialSourceController {
     public ResponseEntity<Void> collectActive(@LoginUserId Long userId) {
         requireAdmin(userId);
         taskExecutor.execute(pipelineService::collectActiveSources);
+        return ResponseEntity.accepted().build();
+    }
+
+    @PostMapping("/wiki-posts/{wikiPostId}/reindex")
+    public ResponseEntity<Void> reindex(
+            @LoginUserId Long userId, @PathVariable Long wikiPostId) {
+        requireAdmin(userId);
+        vectorSyncService.enqueueUpsert(wikiPostRepository.findById(wikiPostId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "위키 문서를 찾을 수 없습니다.")));
         return ResponseEntity.accepted().build();
     }
 

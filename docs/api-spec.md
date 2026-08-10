@@ -95,6 +95,7 @@ GET    /api/{resource}/{id}/likes/count
 | GET | `/api/admin/official-sources` | 공식 출처 목록 |
 | POST | `/api/admin/official-sources` | 공식 출처 등록 |
 | POST | `/api/admin/official-sources/{id}/collect` | 출처 즉시 수집 |
+| POST | `/api/admin/official-sources/wiki-posts/{id}/reindex` | 특정 위키 벡터 재색인 |
 | GET | `/api/admin/official-sources/documents` | 수집 문서 상태 |
 | POST | `/api/admin/official-sources/documents/{id}/approve` | 초안 승인 |
 
