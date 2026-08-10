@@ -29,10 +29,17 @@ public interface WikiVectorSyncJobRepository
 
     @Modifying
     @Query(value = """
-            DELETE older FROM wiki_vector_sync_jobs older
-            JOIN wiki_vector_sync_jobs newer
-              ON newer.wiki_post_id = older.wiki_post_id AND newer.id > older.id
-            WHERE older.status = 'COMPLETED'
+            DELETE FROM wiki_vector_sync_jobs
+            WHERE id IN (
+                SELECT id FROM (
+                    SELECT older.id
+                    FROM wiki_vector_sync_jobs older
+                    JOIN wiki_vector_sync_jobs newer
+                      ON newer.wiki_post_id = older.wiki_post_id AND newer.id > older.id
+                    WHERE older.status = 'COMPLETED'
+                    LIMIT 50
+                ) superseded
+            )
             """, nativeQuery = true)
     int deleteSupersededCompletedJobs();
 
@@ -41,6 +48,7 @@ public interface WikiVectorSyncJobRepository
             UPDATE wiki_vector_sync_jobs
             SET payload = NULL
             WHERE status = 'COMPLETED' AND payload IS NOT NULL
+            LIMIT 5
             """, nativeQuery = true)
     int clearCompletedPayloads();
 }

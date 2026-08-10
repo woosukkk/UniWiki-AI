@@ -11,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.List;
 
@@ -27,6 +28,9 @@ class WikiVectorSyncServiceTest {
     @Mock
     private AiVectorStoreClient aiVectorStoreClient;
 
+    @Mock
+    private PlatformTransactionManager transactionManager;
+
     private WikiVectorSyncService syncService;
 
     @BeforeEach
@@ -34,7 +38,8 @@ class WikiVectorSyncServiceTest {
         syncService = new WikiVectorSyncService(
                 jobRepository,
                 aiVectorStoreClient,
-                new ObjectMapper()
+                new ObjectMapper(),
+                transactionManager
         );
         ReflectionTestUtils.setField(syncService, "maxAttempts", 5);
     }
@@ -77,6 +82,7 @@ class WikiVectorSyncServiceTest {
         assertThat(job.getStatus()).isEqualTo(VectorSyncStatus.COMPLETED);
         assertThat(job.getAttemptCount()).isEqualTo(1);
         assertThat(job.getProcessedAt()).isNotNull();
+        assertThat(job.getPayload()).isNull();
         ArgumentCaptor<WikiVectorSyncPayload> payloadCaptor =
                 ArgumentCaptor.forClass(WikiVectorSyncPayload.class);
         verify(aiVectorStoreClient).upsert(payloadCaptor.capture());

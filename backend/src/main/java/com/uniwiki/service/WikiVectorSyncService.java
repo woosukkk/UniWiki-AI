@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ public class WikiVectorSyncService {
     private final WikiVectorSyncJobRepository jobRepository;
     private final AiVectorStoreClient aiVectorStoreClient;
     private final ObjectMapper objectMapper;
+    private final PlatformTransactionManager transactionManager;
 
     @Value("${uniwiki.vector-sync.max-attempts:5}")
     private int maxAttempts;
@@ -58,11 +61,21 @@ public class WikiVectorSyncService {
         return jobs.size();
     }
 
-    @Transactional
     public int pruneCompletedJobs() {
-        int deleted = jobRepository.deleteSupersededCompletedJobs();
-        jobRepository.clearCompletedPayloads();
-        return deleted;
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+        int pruned = drainBatches(transaction, jobRepository::clearCompletedPayloads);
+        return pruned + drainBatches(
+                transaction, jobRepository::deleteSupersededCompletedJobs);
+    }
+
+    private int drainBatches(TransactionTemplate transaction, java.util.function.IntSupplier batch) {
+        int total = 0;
+        int changed;
+        do {
+            changed = transaction.execute(status -> batch.getAsInt());
+            total += changed;
+        } while (changed > 0);
+        return total;
     }
 
     private void process(WikiVectorSyncJob job) {
