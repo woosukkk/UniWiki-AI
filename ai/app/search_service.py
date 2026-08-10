@@ -39,9 +39,13 @@ class SemanticSearchService:
             top_k=60,
             category_id=request.category_id,
         )
+        title_results = self.vector_store.title_records(
+            self._lexical_tokens(expanded_query),
+            request.category_id,
+        )
         results = self._rerank(
             expanded_query,
-            vector_results,
+            vector_results + title_results,
             max(top_k * 6, 30),
         )
         results = self._prefer_current_period(request.query, results)
@@ -73,7 +77,12 @@ class SemanticSearchService:
         return f"{query} {' '.join(dict.fromkeys(expanded_terms))}"
 
     def _rerank(self, query, vector_results, top_k):
-        vector_scores = {result.chunk_id: result.score for result in vector_results}
+        vector_scores = {}
+        for result in vector_results:
+            vector_scores[result.chunk_id] = max(
+                vector_scores.get(result.chunk_id, 0.0),
+                result.score,
+            )
         candidates = {result.chunk_id: result for result in vector_results}
 
         ranked = []
@@ -170,16 +179,7 @@ class SemanticSearchService:
 
     @staticmethod
     def _lexical_score(query, result):
-        tokens = [
-            SemanticSearchService._strip_korean_particle(token)
-            for token in re.findall(r"[0-9A-Za-z가-힣]+", query.lower())
-            if token not in {
-                "알려줘", "알려주세요", "어디서", "어디", "확인", "관련", "정보",
-                "뭐야", "뭐", "필요해", "필요한", "어떻게", "돼", "되나요", "하려면",
-            }
-            and not token.endswith("하려면")
-        ]
-        tokens = [token for token in tokens if token]
+        tokens = SemanticSearchService._lexical_tokens(query)
         if not tokens:
             return 0.0
         title = re.sub(r"\s+", "", result.title.lower())
@@ -206,6 +206,18 @@ class SemanticSearchService:
         if query_years and any(year in title for year in query_years):
             points += 3.0
         return min(1.0, points / (len(tokens) * 4.0 + 3.0))
+
+    @staticmethod
+    def _lexical_tokens(query):
+        return [
+            SemanticSearchService._strip_korean_particle(token)
+            for token in re.findall(r"[0-9A-Za-z가-힣]+", query.lower())
+            if token not in {
+                "알려줘", "알려주세요", "어디서", "어디", "확인", "관련", "정보",
+                "뭐야", "뭐", "필요해", "필요한", "어떻게", "돼", "되나요", "하려면",
+            }
+            and not token.endswith("하려면")
+        ]
 
     @staticmethod
     def _intent_title_boost(query, result):

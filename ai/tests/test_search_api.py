@@ -37,6 +37,9 @@ class FakeVectorStore:
     def records_for_wiki_posts(self, wiki_post_ids):
         return []
 
+    def title_records(self, terms, category_id=None, limit=20):
+        return []
+
 
 def test_searches_wiki_chunks_with_top_k_and_metadata() -> None:
     vector_store = FakeVectorStore()
@@ -82,8 +85,12 @@ def test_hybrid_ranking_prefers_exact_title_and_deduplicates_documents() -> None
                                      content="기부 장학생 안내", categoryId=6, chunkIndex=0, score=0.8),
                 SemanticSearchResult(chunkId="wrong-1", wikiPostId=8, title="푸른등대 장학사업",
                                      content="신청 조건", categoryId=6, chunkIndex=1, score=0.79),
+            ]
+
+        def title_records(self, terms, category_id=None, limit=20):
+            return [
                 SemanticSearchResult(chunkId="exact-0", wikiPostId=9, title="교내장학금",
-                                     content="교내 장학금 종류와 선발 조건", categoryId=6, chunkIndex=0, score=0.3),
+                                     content="교내 장학금 종류와 선발 조건", categoryId=6, chunkIndex=0, score=0.0),
             ]
 
     service = SemanticSearchService(FakeEmbedder(), HybridVectorStore(), default_top_k=5)
@@ -122,12 +129,16 @@ def test_exact_korean_title_keyword_beats_semantically_similar_document() -> Non
                     title="2026학년도 2학기 휴학·복학 추가 신청 안내",
                     content="수강신청과 등록금 납부를 모두 완료해야 합니다.",
                     categoryId=2, chunkIndex=0, score=0.9,
-                ),
+                )
+            ]
+
+        def title_records(self, terms, category_id=None, limit=20):
+            return [
                 SemanticSearchResult(
                     chunkId="course-0", wikiPostId=12,
                     title="2026-2 수강편람 및 강의시간표",
                     content="수강신청 일정과 개설 강좌를 확인합니다.",
-                    categoryId=2, chunkIndex=0, score=0.3,
+                    categoryId=2, chunkIndex=0, score=0.0,
                 )
             ]
 

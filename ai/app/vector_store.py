@@ -1,4 +1,5 @@
 from pathlib import Path
+import re
 from typing import Protocol
 
 from app.models import (
@@ -38,6 +39,14 @@ class VectorStore(Protocol):
         wiki_post_ids: list[int],
     ) -> list[SemanticSearchResult]:
         """Return chunks only for the requested wiki documents."""
+
+    def title_records(
+        self,
+        terms: list[str],
+        category_id: int | None = None,
+        limit: int = 20,
+    ) -> list[SemanticSearchResult]:
+        """Return a bounded set of chunks whose titles contain a query term."""
 
 
 class ChromaVectorStore:
@@ -175,3 +184,32 @@ class ChromaVectorStore:
                 zip(result["ids"], result["metadatas"])
             )
         ]
+
+    def title_records(
+        self,
+        terms: list[str],
+        category_id: int | None = None,
+        limit: int = 20,
+    ) -> list[SemanticSearchResult]:
+        normalized_terms = [
+            re.sub(r"[^0-9a-z가-힣]", "", term.lower())
+            for term in terms
+            if len(re.sub(r"[^0-9a-z가-힣]", "", term.lower())) >= 2
+        ]
+        if not normalized_terms:
+            return []
+
+        where = {"categoryId": category_id} if category_id is not None else None
+        result = self.collection.get(where=where, include=["metadatas"])
+        wiki_post_ids = []
+        for metadata in result["metadatas"]:
+            title = re.sub(r"[^0-9a-z가-힣]", "", metadata["title"].lower())
+            wiki_post_id = metadata["wikiPostId"]
+            if (wiki_post_id not in wiki_post_ids
+                    and any(term in title for term in normalized_terms)):
+                wiki_post_ids.append(wiki_post_id)
+                if len(wiki_post_ids) >= limit:
+                    break
+
+        records = self.records_for_wiki_posts(wiki_post_ids)
+        return [record for record in records if record.chunk_index == 0][:limit]
