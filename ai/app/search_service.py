@@ -56,12 +56,21 @@ class SemanticSearchService:
             else list(dict.fromkeys(result.category_id for result in seeds[:5]))
         )
         category_results = self.vector_store.records_for_categories(category_ids)
+        required_results = (
+            self.vector_store.records_for_titles(["교내장학금"])
+            if "장학금" in request.query else []
+        )
         results = self._rerank(
             request.query,
-            vector_results + keyword_results + category_results,
+            vector_results + keyword_results + category_results + required_results,
             max(top_k * 6, 30),
         )
         results = self._prefer_current_period(request.query, results)
+        required = self._rerank(request.query, required_results, 1)
+        if required and all(
+                result.wiki_post_id != required[0].wiki_post_id
+                for result in results[:top_k]):
+            results = required + results[:max(0, top_k - 1)]
         results = results[:top_k]
         return SemanticSearchResponse(
             query=request.query,

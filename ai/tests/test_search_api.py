@@ -40,6 +40,9 @@ class FakeVectorStore:
     def records_for_categories(self, category_ids):
         return []
 
+    def records_for_titles(self, titles):
+        return []
+
     def keyword_records(self, terms, category_id=None, limit=20):
         return []
 
@@ -161,6 +164,27 @@ def test_explicit_category_searches_only_that_category() -> None:
     )
 
     assert store.requested_categories == [9]
+
+
+def test_scholarship_question_always_keeps_campus_scholarship_guide() -> None:
+    class ScholarshipStore(FakeVectorStore):
+        requested_titles = None
+
+        def records_for_titles(self, titles):
+            self.requested_titles = titles
+            return [SemanticSearchResult(
+                chunkId="scholarship-0", wikiPostId=8884, title="교내장학금",
+                content="교내 장학금 종류와 신청 조건", categoryId=176,
+                chunkIndex=0, score=0.0,
+            )]
+
+    store = ScholarshipStore()
+    results = SemanticSearchService(FakeEmbedder(), store, 5).search(
+        SemanticSearchRequest(query="장학금 알려줘", topK=5)
+    ).results
+
+    assert store.requested_titles == ["교내장학금"]
+    assert any(result.wiki_post_id == 8884 for result in results)
 
 
 def test_searches_at_most_five_matching_categories_with_seventy_keywords() -> None:

@@ -45,6 +45,9 @@ class VectorStore(Protocol):
     ) -> list[SemanticSearchResult]:
         """Return every chunk in the selected categories."""
 
+    def records_for_titles(self, titles: list[str]) -> list[SemanticSearchResult]:
+        """Return chunks whose title exactly matches one of the requested titles."""
+
     def keyword_records(
         self,
         terms: list[str],
@@ -198,6 +201,30 @@ class ChromaVectorStore:
             return []
         result = self.collection.get(
             where={"categoryId": {"$in": unique_ids}},
+            include=["documents", "metadatas"],
+        )
+        return [
+            SemanticSearchResult(
+                chunkId=chunk_id,
+                wikiPostId=metadata["wikiPostId"],
+                title=metadata["title"],
+                content=result["documents"][index],
+                categoryId=metadata["categoryId"],
+                chunkIndex=metadata["chunkIndex"],
+                documentType=metadata.get("documentType", "GENERAL"),
+                score=0.0,
+            )
+            for index, (chunk_id, metadata) in enumerate(
+                zip(result["ids"], result["metadatas"])
+            )
+        ]
+
+    def records_for_titles(self, titles: list[str]) -> list[SemanticSearchResult]:
+        unique_titles = list(dict.fromkeys(title for title in titles if title))
+        if not unique_titles:
+            return []
+        result = self.collection.get(
+            where={"title": {"$in": unique_titles}},
             include=["documents", "metadatas"],
         )
         return [
