@@ -114,7 +114,9 @@ def test_finds_exact_keyword_without_loading_every_document(tmp_path: Path) -> N
 
     matching.chunks[0].text = "우아한테크코스 멘토링 내용"
     store.replace_document(matching)
+    broad = embedding_response(3, ["교육 프로그램 일반 안내"])
+    store.replace_document(broad)
 
-    records = store.keyword_records(["우아한테크코스"])
+    records = store.keyword_records(["우아한테크코스", "교육"])
 
-    assert [record.wiki_post_id for record in records] == [1]
+    assert [record.wiki_post_id for record in records] == [1, 3]

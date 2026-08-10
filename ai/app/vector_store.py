@@ -195,25 +195,29 @@ class ChromaVectorStore:
             return []
 
         where = {"categoryId": category_id} if category_id is not None else None
-        filters = [{"$contains": term} for term in unique_terms]
-        where_document = filters[0] if len(filters) == 1 else {"$or": filters}
-        result = self.collection.get(
-            where=where,
-            where_document=where_document,
-            limit=limit,
-            include=["documents", "metadatas"],
-        )
-        return [
-            SemanticSearchResult(
-                chunkId=chunk_id,
-                wikiPostId=metadata["wikiPostId"],
-                title=metadata["title"],
-                content=result["documents"][index],
-                categoryId=metadata["categoryId"],
-                chunkIndex=metadata["chunkIndex"],
-                score=0.0,
+        records = []
+        seen_chunk_ids = set()
+        for term in unique_terms:
+            result = self.collection.get(
+                where=where,
+                where_document={"$contains": term},
+                limit=limit - len(records),
+                include=["documents", "metadatas"],
             )
             for index, (chunk_id, metadata) in enumerate(
-                zip(result["ids"], result["metadatas"])
-            )
-        ]
+                    zip(result["ids"], result["metadatas"])):
+                if chunk_id in seen_chunk_ids:
+                    continue
+                seen_chunk_ids.add(chunk_id)
+                records.append(SemanticSearchResult(
+                    chunkId=chunk_id,
+                    wikiPostId=metadata["wikiPostId"],
+                    title=metadata["title"],
+                    content=result["documents"][index],
+                    categoryId=metadata["categoryId"],
+                    chunkIndex=metadata["chunkIndex"],
+                    score=0.0,
+                ))
+                if len(records) >= limit:
+                    return records
+        return records
