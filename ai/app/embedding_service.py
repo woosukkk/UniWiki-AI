@@ -22,6 +22,18 @@ def classify_document(title: str) -> str:
     return "GENERAL"
 
 
+def classify_source_key(title: str) -> str:
+    compact = title.replace(" ", "")
+    if "소프트웨어학과" in compact and "졸업" in compact:
+        return "software-graduation-requirements"
+    if "등록금납부와등록안내" in compact or (
+            "등록금" in compact and "기본" in compact):
+        return "tuition-policy"
+    if "장학금" in compact and any(term in compact for term in ("기본", "교내", "제도")):
+        return "scholarship-policy"
+    return ""
+
+
 class WikiEmbeddingService:
     def __init__(self, embedder: Embedder, max_chars: int, overlap_chars: int) -> None:
         self.embedder = embedder
@@ -51,7 +63,7 @@ class WikiEmbeddingService:
                     categoryId=document.category_id,
                     chunkIndex=chunk.index,
                     documentType=classify_document(document.title),
-                    sourceKey=document.source_key,
+                    sourceKey=document.source_key or classify_source_key(document.title),
                 ),
             )
             for chunk, vector in zip(text_chunks, vectors)

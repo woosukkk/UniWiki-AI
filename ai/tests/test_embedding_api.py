@@ -1,7 +1,7 @@
 import numpy as np
 from fastapi.testclient import TestClient
 
-from app.embedding_service import WikiEmbeddingService
+from app.embedding_service import WikiEmbeddingService, classify_source_key
 from app.main import app, get_embedding_service
 
 
@@ -55,3 +55,10 @@ def test_rejects_blank_document_content() -> None:
     )
 
     assert response.status_code == 422
+
+
+def test_classifies_stable_source_keys_from_titles() -> None:
+    assert classify_source_key("2026 소프트웨어학과 졸업 이수학점 안내") == \
+        "software-graduation-requirements"
+    assert classify_source_key("세종대학교 등록금 납부와 등록 안내") == "tuition-policy"
+    assert classify_source_key("교내장학금 기본 안내") == "scholarship-policy"

@@ -21,8 +21,9 @@ class WikiVectorStoreService:
         embedding = self.embedding_service.embed(document)
         stored_count = self.vector_store.replace_document(embedding)
         stored = self.vector_store.get_document(document.wiki_post_id)
+        expected_key = embedding.chunks[0].metadata.source_key if embedding.chunks else ""
         if stored.chunk_count != stored_count or any(
-                chunk.metadata.source_key != document.source_key
+                chunk.metadata.source_key != expected_key
                 for chunk in stored.chunks):
             raise RuntimeError("벡터 저장 후 검증에 실패했습니다.")
         return VectorStoreWriteResponse(
