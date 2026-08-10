@@ -14,6 +14,8 @@ RUN pip install --upgrade pip \
 COPY app app
 COPY tests tests
 COPY scripts scripts
+COPY data/normalized data/normalized
+COPY data/raw data/raw
 RUN pytest -q
 COPY docker-entrypoint.sh /usr/local/bin/uniwiki-ai-entrypoint
 RUN mkdir -p /data/chroma && chown -R 10001:10001 /app /data
