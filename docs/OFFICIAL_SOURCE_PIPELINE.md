@@ -99,6 +99,7 @@ PDF, XLS, XLSX, DOCX, TXT, CSV의 텍스트를 추출한다. 지원하지 않는
 ```text
 OFFICIAL_SOURCE_BOOTSTRAP_ENABLED=true
 OFFICIAL_SOURCE_COLLECT_ON_STARTUP=false
+OFFICIAL_SOURCE_RESET_ENABLED=false
 OFFICIAL_SOURCE_SCHEDULER_ENABLED=true
 OFFICIAL_SOURCE_CRON=0 0 0 * * *
 OFFICIAL_SOURCE_ZONE=Asia/Seoul
@@ -114,6 +115,8 @@ OFFICIAL_ATTACHMENT_MAX_COUNT=10
 OFFICIAL_ATTACHMENT_MAX_BYTES=20971520
 OFFICIAL_ATTACHMENT_MAX_TEXT_LENGTH=50000
 ```
+
+`OFFICIAL_SOURCE_RESET_ENABLED=true`는 자동 수집 공식 위키(고정 문서 1, 2, 3 제외), 원문, 첨부 텍스트와 벡터만 배치 삭제하는 일회성 운영 복구 옵션이다. 정리 후에는 반드시 `false`로 되돌린다.
 
 초기 운영 확인 때는 `OFFICIAL_SOURCE_MAX_ARTICLES=5`, `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=true`로 소량 수집한 뒤 결과를 확인한다. 이후 시작 시 수집을 끄고 스케줄러를 켠다. 등록된 공식 출처는 수집 직후 게시되고 벡터 동기화 작업에 들어간다.
 

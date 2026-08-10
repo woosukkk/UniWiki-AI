@@ -52,6 +52,7 @@ uniwiki:
     max-attempts: 5
   official-sources:
     bootstrap-enabled: ${OFFICIAL_SOURCE_BOOTSTRAP_ENABLED:false}
+    reset-enabled: ${OFFICIAL_SOURCE_RESET_ENABLED:false}
     remove-before-2024: ${OFFICIAL_REMOVE_BEFORE_2024:false}
     topic-rebuild-enabled: ${OFFICIAL_TOPIC_REBUILD_ENABLED:false}
     collect-on-startup: ${OFFICIAL_SOURCE_COLLECT_ON_STARTUP:false}
