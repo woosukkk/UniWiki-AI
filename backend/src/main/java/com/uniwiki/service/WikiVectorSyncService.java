@@ -42,6 +42,10 @@ public class WikiVectorSyncService {
                                 wikiPost.getId(), payload)));
     }
 
+    public void upsertNow(WikiPost wikiPost) {
+        aiVectorStoreClient.upsert(WikiVectorSyncPayload.from(wikiPost));
+    }
+
     @Transactional
     public void enqueueDelete(Long wikiPostId) {
         jobRepository.save(WikiVectorSyncJob.delete(wikiPostId));

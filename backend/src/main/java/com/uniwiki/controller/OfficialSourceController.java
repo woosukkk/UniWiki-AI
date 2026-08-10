@@ -71,10 +71,10 @@ public class OfficialSourceController {
     public ResponseEntity<Void> reindex(
             @LoginUserId Long userId, @PathVariable Long wikiPostId) {
         requireAdmin(userId);
-        vectorSyncService.enqueueUpsert(wikiPostRepository.findById(wikiPostId)
+        vectorSyncService.upsertNow(wikiPostRepository.findById(wikiPostId)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "위키 문서를 찾을 수 없습니다.")));
-        return ResponseEntity.accepted().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/documents/{rawDocumentId}/approve")
