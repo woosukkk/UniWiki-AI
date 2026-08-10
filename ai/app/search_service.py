@@ -53,6 +53,13 @@ class SemanticSearchService:
         )
         guide_terms = self._canonical_search_terms(request.query)
         if guide_terms:
+            guide_query = " ".join(guide_terms)
+            guide_vectors = self.embedder.encode([f"질문: {guide_query}"])
+            guide_vector_results = self.vector_store.search(
+                query_embedding=guide_vectors[0].tolist(),
+                top_k=30,
+                category_id=request.category_id,
+            )
             guide_results = self.vector_store.keyword_records(
                 guide_terms,
                 request.category_id,
@@ -60,7 +67,7 @@ class SemanticSearchService:
             )
             results = self._rerank(
                 expanded_query,
-                vector_results + keyword_results + guide_results,
+                vector_results + keyword_results + guide_vector_results + guide_results,
                 max(top_k * 6, 30),
             )
         results = self._prefer_current_period(request.query, results)
