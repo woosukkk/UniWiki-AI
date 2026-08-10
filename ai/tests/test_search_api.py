@@ -37,7 +37,7 @@ class FakeVectorStore:
     def records_for_wiki_posts(self, wiki_post_ids):
         return []
 
-    def title_records(self, terms, category_id=None, limit=20):
+    def keyword_records(self, terms, category_id=None, limit=20):
         return []
 
 
@@ -87,7 +87,7 @@ def test_hybrid_ranking_prefers_exact_title_and_deduplicates_documents() -> None
                                      content="신청 조건", categoryId=6, chunkIndex=1, score=0.79),
             ]
 
-        def title_records(self, terms, category_id=None, limit=20):
+        def keyword_records(self, terms, category_id=None, limit=20):
             return [
                 SemanticSearchResult(chunkId="exact-0", wikiPostId=9, title="교내장학금",
                                      content="교내 장학금 종류와 선발 조건", categoryId=6, chunkIndex=0, score=0.0),
@@ -132,7 +132,7 @@ def test_exact_korean_title_keyword_beats_semantically_similar_document() -> Non
                 )
             ]
 
-        def title_records(self, terms, category_id=None, limit=20):
+        def keyword_records(self, terms, category_id=None, limit=20):
             return [
                 SemanticSearchResult(
                     chunkId="course-0", wikiPostId=12,

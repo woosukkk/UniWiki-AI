@@ -105,13 +105,16 @@ def test_reads_chunks_only_for_selected_documents(tmp_path: Path) -> None:
     assert [record.chunk_index for record in records] == [0, 1]
 
 
-def test_finds_exact_title_without_loading_every_document(tmp_path: Path) -> None:
+def test_finds_exact_keyword_without_loading_every_document(tmp_path: Path) -> None:
     store = create_store(tmp_path)
     matching = embedding_response(1, ["멘토링 내용"])
     matching.chunks[0].metadata.title = "우아한테크코스 멘토링"
     store.replace_document(matching)
     store.replace_document(embedding_response(2, ["다른 내용"]))
 
-    records = store.title_records(["우아한테크코스"])
+    matching.chunks[0].text = "우아한테크코스 멘토링 내용"
+    store.replace_document(matching)
+
+    records = store.keyword_records(["우아한테크코스"])
 
     assert [record.wiki_post_id for record in records] == [1]

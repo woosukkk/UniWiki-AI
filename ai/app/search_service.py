@@ -39,13 +39,13 @@ class SemanticSearchService:
             top_k=60,
             category_id=request.category_id,
         )
-        title_results = self.vector_store.title_records(
+        keyword_results = self.vector_store.keyword_records(
             self._lexical_tokens(expanded_query),
             request.category_id,
         )
         results = self._rerank(
             expanded_query,
-            vector_results + title_results,
+            vector_results + keyword_results,
             max(top_k * 6, 30),
         )
         results = self._prefer_current_period(request.query, results)
