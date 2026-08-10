@@ -173,6 +173,8 @@ class SemanticSearchService:
     @classmethod
     def _document_role_adjustment(cls, query, result):
         normalized = re.sub(r"\s+", "", query.lower())
+        if result.source_key in cls._canonical_source_keys(query):
+            return 0.60
         role = result.document_type
         if role == "GENERAL":
             compact_title = re.sub(r"\s+", "", result.title)
@@ -202,6 +204,8 @@ class SemanticSearchService:
 
     @classmethod
     def _document_role_rank(cls, query, result):
+        if result.source_key in cls._canonical_source_keys(query):
+            return 3
         adjustment = cls._document_role_adjustment(query, result)
         if adjustment > 0:
             return 2
@@ -227,6 +231,12 @@ class SemanticSearchService:
         return []
 
     def _canonical_records(self, query):
+        return self.vector_store.records_for_source_keys(
+            self._canonical_source_keys(query)
+        )
+
+    @staticmethod
+    def _canonical_source_keys(query):
         normalized = re.sub(r"\s+", "", query.lower())
         keys = []
         if re.search(r"졸업(?!생)", normalized) and re.search(
@@ -236,7 +246,7 @@ class SemanticSearchService:
             keys.append("tuition-policy")
         if re.search(r"교내장학|학교장학|장학금", normalized):
             keys.append("scholarship-policy")
-        return self.vector_store.records_for_source_keys(keys)
+        return keys
 
     @staticmethod
     def _canonical_title(title):
