@@ -43,7 +43,7 @@ class SemanticSearchService:
         keyword_results = self.vector_store.keyword_records(
             self._lexical_tokens(request.query),
             request.category_id,
-            limit=40,
+            limit=70,
         )
         seeds = self._rerank(
             request.query,
@@ -53,7 +53,7 @@ class SemanticSearchService:
         category_ids = (
             [request.category_id]
             if request.category_id is not None
-            else list(dict.fromkeys(result.category_id for result in seeds[:3]))
+            else list(dict.fromkeys(result.category_id for result in seeds[:5]))
         )
         category_results = self.vector_store.records_for_categories(category_ids)
         results = self._rerank(
@@ -179,7 +179,7 @@ class SemanticSearchService:
         ]
         return scoped or results
 
-    def expand_results(self, results, max_chunks_per_document=8):
+    def expand_results(self, results, max_chunks_per_document=3):
         if not results:
             return results
         records_by_wiki_post = {}
@@ -189,12 +189,17 @@ class SemanticSearchService:
         for record in records:
             records_by_wiki_post.setdefault(record.wiki_post_id, []).append(record)
 
-        expanded = []
+        selected_records = []
         for result in results:
             records = records_by_wiki_post.get(result.wiki_post_id, [result])
             records.sort(key=lambda record: record.chunk_index)
-            for record in records[:max_chunks_per_document]:
-                expanded.append(record.model_copy(update={"score": result.score}))
+            selected_records.append((result.score, records[:max_chunks_per_document]))
+
+        expanded = []
+        for chunk_index in range(max_chunks_per_document):
+            for score, records in selected_records:
+                if chunk_index < len(records):
+                    expanded.append(records[chunk_index].model_copy(update={"score": score}))
         return expanded
 
     @staticmethod

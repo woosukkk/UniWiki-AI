@@ -163,6 +163,38 @@ def test_explicit_category_searches_only_that_category() -> None:
     assert store.requested_categories == [9]
 
 
+def test_searches_at_most_five_matching_categories_with_seventy_keywords() -> None:
+    class CategoryStore(FakeVectorStore):
+        requested_categories = None
+        keyword_limit = None
+
+        def search(self, query_embedding, top_k, category_id=None):
+            return [
+                SemanticSearchResult(
+                    chunkId=f"seed-{category_id}", wikiPostId=category_id,
+                    title=f"카테고리 {category_id}", content="검색 대상",
+                    categoryId=category_id, chunkIndex=0, score=1.0,
+                )
+                for category_id in range(1, 7)
+            ]
+
+        def keyword_records(self, terms, category_id=None, limit=20):
+            self.keyword_limit = limit
+            return []
+
+        def records_for_categories(self, category_ids):
+            self.requested_categories = category_ids
+            return []
+
+    store = CategoryStore()
+    SemanticSearchService(FakeEmbedder(), store, 5).search(
+        SemanticSearchRequest(query="검색 대상", topK=5)
+    )
+
+    assert store.keyword_limit == 70
+    assert store.requested_categories == [1, 2, 3, 4, 5]
+
+
 def test_source_priority_follows_question_intent() -> None:
     service = SemanticSearchService(
         FakeEmbedder(), FakeVectorStore(), 5, community_category_id=304
@@ -394,5 +426,5 @@ def test_expands_only_selected_wiki_documents() -> None:
     expanded = service.expand_results(selected)
 
     assert store.requested_ids == [7]
-    assert len(expanded) == 8
-    assert [result.chunk_index for result in expanded] == list(range(8))
+    assert len(expanded) == 3
+    assert [result.chunk_index for result in expanded] == list(range(3))
