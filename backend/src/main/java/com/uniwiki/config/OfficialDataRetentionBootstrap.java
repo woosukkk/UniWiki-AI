@@ -14,11 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Order(3)
 @Slf4j
-@ConditionalOnProperty(name = "uniwiki.official-sources.remove-before-2024", havingValue = "true")
+@ConditionalOnProperty(name = "uniwiki.official-sources.remove-before-2025", havingValue = "true")
 public class OfficialDataRetentionBootstrap implements ApplicationRunner {
 
     private static final String LEGACY_YEAR_PATTERN =
-            "(^|[^0-9])(19[0-9]{2}|20[01][0-9]|202[0-3])([^0-9]|$)";
+            "(^|[^0-9])(19[0-9]{2}|20[01][0-9]|202[0-4])([^0-9]|$)";
+    private static final String RETAINED_YEAR_PATTERN =
+            "(^|[^0-9])(202[5-9]|20[3-9][0-9])([^0-9]|$)";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -36,8 +38,9 @@ public class OfficialDataRetentionBootstrap implements ApplicationRunner {
                 INSERT IGNORE INTO legacy_official_raw_ids (id)
                 SELECT id
                 FROM raw_official_documents
-                WHERE title REGEXP ? OR source_url REGEXP ?
-                """, LEGACY_YEAR_PATTERN,
+                WHERE (title REGEXP ? AND title NOT REGEXP ?)
+                   OR source_url REGEXP ?
+                """, LEGACY_YEAR_PATTERN, RETAINED_YEAR_PATTERN,
                 "curriculum(19[0-9]{2}|20[01][0-9]|202[0-3])\\.do");
 
         jdbcTemplate.update("""

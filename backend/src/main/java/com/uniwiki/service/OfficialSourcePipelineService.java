@@ -126,7 +126,7 @@ public class OfficialSourcePipelineService {
         String title = requiredText(articlePage, source.getTitleSelector(), "제목");
         title = catalogTitle(source, articleUrl, title);
         if (isBeforeRetentionYear(title)) {
-            log.debug("Skipped official article before 2024: source={}, title={}",
+            log.debug("Skipped official article before 2025: source={}, title={}",
                     source.getName(), title);
             return ArticleCollectionOutcome.UNCHANGED;
         }
@@ -164,7 +164,7 @@ public class OfficialSourcePipelineService {
         boolean foundYear = false;
         while (matcher.find()) {
             foundYear = true;
-            if (Integer.parseInt(matcher.group(1)) >= 2024) return false;
+            if (Integer.parseInt(matcher.group(1)) >= 2025) return false;
         }
         return foundYear;
     }
@@ -341,7 +341,7 @@ public class OfficialSourcePipelineService {
                 requireAllowedUrl(url);
                 Integer year = listEntryYear(link);
                 if (year == null) hasUndatedEntry = true;
-                else if (year >= 2024) hasRecentEntry = true;
+                else if (year >= 2025) hasRecentEntry = true;
                 else continue;
                 if (!discovered.add(url)) continue;
                 pageUrls.add(url);
