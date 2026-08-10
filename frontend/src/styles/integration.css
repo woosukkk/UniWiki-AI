@@ -250,6 +250,7 @@
   .admin-page { width: calc(100% - 32px); padding: 48px 0 80px; }
   .wiki-page-heading,
   .admin-heading { align-items: stretch; flex-direction: column; }
+  .admin-actions { position: static; align-self: flex-start; margin-top: 16px; }
   .wiki-grid,
   .coverage-summary,
   .admin-metrics { grid-template-columns: 1fr; }
