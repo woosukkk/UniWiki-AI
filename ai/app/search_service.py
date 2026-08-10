@@ -224,6 +224,13 @@ class SemanticSearchService:
         normalized_query = re.sub(r"\s+", "", query.lower())
         normalized_title = re.sub(r"\s+", "", result.title.lower())
         boost = 0.0
+        exact_title_terms = [
+            token.replace(" ", "")
+            for token in SemanticSearchService._lexical_tokens(query)
+            if len(token.replace(" ", "")) >= 3
+        ]
+        if any(term in normalized_title for term in exact_title_terms):
+            boost += 0.35
         graduation_intent = re.search(
             r"졸업(?!생)|졸업하려|졸업조건|졸업기준",
             normalized_query,

@@ -150,6 +150,21 @@ def test_exact_korean_title_keyword_beats_semantically_similar_document() -> Non
     assert results[0].wiki_post_id == 12
 
 
+def test_exact_proper_noun_title_is_not_diluted_by_rewrite_terms() -> None:
+    exact = SemanticSearchResult(
+        chunkId="woowacourse-0", wikiPostId=13,
+        title="우아한테크코스 멘토링", content="졸업생 멘토링 안내",
+        categoryId=2, chunkIndex=0, score=0.0,
+    )
+
+    boost = SemanticSearchService._intent_title_boost(
+        "우아한테크코스가 뭐야 개발자 교육 과정 취업 멘토링 프로그램",
+        exact,
+    )
+
+    assert boost == 0.35
+
+
 def test_expands_casual_graduation_question_with_catalog_terms() -> None:
     expanded = SemanticSearchService._expand_query(
         "소프트웨어학과 졸업하려면 뭐 필요해?"
