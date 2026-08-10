@@ -36,11 +36,13 @@ def test_creates_chunks_embeddings_and_metadata() -> None:
     assert body["chunkCount"] == 1
     assert body["chunks"][0]["chunkId"] == "wiki-7-chunk-0"
     assert body["chunks"][0]["text"].startswith(body["chunks"][0]["metadata"]["title"])
+    assert body["chunks"][0]["metadata"]["documentType"] == "OFFICIAL_NOTICE"
     assert body["chunks"][0]["metadata"] == {
         "wikiPostId": 7,
         "title": "수강신청 안내",
         "categoryId": 2,
         "chunkIndex": 0,
+        "documentType": "OFFICIAL_NOTICE",
     }
 
 

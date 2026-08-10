@@ -153,6 +153,7 @@ class ChromaVectorStore:
                     content=result["documents"][0][index],
                     categoryId=metadata["categoryId"],
                     chunkIndex=metadata["chunkIndex"],
+                    documentType=metadata.get("documentType", "GENERAL"),
                     score=max(-1.0, min(1.0, 1.0 - distance)),
                 )
             )
@@ -177,6 +178,7 @@ class ChromaVectorStore:
                 content=result["documents"][index],
                 categoryId=metadata["categoryId"],
                 chunkIndex=metadata["chunkIndex"],
+                documentType=metadata.get("documentType", "GENERAL"),
                 score=0.0,
             )
             for index, (chunk_id, metadata) in enumerate(
@@ -188,7 +190,7 @@ class ChromaVectorStore:
         self,
         terms: list[str],
         category_id: int | None = None,
-        limit: int = 20,
+        limit: int = 40,
     ) -> list[SemanticSearchResult]:
         unique_terms = list(dict.fromkeys(term for term in terms if len(term) >= 2))
         if not unique_terms:
@@ -197,6 +199,8 @@ class ChromaVectorStore:
         where = {"categoryId": category_id} if category_id is not None else None
         records = []
         seen_chunk_ids = set()
+        seen_wiki_post_ids = set()
+        per_term_limit = max(2, min(5, limit // len(unique_terms)))
         for term in unique_terms:
             title_where = {"title": term}
             if category_id is not None:
@@ -204,13 +208,13 @@ class ChromaVectorStore:
             results = [
                 self.collection.get(
                     where=title_where,
-                    limit=limit - len(records),
+                    limit=per_term_limit,
                     include=["documents", "metadatas"],
                 ),
                 self.collection.get(
                     where=where,
                     where_document={"$contains": term},
-                    limit=limit - len(records),
+                    limit=per_term_limit,
                     include=["documents", "metadatas"],
                 ),
             ]
@@ -219,7 +223,10 @@ class ChromaVectorStore:
                         zip(result["ids"], result["metadatas"])):
                     if chunk_id in seen_chunk_ids:
                         continue
+                    if metadata["wikiPostId"] in seen_wiki_post_ids:
+                        continue
                     seen_chunk_ids.add(chunk_id)
+                    seen_wiki_post_ids.add(metadata["wikiPostId"])
                     records.append(SemanticSearchResult(
                         chunkId=chunk_id,
                         wikiPostId=metadata["wikiPostId"],
@@ -227,6 +234,7 @@ class ChromaVectorStore:
                         content=result["documents"][index],
                         categoryId=metadata["categoryId"],
                         chunkIndex=metadata["chunkIndex"],
+                        documentType=metadata.get("documentType", "GENERAL"),
                         score=0.0,
                     ))
                     if len(records) >= limit:

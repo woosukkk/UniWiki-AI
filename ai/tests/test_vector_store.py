@@ -131,3 +131,18 @@ def test_finds_exact_title_when_keyword_is_not_in_content(tmp_path: Path) -> Non
     records = store.keyword_records(["교내장학금"])
 
     assert [record.wiki_post_id for record in records] == [4]
+
+
+def test_keyword_candidates_are_diversified_across_terms_and_documents(tmp_path: Path) -> None:
+    store = create_store(tmp_path)
+    for wiki_post_id in range(1, 8):
+        broad = embedding_response(wiki_post_id, ["장학금 일반 공지"])
+        store.replace_document(broad)
+    canonical = embedding_response(20, ["교내장학금 종류와 중복수혜 기본 원칙"])
+    canonical.chunks[0].metadata.title = "장학금 신청과 중복수혜 기본 원칙"
+    store.replace_document(canonical)
+
+    records = store.keyword_records(["장학금", "교내장학금"], limit=8)
+
+    assert 20 in [record.wiki_post_id for record in records]
+    assert len({record.wiki_post_id for record in records}) == len(records)

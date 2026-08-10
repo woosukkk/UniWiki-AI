@@ -8,6 +8,20 @@ from app.models import (
 )
 
 
+def classify_document(title: str) -> str:
+    compact = title.replace(" ", "")
+    if any(term in compact for term in (
+        "기본안내", "기본원칙", "이수학점안내", "적용기준", "수강편람",
+        "학사규정", "장학제도", "교내장학금",
+    )):
+        return "CANONICAL_GUIDE"
+    if any(term in compact for term in (
+        "신청안내", "선발안내", "선발결과", "지급안내", "모집안내", "공지",
+    )):
+        return "OFFICIAL_NOTICE"
+    return "GENERAL"
+
+
 class WikiEmbeddingService:
     def __init__(self, embedder: Embedder, max_chars: int, overlap_chars: int) -> None:
         self.embedder = embedder
@@ -36,6 +50,7 @@ class WikiEmbeddingService:
                     title=document.title,
                     categoryId=document.category_id,
                     chunkIndex=chunk.index,
+                    documentType=classify_document(document.title),
                 ),
             )
             for chunk, vector in zip(text_chunks, vectors)

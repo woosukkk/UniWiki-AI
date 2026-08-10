@@ -127,6 +127,14 @@ GET    /api/vector-store/stats
 
 검색 개선 과정은 [`docs/AI_TUNING_HISTORY.md`](../docs/AI_TUNING_HISTORY.md), 전체 구조는 [`docs/PRESENTATION_AI_PIPELINE.md`](../docs/PRESENTATION_AI_PIPELINE.md)를 참고하세요.
 
+### 재수집 이후 검색 품질 보호
+
+- 벡터 후보 60건에 복합어 우선 키워드 후보 40건을 결합합니다.
+- 한 검색어 또는 한 문서가 후보를 독점하지 않도록 검색어별·위키별 후보 수를 제한합니다.
+- 졸업요건과 교내장학금 질문에서 핵심 근거가 없으면 종합 안내 제목으로 2차 검색합니다.
+- `CANONICAL_GUIDE`, `OFFICIAL_NOTICE`, `GENERAL` 문서 역할을 저장해 기준·요건 질문에는 종합 안내를, 기간·마감 질문에는 최신 공지를 우선합니다.
+- 기존 벡터는 제목으로 역할을 판별하므로 전체 재임베딩 없이 즉시 적용되며, 새로 수집한 문서는 역할 메타데이터를 함께 저장합니다.
+
 ## v1.5.1 검색·메모리 정책
 
 - 벡터 후보는 최대 60개만 조회하고 정확 키워드는 Chroma 서버 측 본문 필터로 최대 20개만 보강합니다.

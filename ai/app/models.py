@@ -25,6 +25,7 @@ class ChunkMetadata(BaseModel):
     title: str
     category_id: int = Field(alias="categoryId")
     chunk_index: int = Field(alias="chunkIndex")
+    document_type: str = Field(default="GENERAL", alias="documentType")
 
 
 class EmbeddedChunk(BaseModel):
@@ -106,6 +107,7 @@ class SemanticSearchResult(BaseModel):
     content: str
     category_id: int = Field(alias="categoryId")
     chunk_index: int = Field(alias="chunkIndex")
+    document_type: str = Field(default="GENERAL", alias="documentType")
     score: float
 
 
