@@ -175,11 +175,16 @@ class OfficialSourcePipelineServiceTest {
     }
 
     @Test
-    void groupsSameToscRoundAndSemesterCourseGuides() {
+    void groupsOnlyToscSwCenterAndUdreamSources() {
         OfficialTopicKeyResolver resolver = new OfficialTopicKeyResolver();
         OfficialSource tosc = new OfficialSource(null, "TOSC", "https://tosc.sejong.ac.kr/notice",
                 "a", "h1", ".content", true);
         OfficialSource academic = new OfficialSource(null, "학사공지", "https://www.sejong.ac.kr/notice3.do",
+                "a", "h1", ".content", true);
+        OfficialSource swCenter = new OfficialSource(null, "SW중심대학사업단",
+                "https://sw.sejong.ac.kr/sw/notice.do", "a", "h1", ".content", true);
+        OfficialSource udream = new OfficialSource(null, "uDream",
+                "https://udream.sejong.ac.kr/Career/ProgramList.aspx",
                 "a", "h1", ".content", true);
 
         assertThat(resolver.resolve(tosc,
@@ -187,9 +192,13 @@ class OfficialSourcePipelineServiceTest {
                 .isEqualTo(resolver.resolve(tosc,
                         "[고사장 안내] 제16회 SW코딩역량평가 (2026년)",
                         "https://tosc.sejong.ac.kr/view/2"));
+        assertThat(resolver.resolve(swCenter, "공지 1", "https://sw.sejong.ac.kr/view/1"))
+                .isEqualTo(resolver.resolve(swCenter, "공지 2", "https://sw.sejong.ac.kr/view/2"));
+        assertThat(resolver.resolve(udream, "프로그램 1", "https://udream.sejong.ac.kr/view/1"))
+                .isEqualTo(resolver.resolve(udream, "프로그램 2", "https://udream.sejong.ac.kr/view/2"));
         assertThat(resolver.resolve(academic,
                 "2026-2학기 수강편람", "https://www.sejong.ac.kr/view/1"))
-                .isEqualTo(resolver.resolve(academic,
+                .isNotEqualTo(resolver.resolve(academic,
                         "2026학년도 2학기 강의시간표", "https://www.sejong.ac.kr/view/2"));
     }
 }

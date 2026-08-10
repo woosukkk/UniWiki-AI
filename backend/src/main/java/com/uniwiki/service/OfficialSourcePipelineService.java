@@ -200,7 +200,12 @@ public class OfficialSourcePipelineService {
     @Transactional
     public int rebuildTopicWikis() {
         if (!documentRepository.existsByTopicKeyIsNull()
-                && !documentRepository.existsByTopicKeyLike("TOSC:%:%")) {
+                && !documentRepository.existsByTopicKeyLike("TOSC:%:%")
+                && !documentRepository.existsByTopicKeyLike("COURSE_GUIDE:%")
+                && !documentRepository.existsBySourceOutsideTopic(
+                        "sw.sejong.ac.kr/sw/notice.do", OfficialTopicKeyResolver.SW_CENTER_TOPIC)
+                && !documentRepository.existsBySourceOutsideTopic(
+                        "udream.sejong.ac.kr", OfficialTopicKeyResolver.UDREAM_TOPIC)) {
             return 0;
         }
         List<RawOfficialDocument> documents = rawRepository.findAllByOrderByLastCollectedAtDesc();
@@ -230,8 +235,12 @@ public class OfficialSourcePipelineService {
         List<OfficialWikiDocument> topicLinks = documentRepository.findByTopicKeyOrderByIdAsc(topicKey);
 
         WikiPost previousRawWiki = rawLink == null ? null : rawLink.getWikiPost();
+        boolean splitExistingWiki = rawLink != null
+                && topicLinks.isEmpty()
+                && documentRepository.findByWikiPost_IdOrderByRawDocument_IdAsc(
+                        rawLink.getWikiPost().getId()).size() > 1;
         WikiPost wikiPost = topicLinks.isEmpty()
-                ? (rawLink == null ? null : rawLink.getWikiPost())
+                ? (rawLink == null || splitExistingWiki ? null : rawLink.getWikiPost())
                 : topicLinks.get(0).getWikiPost();
         if (wikiPost == null) {
             User author = userRepository.findByEmail(authorEmail)

@@ -6,10 +6,21 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface OfficialWikiDocumentRepository extends JpaRepository<OfficialWikiDocument, Long> {
     boolean existsByTopicKeyIsNull();
     boolean existsByTopicKeyLike(String pattern);
+
+    @Query("""
+            select (count(d) > 0)
+            from OfficialWikiDocument d
+            where d.rawDocument.officialSource.listUrl like concat('%', :urlFragment, '%')
+              and d.topicKey <> :topicKey
+            """)
+    boolean existsBySourceOutsideTopic(
+            @Param("urlFragment") String urlFragment,
+            @Param("topicKey") String topicKey);
 
     Optional<OfficialWikiDocument> findByRawDocument_Id(Long rawDocumentId);
 
