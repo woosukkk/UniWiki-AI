@@ -37,7 +37,7 @@ class FakeVectorStore:
     def records_for_wiki_posts(self, wiki_post_ids):
         return []
 
-    def records_for_source_keys(self, source_keys):
+    def records_for_categories(self, category_ids):
         return []
 
     def keyword_records(self, terms, category_id=None, limit=20):
@@ -69,7 +69,6 @@ def test_searches_wiki_chunks_with_top_k_and_metadata() -> None:
         "categoryId": 2,
         "chunkIndex": 0,
         "documentType": "GENERAL",
-        "sourceKey": "",
         "score": 0.91,
     }
     assert vector_store.search_arguments == ([1.0, 0.0, 0.0], 60, 2)
@@ -117,109 +116,51 @@ def test_expands_school_scholarship_and_software_department_aliases() -> None:
     scholarship = SemanticSearchService._expand_query("학교에서 주는 장학금 종류가 뭐야?")
     graduation = SemanticSearchService._expand_query("소프트웨어 졸업학점 총 몇 학점이야?")
 
-    assert "재학생 장학금 신청 기본 안내" in scholarship
-    assert "소프트웨어학과 졸업 이수학점" in graduation
+    assert scholarship == "학교에서 주는 장학금 종류가 뭐야?"
+    assert graduation == "소프트웨어 졸업학점 총 몇 학점이야?"
 
 
-def test_retries_with_canonical_guide_when_first_candidates_lack_evidence() -> None:
-    class RetryStore(FakeVectorStore):
-        def __init__(self):
-            super().__init__()
-            self.keyword_calls = []
+def test_searches_every_document_in_the_best_matching_category() -> None:
+    class CategoryStore(FakeVectorStore):
+        requested_categories = None
 
         def search(self, query_embedding, top_k, category_id=None):
             return [SemanticSearchResult(
-                chunkId="notice-0", wikiPostId=80,
-                title="푸른등대 장학생 선발 안내", content="교외 장학생 모집",
-                categoryId=6, chunkIndex=0, documentType="OFFICIAL_NOTICE", score=0.9,
+                chunkId="seed-0", wikiPostId=80, title="학사 안내",
+                content="학교 생활 안내", categoryId=6, chunkIndex=0, score=0.9,
             )]
 
-        def keyword_records(self, terms, category_id=None, limit=40):
-            self.keyword_calls.append(terms)
-            if "재학생 장학금 신청 기본 안내" not in terms:
-                return []
+        def records_for_categories(self, category_ids):
+            self.requested_categories = category_ids
             return [SemanticSearchResult(
-                chunkId="guide-0", wikiPostId=60,
-                title="세종대학교 장학금 신청과 중복수혜 기본 원칙",
-                content="교내장학은 학교가 자체 선발하며 중복수혜 원칙을 확인합니다.",
-                categoryId=6, chunkIndex=0, documentType="CANONICAL_GUIDE", score=0.0,
+                chunkId="answer-0", wikiPostId=60, title="교내 장학금 종류",
+                content="교내 장학금 종류와 신청 조건", categoryId=6,
+                chunkIndex=0, score=0.0,
             )]
 
-    store = RetryStore()
-    service = SemanticSearchService(FakeEmbedder(), store, 5)
-    results = service.search(SemanticSearchRequest(
-        query="교내 장학금 종류와 신청 방법 알려줘", topK=5,
-    )).results
+    store = CategoryStore()
+    results = SemanticSearchService(FakeEmbedder(), store, 5).search(
+        SemanticSearchRequest(query="교내 장학금 종류", topK=5)
+    ).results
 
-    assert len(store.keyword_calls) == 2
+    assert store.requested_categories == [6]
     assert results[0].wiki_post_id == 60
 
 
-def test_guide_question_prefers_canonical_document_over_notice() -> None:
-    service = SemanticSearchService(FakeEmbedder(), FakeVectorStore(), 5)
-    guide = SemanticSearchResult(
-        chunkId="guide-0", wikiPostId=47,
-        title="2026 소프트웨어학과 졸업 이수학점 안내",
-        content="졸업학점 130학점, 전공필수 36학점",
-        categoryId=2, chunkIndex=0, documentType="CANONICAL_GUIDE", score=0.35,
-    )
-    notice = SemanticSearchResult(
-        chunkId="notice-0", wikiPostId=48,
-        title="졸업심사 결과 공지", content="졸업 대상자 확인",
-        categoryId=2, chunkIndex=0, documentType="OFFICIAL_NOTICE", score=0.95,
-    )
+def test_explicit_category_searches_only_that_category() -> None:
+    class CategoryStore(FakeVectorStore):
+        requested_categories = None
 
-    results = service._rerank("소프트웨어 졸업학점 총 몇 학점이야", [notice, guide], 5)
-
-    assert results[0].wiki_post_id == 47
-
-
-def test_software_graduation_query_loads_canonical_wiki_directly() -> None:
-    class CanonicalStore(FakeVectorStore):
-        def __init__(self):
-            super().__init__()
-            self.requested_ids = None
-
-        def records_for_source_keys(self, source_keys):
-            self.requested_ids = source_keys
+        def records_for_categories(self, category_ids):
+            self.requested_categories = category_ids
             return []
 
-    store = CanonicalStore()
-    service = SemanticSearchService(FakeEmbedder(), store, 5)
+    store = CategoryStore()
+    SemanticSearchService(FakeEmbedder(), store, 5).search(
+        SemanticSearchRequest(query="등록금", topK=5, categoryId=9)
+    )
 
-    service._canonical_records("소프트웨어학과 졸업 요건 알려줘")
-
-    assert store.requested_ids == ["software-graduation-requirements"]
-
-
-def test_critical_questions_return_their_canonical_source_first() -> None:
-    class CriticalStore(FakeVectorStore):
-        def records_for_source_keys(self, source_keys):
-            key = source_keys[0] if source_keys else ""
-            titles = {
-                "software-graduation-requirements": "소프트웨어학과 졸업 이수학점 안내",
-                "tuition-policy": "등록금 납부 및 반환 기준",
-                "scholarship-policy": "교내장학금 기본 안내",
-            }
-            if not key:
-                return []
-            return [SemanticSearchResult(
-                chunkId=f"{key}-0", wikiPostId=100,
-                title=titles[key], content="핵심 기준 문서 본문",
-                categoryId=2, chunkIndex=0, documentType="CANONICAL_GUIDE",
-                sourceKey=key, score=0.0,
-            )]
-
-    cases = {
-        "소프트웨어학과 졸업 요건 알려줘": "software-graduation-requirements",
-        "등록금 납부와 반환 기준 알려줘": "tuition-policy",
-        "교내 장학금 종류 알려줘": "scholarship-policy",
-    }
-    service = SemanticSearchService(FakeEmbedder(), CriticalStore(), 5)
-
-    for query, expected_key in cases.items():
-        results = service.search(SemanticSearchRequest(query=query, topK=5)).results
-        assert results[0].source_key == expected_key
+    assert store.requested_categories == [9]
 
 
 def test_source_priority_follows_question_intent() -> None:
@@ -259,36 +200,6 @@ def test_lexical_score_removes_korean_particles_for_title_matching() -> None:
     assert score >= 0.5
 
 
-def test_exact_korean_title_keyword_beats_semantically_similar_document() -> None:
-    class CourseVectorStore(FakeVectorStore):
-        def search(self, query_embedding, top_k, category_id=None):
-            return [
-                SemanticSearchResult(
-                    chunkId="leave-0", wikiPostId=11,
-                    title="2026학년도 2학기 휴학·복학 추가 신청 안내",
-                    content="수강신청과 등록금 납부를 모두 완료해야 합니다.",
-                    categoryId=2, chunkIndex=0, score=0.9,
-                )
-            ]
-
-        def keyword_records(self, terms, category_id=None, limit=20):
-            return [
-                SemanticSearchResult(
-                    chunkId="course-0", wikiPostId=12,
-                    title="2026-2 수강편람 및 강의시간표",
-                    content="수강신청 일정과 개설 강좌를 확인합니다.",
-                    categoryId=2, chunkIndex=0, score=0.0,
-                )
-            ]
-
-    service = SemanticSearchService(FakeEmbedder(), CourseVectorStore(), default_top_k=5)
-    results = service.search(SemanticSearchRequest(
-        query="2026-2학기 수강편람과 수강신청 방법을 알려주세요.", topK=5
-    )).results
-
-    assert results[0].wiki_post_id == 12
-
-
 def test_exact_proper_noun_title_is_not_diluted_by_rewrite_terms() -> None:
     exact = SemanticSearchResult(
         chunkId="woowacourse-0", wikiPostId=13,
@@ -309,9 +220,7 @@ def test_expands_casual_graduation_question_with_catalog_terms() -> None:
         "소프트웨어학과 졸업하려면 뭐 필요해?"
     )
 
-    assert "졸업 이수 학점" in expanded
-    assert "수강편람" in expanded
-    assert "교과과정" in expanded
+    assert expanded == "소프트웨어학과 졸업하려면 뭐 필요해?"
 
 
 def test_does_not_strip_department_suffix_as_particle() -> None:

@@ -67,7 +67,7 @@ class WikiVectorSyncServiceTest {
     }
 
     @Test
-    void assignsStableKeyToSoftwareGraduationGuide() {
+    void createsPayloadForWikiPost() {
         WikiPost wikiPost = mock(WikiPost.class);
         Category category = mock(Category.class);
         when(wikiPost.getId()).thenReturn(47L);
@@ -81,8 +81,6 @@ class WikiVectorSyncServiceTest {
         ArgumentCaptor<WikiVectorSyncPayload> payload =
                 ArgumentCaptor.forClass(WikiVectorSyncPayload.class);
         verify(aiVectorStoreClient).upsert(payload.capture());
-        assertThat(payload.getValue().sourceKey())
-                .isEqualTo("software-graduation-requirements");
     }
 
     @Test

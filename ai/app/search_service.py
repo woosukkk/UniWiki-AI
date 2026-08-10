@@ -30,8 +30,7 @@ class SemanticSearchService:
 
     def search(self, request: SemanticSearchRequest) -> SemanticSearchResponse:
         top_k = request.top_k or self.default_top_k
-        expanded_query = self._expand_query(request.query)
-        query_text = f"질문: {expanded_query}"
+        query_text = f"질문: {request.query}"
         query_vectors = self.embedder.encode([query_text])
         if len(query_vectors) != 1:
             raise RuntimeError("검색 질문 임베딩 생성에 실패했습니다.")
@@ -42,36 +41,26 @@ class SemanticSearchService:
             category_id=request.category_id,
         )
         keyword_results = self.vector_store.keyword_records(
-            self._lexical_tokens(expanded_query),
+            self._lexical_tokens(request.query),
             request.category_id,
             limit=40,
         )
-        canonical_results = self._canonical_records(request.query)
-        results = self._rerank(
-            expanded_query,
-            canonical_results + vector_results + keyword_results,
+        seeds = self._rerank(
+            request.query,
+            vector_results + keyword_results,
             max(top_k * 6, 30),
         )
-        guide_terms = self._canonical_search_terms(request.query)
-        if guide_terms:
-            guide_query = " ".join(guide_terms)
-            guide_vectors = self.embedder.encode([f"질문: {guide_query}"])
-            guide_vector_results = self.vector_store.search(
-                query_embedding=guide_vectors[0].tolist(),
-                top_k=30,
-                category_id=request.category_id,
-            )
-            guide_results = self.vector_store.keyword_records(
-                guide_terms,
-                request.category_id,
-                limit=30,
-            )
-            results = self._rerank(
-                expanded_query,
-                canonical_results + vector_results + keyword_results
-                + guide_vector_results + guide_results,
-                max(top_k * 6, 30),
-            )
+        category_ids = (
+            [request.category_id]
+            if request.category_id is not None
+            else list(dict.fromkeys(result.category_id for result in seeds[:3]))
+        )
+        category_results = self.vector_store.records_for_categories(category_ids)
+        results = self._rerank(
+            request.query,
+            vector_results + keyword_results + category_results,
+            max(top_k * 6, 30),
+        )
         results = self._prefer_current_period(request.query, results)
         results = results[:top_k]
         return SemanticSearchResponse(
@@ -83,31 +72,7 @@ class SemanticSearchService:
 
     @staticmethod
     def _expand_query(query):
-        expanded_terms = []
-        normalized = re.sub(r"\s+", "", query.lower())
-        if re.search(r"졸업(?!생)|졸업하려|졸업조건|졸업기준", normalized):
-            expanded_terms.extend([
-                "졸업 요건",
-                "졸업 이수 학점",
-                "전공필수",
-                "교양필수",
-                "수강편람",
-                "교과과정",
-            ])
-            if re.search(r"소프트웨어(?:학과|과)?|소융대", normalized):
-                expanded_terms.extend(["소프트웨어학과", "소프트웨어학과 졸업 이수학점"])
-        if re.search(r"교내장학|학교장학|장학금(?:종류|제도|혜택)|장학.*(?:종류|어떤|뭐)", normalized):
-            expanded_terms.extend([
-                "교내 장학금",
-                "재학생 장학금 신청 기본 안내",
-                "장학금 신청 중복수혜 기본 원칙",
-                "성적우수 에델바이스 자체 선발",
-            ])
-        if re.search(r"수강신청|과목신청|강의신청", normalized):
-            expanded_terms.extend(["수강신청", "수강편람", "강의시간표"])
-        if not expanded_terms:
-            return query
-        return f"{query} {' '.join(dict.fromkeys(expanded_terms))}"
+        return query
 
     def _rerank(self, query, vector_results, top_k):
         vector_scores = {}
@@ -125,12 +90,10 @@ class SemanticSearchService:
             score = min(1.0, vector * 0.3 + lexical * 0.8)
             score += self._intent_title_boost(query, result)
             score += self._source_priority_boost(query, result)
-            score += self._document_role_adjustment(query, result)
             score = max(0.0, min(1.0, score))
             ranked.append(result.model_copy(update={"score": score}))
         ranked.sort(
             key=lambda result: (
-                self._document_role_rank(query, result),
                 result.score,
                 min(len(result.content), 800),
             ),
@@ -169,84 +132,6 @@ class SemanticSearchService:
         if community_intent:
             return 0.20 if is_community else 0.0
         return 0.05 if is_community else 0.0
-
-    @classmethod
-    def _document_role_adjustment(cls, query, result):
-        normalized = re.sub(r"\s+", "", query.lower())
-        if result.source_key in cls._canonical_source_keys(query):
-            return 0.60
-        role = result.document_type
-        if role == "GENERAL":
-            compact_title = re.sub(r"\s+", "", result.title)
-            if any(term in compact_title for term in (
-                "기본안내", "기본원칙", "이수학점안내", "적용기준",
-                "수강편람", "학사규정", "장학제도", "교내장학금",
-            )):
-                role = "CANONICAL_GUIDE"
-            elif any(term in compact_title for term in (
-                "신청안내", "선발안내", "선발결과", "지급안내", "모집안내",
-            )):
-                role = "OFFICIAL_NOTICE"
-
-        guide_intent = re.search(
-            r"요건|조건|기준|원칙|종류|전체|총몇|몇학점|방법|어떤|뭐가",
-            normalized,
-        )
-        period_intent = re.search(r"기간|일정|날짜|언제|마감|접수", normalized)
-        if guide_intent:
-            if role == "CANONICAL_GUIDE":
-                return 0.45
-            if role == "OFFICIAL_NOTICE":
-                return -0.12
-        if period_intent and role == "OFFICIAL_NOTICE":
-            return 0.30
-        return 0.0
-
-    @classmethod
-    def _document_role_rank(cls, query, result):
-        if result.source_key in cls._canonical_source_keys(query):
-            return 3
-        adjustment = cls._document_role_adjustment(query, result)
-        if adjustment > 0:
-            return 2
-        if adjustment < 0:
-            return 0
-        return 1
-
-    @staticmethod
-    def _canonical_search_terms(query):
-        normalized = re.sub(r"\s+", "", query.lower())
-        if re.search(r"졸업(?!생)|졸업조건|졸업기준|졸업요건|졸업학점", normalized):
-            terms = ["졸업 이수학점", "이수학점 안내", "전공필수", "수강편람"]
-            if re.search(r"소프트웨어(?:학과|과)?|소융대", normalized):
-                terms.insert(0, "소프트웨어학과 졸업")
-            return terms
-        if re.search(r"교내장학|학교장학|장학금", normalized):
-            return [
-                "재학생 장학금 신청 기본 안내",
-                "장학금 신청과 중복수혜 기본 원칙",
-                "교내장학금",
-                "자체 선발",
-            ]
-        return []
-
-    def _canonical_records(self, query):
-        return self.vector_store.records_for_source_keys(
-            self._canonical_source_keys(query)
-        )
-
-    @staticmethod
-    def _canonical_source_keys(query):
-        normalized = re.sub(r"\s+", "", query.lower())
-        keys = []
-        if re.search(r"졸업(?!생)", normalized) and re.search(
-                r"소프트웨어(?:학과|과)?|소융대", normalized):
-            keys.append("software-graduation-requirements")
-        if re.search(r"등록금|학비|등록(?:납부|고지|환불|반환)", normalized):
-            keys.append("tuition-policy")
-        if re.search(r"교내장학|학교장학|장학금", normalized):
-            keys.append("scholarship-policy")
-        return keys
 
     @staticmethod
     def _canonical_title(title):
@@ -373,12 +258,6 @@ class SemanticSearchService:
         ]
         if any(term in normalized_title for term in exact_title_terms):
             boost += 0.35
-        graduation_intent = re.search(
-            r"졸업(?!생)|졸업하려|졸업조건|졸업기준",
-            normalized_query,
-        )
-        if graduation_intent and "졸업" in normalized_title:
-            boost += 0.25
         departments = set(re.findall(r"[가-힣]+학과", normalized_query))
         if departments and any(department in normalized_title for department in departments):
             boost += 0.15
