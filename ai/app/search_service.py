@@ -21,10 +21,12 @@ class SemanticSearchService:
         embedder: Embedder,
         vector_store: VectorStore,
         default_top_k: int,
+        community_category_id: int = 0,
     ) -> None:
         self.embedder = embedder
         self.vector_store = vector_store
         self.default_top_k = default_top_k
+        self.community_category_id = community_category_id
 
     def search(self, request: SemanticSearchRequest) -> SemanticSearchResponse:
         top_k = request.top_k or self.default_top_k
@@ -91,6 +93,7 @@ class SemanticSearchService:
             vector = max(0.0, vector_scores.get(result.chunk_id, 0.0))
             score = min(1.0, vector * 0.3 + lexical * 0.8)
             score = min(1.0, score + self._intent_title_boost(query, result))
+            score = min(1.0, score + self._source_priority_boost(query, result))
             ranked.append(result.model_copy(update={"score": score}))
         ranked.sort(
             key=lambda result: (result.score, min(len(result.content), 800)),
@@ -112,6 +115,23 @@ class SemanticSearchService:
             if len(deduplicated) >= top_k:
                 break
         return deduplicated
+
+    def _source_priority_boost(self, query, result):
+        is_community = result.category_id == self.community_category_id
+        normalized = re.sub(r"\s+", "", query.lower())
+        official_intent = re.search(
+            r"일정|기간|날짜|언제|규정|규칙|장학금|졸업|수강|학점|등록금|휴학|복학|신청|마감",
+            normalized,
+        )
+        if official_intent:
+            return 0.25 if not is_community else 0.0
+        community_intent = re.search(
+            r"후기|팁|경험|추천|취업|프로젝트|면접|코딩테스트|인턴|동아리|공부법|노하우",
+            normalized,
+        )
+        if community_intent:
+            return 0.20 if is_community else 0.0
+        return 0.05 if is_community else 0.0
 
     @staticmethod
     def _canonical_title(title):
@@ -209,7 +229,7 @@ class SemanticSearchService:
 
     @staticmethod
     def _lexical_tokens(query):
-        return [
+        tokens = [
             SemanticSearchService._strip_korean_particle(token)
             for token in re.findall(r"[0-9A-Za-z가-힣]+", query.lower())
             if token not in {
@@ -218,6 +238,12 @@ class SemanticSearchService:
             }
             and not token.endswith("하려면")
         ]
+        compounds = [
+            left + right
+            for left, right in zip(tokens, tokens[1:])
+            if len(left + right) >= 4
+        ]
+        return list(dict.fromkeys(tokens + compounds))
 
     @staticmethod
     def _intent_title_boost(query, result):

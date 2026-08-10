@@ -102,6 +102,31 @@ def test_hybrid_ranking_prefers_exact_title_and_deduplicates_documents() -> None
     assert len([result for result in results if result.wiki_post_id == 8]) == 1
 
 
+def test_spaced_korean_title_adds_compound_keyword_candidate() -> None:
+    assert "교내장학금" in SemanticSearchService._lexical_tokens(
+        "교내 장학금 종류를 알려줘"
+    )
+
+
+def test_source_priority_follows_question_intent() -> None:
+    service = SemanticSearchService(
+        FakeEmbedder(), FakeVectorStore(), 5, community_category_id=304
+    )
+    official = SemanticSearchResult(
+        chunkId="official-0", wikiPostId=1, title="공식 자료", content="본문",
+        categoryId=2, chunkIndex=0, score=0.0,
+    )
+    community = SemanticSearchResult(
+        chunkId="community-0", wikiPostId=2, title="함께 만든 위키", content="본문",
+        categoryId=304, chunkIndex=0, score=0.0,
+    )
+
+    assert service._source_priority_boost("프로젝트 후기 알려줘", community) == 0.20
+    assert service._source_priority_boost("장학금 신청 기간", official) == 0.25
+    assert service._source_priority_boost("장학금 신청 후기", community) == 0.0
+    assert service._source_priority_boost("학교생활 알려줘", community) == 0.05
+
+
 def test_lexical_score_removes_korean_particles_for_title_matching() -> None:
     result = SemanticSearchResult(
         chunkId="course-guide-0",

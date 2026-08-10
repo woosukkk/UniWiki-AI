@@ -23,6 +23,7 @@ class Settings:
         "uniwiki_wiki_chunks",
     )
     search_top_k: int = int(os.getenv("SEARCH_TOP_K", "5"))
+    community_wiki_category_id: int = int(os.getenv("COMMUNITY_WIKI_CATEGORY_ID", "0"))
     rag_top_k: int = int(os.getenv("RAG_TOP_K", "5"))
     rag_min_score: float = float(os.getenv("RAG_MIN_SCORE", "0.35"))
     rag_partial_min_score: float = float(os.getenv("RAG_PARTIAL_MIN_SCORE", "0.20"))

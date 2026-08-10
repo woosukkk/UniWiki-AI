@@ -69,6 +69,7 @@ def get_search_service() -> SemanticSearchService:
         embedder=get_embedding_service().embedder,
         vector_store=get_vector_store(),
         default_top_k=settings.search_top_k,
+        community_category_id=settings.community_wiki_category_id,
     )
 
 
