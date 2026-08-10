@@ -117,7 +117,7 @@ export function WikiListPage() {
           <h1>함께 만드는 대학 생활 위키</h1>
           <p>학교 구성원이 직접 정리한 최신 정보를 확인해 보세요.</p>
         </div>
-        {isAuthenticated && <Link className="button" to="/wiki/new">위키 작성</Link>}
+        {isAuthenticated && <Link className="button wiki-create-button" to="/wiki/new">위키 작성</Link>}
       </header>
 
       <section className="wiki-toolbar" aria-label="위키 검색 및 필터">

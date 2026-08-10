@@ -63,6 +63,14 @@
   letter-spacing: 0.08em;
 }
 
+.wiki-page .wiki-create-button {
+  min-height: 40px;
+  padding: 0 18px;
+  align-self: flex-end;
+  display: inline-flex;
+  align-items: center;
+}
+
 .wiki-source-tabs {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -250,6 +258,7 @@
   .admin-page { width: calc(100% - 32px); padding: 48px 0 80px; }
   .wiki-page-heading,
   .admin-heading { align-items: stretch; flex-direction: column; }
+  .wiki-page .wiki-create-button { align-self: flex-start; }
   .admin-actions { position: static; align-self: flex-start; margin-top: 16px; }
   .wiki-grid,
   .coverage-summary,
