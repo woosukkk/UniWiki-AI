@@ -65,9 +65,11 @@ class SemanticSearchService:
                 request.category_id,
                 limit=30,
             )
+            canonical_results = self._canonical_records(request.query)
             results = self._rerank(
                 expanded_query,
-                vector_results + keyword_results + guide_vector_results + guide_results,
+                vector_results + keyword_results + guide_vector_results
+                + guide_results + canonical_results,
                 max(top_k * 6, 30),
             )
         results = self._prefer_current_period(request.query, results)
@@ -222,6 +224,13 @@ class SemanticSearchService:
                 "교내장학금",
                 "자체 선발",
             ]
+        return []
+
+    def _canonical_records(self, query):
+        normalized = re.sub(r"\s+", "", query.lower())
+        if re.search(r"졸업(?!생)", normalized) and re.search(
+                r"소프트웨어(?:학과|과)?|소융대", normalized):
+            return self.vector_store.records_for_wiki_posts([47])
         return []
 
     @staticmethod

@@ -170,6 +170,24 @@ def test_guide_question_prefers_canonical_document_over_notice() -> None:
     assert results[0].wiki_post_id == 47
 
 
+def test_software_graduation_query_loads_canonical_wiki_directly() -> None:
+    class CanonicalStore(FakeVectorStore):
+        def __init__(self):
+            super().__init__()
+            self.requested_ids = None
+
+        def records_for_wiki_posts(self, wiki_post_ids):
+            self.requested_ids = wiki_post_ids
+            return []
+
+    store = CanonicalStore()
+    service = SemanticSearchService(FakeEmbedder(), store, 5)
+
+    service._canonical_records("소프트웨어학과 졸업 요건 알려줘")
+
+    assert store.requested_ids == [47]
+
+
 def test_source_priority_follows_question_intent() -> None:
     service = SemanticSearchService(
         FakeEmbedder(), FakeVectorStore(), 5, community_category_id=304
