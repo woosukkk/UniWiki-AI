@@ -28,9 +28,9 @@ public class OfficialDataRetentionBootstrap implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) {
         jdbcTemplate.execute("CREATE TEMPORARY TABLE IF NOT EXISTS legacy_official_raw_ids "
-                + "(id BIGINT PRIMARY KEY)");
+                + "(id BIGINT PRIMARY KEY) ENGINE=MEMORY");
         jdbcTemplate.execute("CREATE TEMPORARY TABLE IF NOT EXISTS legacy_official_wiki_ids "
-                + "(id BIGINT PRIMARY KEY)");
+                + "(id BIGINT PRIMARY KEY) ENGINE=MEMORY");
         jdbcTemplate.execute("TRUNCATE TABLE legacy_official_raw_ids");
         jdbcTemplate.execute("TRUNCATE TABLE legacy_official_wiki_ids");
 
