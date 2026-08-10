@@ -40,14 +40,15 @@ class CategoryServiceTest {
     void repairsMojibakeAndPrefersTheCleanDuplicate() {
         Category broken = category(1L, mojibake("학사"));
         Category clean = category(171L, "학사");
-        when(categoryRepository.findAllByOrderByNameAsc()).thenReturn(List.of(broken, clean));
+        Category windows1252 = category(2L, "êµ\u0090ìˆ˜ë‹˜");
+        when(categoryRepository.findAllByOrderByNameAsc()).thenReturn(List.of(broken, clean, windows1252));
 
         assertThat(categoryService.getCategories())
-                .singleElement()
-                .satisfies(category -> {
-                    assertThat(category.id()).isEqualTo(171L);
-                    assertThat(category.name()).isEqualTo("학사");
-                });
+                .extracting("id", "name")
+                .containsExactly(
+                        org.assertj.core.groups.Tuple.tuple(171L, "학사"),
+                        org.assertj.core.groups.Tuple.tuple(2L, "교수님")
+                );
     }
 
     private String mojibake(String value) {

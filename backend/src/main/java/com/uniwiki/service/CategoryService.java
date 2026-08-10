@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -36,14 +37,23 @@ public class CategoryService {
     }
 
     private boolean isMojibake(String value) {
-        return value != null
-                && StandardCharsets.ISO_8859_1.newEncoder().canEncode(value)
-                && !repairUtf8(value).equals(value);
+        return value != null && !repairUtf8(value).equals(value);
     }
 
     private String repairUtf8(String value) {
-        if (value == null || !StandardCharsets.ISO_8859_1.newEncoder().canEncode(value)) return value;
-        return new String(value.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+        if (value == null) return null;
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream(value.length());
+        for (char character : value.toCharArray()) {
+            if (character <= 0xff) {
+                bytes.write(character);
+                continue;
+            }
+            String text = String.valueOf(character);
+            if (!java.nio.charset.Charset.forName("windows-1252").newEncoder().canEncode(text)) return value;
+            bytes.writeBytes(text.getBytes(java.nio.charset.Charset.forName("windows-1252")));
+        }
+        String decoded = bytes.toString(StandardCharsets.UTF_8);
+        return decoded.matches(".*[가-힣].*") ? decoded : value;
     }
 
     private record NormalizedCategory(CategoryDto dto, boolean repaired) { }
