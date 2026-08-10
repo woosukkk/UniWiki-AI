@@ -50,6 +50,7 @@ public class OfficialSourcePipelineService {
     private final WikiVectorSyncService vectorSyncService;
     private final OfficialAttachmentService attachmentService;
     private final OfficialTopicKeyResolver topicKeyResolver;
+    private final OfficialRobotsPolicy robotsPolicy;
 
     @Value("${uniwiki.official-sources.allowed-host-suffixes:sejong.ac.kr}")
     private String allowedHostSuffixes;
@@ -304,6 +305,7 @@ public class OfficialSourcePipelineService {
     }
 
     private Document fetch(String url) throws Exception {
+        robotsPolicy.awaitAllowed(url);
         Document document;
         try {
             document = connection(url).get();
@@ -319,6 +321,7 @@ public class OfficialSourcePipelineService {
             document = fetchWithCurl(url);
         }
         requireAllowedUrl(document.location());
+        robotsPolicy.requireAllowed(document.location());
         return document;
     }
 

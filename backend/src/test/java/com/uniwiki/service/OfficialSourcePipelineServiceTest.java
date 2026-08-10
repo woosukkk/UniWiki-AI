@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 class OfficialSourcePipelineServiceTest {
 
     private final OfficialSourcePipelineService service =
-            new OfficialSourcePipelineService(null, null, null, null, null, null, null, null, null, null);
+            new OfficialSourcePipelineService(null, null, null, null, null, null, null, null, null, null, null);
 
     @Test
     void skipsOverlappingFullCollectionRuns() throws Exception {
@@ -33,7 +33,7 @@ class OfficialSourcePipelineServiceTest {
             return List.of();
         });
         OfficialSourcePipelineService pipeline = new OfficialSourcePipelineService(
-                repository, null, null, null, null, null, null, null, null, null);
+                repository, null, null, null, null, null, null, null, null, null, null);
 
         try (var executor = Executors.newSingleThreadExecutor()) {
             var firstRun = executor.submit(pipeline::collectActiveSources);

@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 public class OfficialAttachmentService {
 
     private final OfficialAttachmentRepository attachmentRepository;
+    private final OfficialRobotsPolicy robotsPolicy;
 
     @Value("${uniwiki.official-sources.allowed-host-suffixes:sejong.ac.kr}")
     private String allowedHostSuffixes;
@@ -57,7 +58,7 @@ public class OfficialAttachmentService {
                 + "a[href$='.xls'], a[href$='.docx'], a[href$='.txt'], a[href$='.csv']")) {
             if (collected.size() >= maxCount) break;
             String url = link.absUrl("href");
-            if (url.isBlank() || !seen.add(url)) continue;
+            if (url.isBlank() || !seen.add(url) || !robotsPolicy.isAllowed(URI.create(url))) continue;
             String fileName = link.text().replaceAll("\\s+", " ").trim();
             if (fileName.isBlank()) fileName = fileNameFromUrl(url);
             collected.add(collectOne(url, fileName));
@@ -122,9 +123,11 @@ public class OfficialAttachmentService {
     }
 
     private DownloadedFile download(String url) throws Exception {
+        robotsPolicy.awaitAllowed(url);
         try {
             Connection.Response response = connection(url).execute();
             requireAllowedUrl(response.url().toString());
+            robotsPolicy.requireAllowed(response.url().toString());
             return new DownloadedFile(response.bodyAsBytes(), response.contentType());
         } catch (SSLHandshakeException exception) {
             try {
@@ -133,6 +136,7 @@ public class OfficialAttachmentService {
                 Connection.Response response = connection(url)
                         .sslSocketFactory(tls12.getSocketFactory()).execute();
                 requireAllowedUrl(response.url().toString());
+                robotsPolicy.requireAllowed(response.url().toString());
                 return new DownloadedFile(response.bodyAsBytes(), response.contentType());
             } catch (SSLHandshakeException retryException) {
                 return downloadWithCurl(url);

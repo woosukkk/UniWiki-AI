@@ -141,3 +141,7 @@ npm.cmd run dev -- --host 127.0.0.1
 - 프론트: `http://127.0.0.1:5173`
 - 백엔드: `http://localhost:8080`
 - Swagger: `http://localhost:8080/swagger-ui/index.html`
+
+## robots.txt 준수
+
+2026-08-11 확인한 공식 호스트 정책을 신규 요청에 적용한다. `www.sejong.ac.kr`은 요청 간 10초를 유지하고 `mode=download` 및 내부 리소스 경로를 수집하지 않는다. `tosc.sejong.ac.kr`과 `udream.sejong.ac.kr`은 루트 외 경로가 차단되어 자동 수집에서 제외한다. 기존 공식 데이터를 초기화한 뒤에도 허용된 URL만 다시 적재한다.
