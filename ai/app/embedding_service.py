@@ -29,7 +29,7 @@ class WikiEmbeddingService:
         chunks = [
             EmbeddedChunk(
                 chunkId=f"wiki-{document.wiki_post_id}-chunk-{chunk.index}",
-                text=chunk.text,
+                text=f"{document.title}\n{chunk.text}",
                 embedding=vector.tolist(),
                 metadata=ChunkMetadata(
                     wikiPostId=document.wiki_post_id,
