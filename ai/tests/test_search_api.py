@@ -34,6 +34,9 @@ class FakeVectorStore:
             )
         ]
 
+    def records_for_wiki_posts(self, wiki_post_ids):
+        return []
+
 
 def test_searches_wiki_chunks_with_top_k_and_metadata() -> None:
     vector_store = FakeVectorStore()
@@ -52,7 +55,7 @@ def test_searches_wiki_chunks_with_top_k_and_metadata() -> None:
     assert body["query"] == "수강신청은 어디서 하나요?"
     assert body["topK"] == 3
     assert body["resultCount"] == 1
-    assert body["results"][0] == {
+    assert body["results"][0] | {"score": 0.91} == {
         "chunkId": "wiki-7-chunk-0",
         "wikiPostId": 7,
         "title": "수강신청 안내",
@@ -61,7 +64,7 @@ def test_searches_wiki_chunks_with_top_k_and_metadata() -> None:
         "chunkIndex": 0,
         "score": 0.91,
     }
-    assert vector_store.search_arguments == ([1.0, 0.0, 0.0], 3, 2)
+    assert vector_store.search_arguments == ([1.0, 0.0, 0.0], 60, 2)
 
 
 def test_rejects_blank_search_query() -> None:
@@ -79,12 +82,8 @@ def test_hybrid_ranking_prefers_exact_title_and_deduplicates_documents() -> None
                                      content="기부 장학생 안내", categoryId=6, chunkIndex=0, score=0.8),
                 SemanticSearchResult(chunkId="wrong-1", wikiPostId=8, title="푸른등대 장학사업",
                                      content="신청 조건", categoryId=6, chunkIndex=1, score=0.79),
-            ]
-
-        def all_records(self, category_id=None):
-            return [
                 SemanticSearchResult(chunkId="exact-0", wikiPostId=9, title="교내장학금",
-                                     content="교내 장학금 종류와 선발 조건", categoryId=6, chunkIndex=0, score=0.0)
+                                     content="교내 장학금 종류와 선발 조건", categoryId=6, chunkIndex=0, score=0.3),
             ]
 
     service = SemanticSearchService(FakeEmbedder(), HybridVectorStore(), default_top_k=5)
@@ -123,16 +122,12 @@ def test_exact_korean_title_keyword_beats_semantically_similar_document() -> Non
                     title="2026학년도 2학기 휴학·복학 추가 신청 안내",
                     content="수강신청과 등록금 납부를 모두 완료해야 합니다.",
                     categoryId=2, chunkIndex=0, score=0.9,
-                )
-            ]
-
-        def all_records(self, category_id=None):
-            return [
+                ),
                 SemanticSearchResult(
                     chunkId="course-0", wikiPostId=12,
                     title="2026-2 수강편람 및 강의시간표",
                     content="수강신청 일정과 개설 강좌를 확인합니다.",
-                    categoryId=2, chunkIndex=0, score=0.0,
+                    categoryId=2, chunkIndex=0, score=0.3,
                 )
             ]
 
@@ -201,7 +196,7 @@ def test_graduation_intent_title_outranks_semantically_related_document() -> Non
     service = SemanticSearchService(FakeEmbedder(), FakeVectorStore(), 5)
     query = service._expand_query("소프트웨어학과 졸업하려면 뭐 필요해?")
 
-    results = service._rerank(query, [internship, graduation], [], 5)
+    results = service._rerank(query, [internship, graduation], 5)
 
     assert results[0].wiki_post_id == 20
 
@@ -230,7 +225,7 @@ def test_lexical_match_uses_same_hybrid_scale_for_every_source() -> None:
     service = SemanticSearchService(FakeEmbedder(), FakeVectorStore(), 5)
     query = service._expand_query("졸업생과 연락할 수단이 있어?")
 
-    results = service._rerank(query, [graduation, community], [], 5)
+    results = service._rerank(query, [graduation, community], 5)
 
     assert service._lexical_score(query, community) >= 0.35
     assert results[0].wiki_post_id == 1377
@@ -296,6 +291,34 @@ def test_nearly_identical_titles_are_deduplicated() -> None:
         chunkIndex=0, score=0.89,
     )
 
-    results = service._rerank("우아한테크코스가 뭐야", [first, duplicate], [], 5)
+    results = service._rerank("우아한테크코스가 뭐야", [first, duplicate], 5)
 
     assert len(results) == 1
+
+
+def test_expands_only_selected_wiki_documents() -> None:
+    class SelectedDocumentStore(FakeVectorStore):
+        def __init__(self):
+            super().__init__()
+            self.requested_ids = None
+
+        def records_for_wiki_posts(self, wiki_post_ids):
+            self.requested_ids = wiki_post_ids
+            return [
+                SemanticSearchResult(
+                    chunkId=f"wiki-7-chunk-{index}", wikiPostId=7,
+                    title="수강신청 안내", content=f"청크 {index}",
+                    categoryId=2, chunkIndex=index, score=0.0,
+                )
+                for index in range(10)
+            ]
+
+    store = SelectedDocumentStore()
+    service = SemanticSearchService(FakeEmbedder(), store, 5)
+    selected = store.search([], 1)
+
+    expanded = service.expand_results(selected)
+
+    assert store.requested_ids == [7]
+    assert len(expanded) == 8
+    assert [result.chunk_index for result in expanded] == list(range(8))

@@ -24,5 +24,5 @@ class FastEmbedEmbedder:
     def encode(self, texts: Sequence[str]) -> np.ndarray:
         if not texts:
             return np.empty((0, 0), dtype=np.float32)
-        vectors = list(self.model.embed(list(texts), batch_size=8))
+        vectors = list(self.model.embed(list(texts), batch_size=4))
         return np.asarray(vectors, dtype=np.float32)

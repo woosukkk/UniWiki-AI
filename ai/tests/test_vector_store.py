@@ -92,3 +92,14 @@ def test_searches_by_cosine_similarity_and_category(tmp_path: Path) -> None:
     assert results[0].score == 1.0
     assert filtered[0].wiki_post_id == 2
     assert len(filtered) == 1
+
+
+def test_reads_chunks_only_for_selected_documents(tmp_path: Path) -> None:
+    store = create_store(tmp_path)
+    store.replace_document(embedding_response(1, ["선택 문서 1", "선택 문서 2"]))
+    store.replace_document(embedding_response(2, ["제외 문서"]))
+
+    records = store.records_for_wiki_posts([1])
+
+    assert [record.wiki_post_id for record in records] == [1, 1]
+    assert [record.chunk_index for record in records] == [0, 1]

@@ -34,24 +34,15 @@ class SemanticSearchService:
         if len(query_vectors) != 1:
             raise RuntimeError("검색 질문 임베딩 생성에 실패했습니다.")
 
-        supports_lexical = hasattr(self.vector_store, "all_records")
         vector_results = self.vector_store.search(
             query_embedding=query_vectors[0].tolist(),
-            top_k=max(top_k * 6, 30) if supports_lexical else top_k,
+            top_k=60,
             category_id=request.category_id,
         )
-        lexical_records = (
-            self.vector_store.all_records(request.category_id)
-            if supports_lexical else []
-        )
-        results = (
-            self._rerank(
-                expanded_query,
-                vector_results,
-                lexical_records,
-                max(top_k * 6, 30),
-            )
-            if supports_lexical else vector_results[:top_k]
+        results = self._rerank(
+            expanded_query,
+            vector_results,
+            max(top_k * 6, 30),
         )
         results = self._prefer_current_period(request.query, results)
         results = results[:top_k]
@@ -81,12 +72,9 @@ class SemanticSearchService:
             return query
         return f"{query} {' '.join(dict.fromkeys(expanded_terms))}"
 
-    def _rerank(self, query, vector_results, lexical_records, top_k):
+    def _rerank(self, query, vector_results, top_k):
         vector_scores = {result.chunk_id: result.score for result in vector_results}
         candidates = {result.chunk_id: result for result in vector_results}
-        for result in lexical_records:
-            if self._lexical_score(query, result) > 0:
-                candidates[result.chunk_id] = result
 
         ranked = []
         for result in candidates.values():
@@ -163,10 +151,13 @@ class SemanticSearchService:
         return scoped or results
 
     def expand_results(self, results, max_chunks_per_document=8):
-        if not hasattr(self.vector_store, "all_records"):
+        if not results:
             return results
         records_by_wiki_post = {}
-        for record in self.vector_store.all_records():
+        records = self.vector_store.records_for_wiki_posts(
+            [result.wiki_post_id for result in results]
+        )
+        for record in records:
             records_by_wiki_post.setdefault(record.wiki_post_id, []).append(record)
 
         expanded = []

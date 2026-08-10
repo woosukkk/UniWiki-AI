@@ -76,3 +76,5 @@ docker compose --env-file infra/.env -f infra/docker-compose.yml up --build
 - 공식 위키와 함께 만든 위키가 AI 검색 결과에 모두 포함됨
 - 수집 import API가 관리자 권한과 전용 토큰으로 보호됨
 - 배포 태그와 실행 중인 커밋이 일치함
+- AI 질문 직후 Railway 로그에 `Killed` 또는 컨테이너 재시작이 없음
+- AI 검색이 전체 Chroma 레코드가 아닌 최대 60개 후보와 선택된 위키 청크만 조회함
