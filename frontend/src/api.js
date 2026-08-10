@@ -79,6 +79,10 @@ export const api = {
   askAi: (payload) => request({ url: '/api/ai/answers', method: 'POST', data: payload }),
   summarizeWikiPost: (wikiPostId, maxChars = 500) => request({ url: `/api/ai/wiki-posts/${wikiPostId}/summary`, method: 'POST', params: { maxChars } }),
   getAdminDashboard: () => request({ url: '/api/admin/dashboard' }),
+  collectOfficialSources: () => request({
+    url: '/api/admin/official-sources/collect-active',
+    method: 'POST',
+  }),
   promoteAnswerToWiki: (answerId) => request({
     url: `/api/admin/wiki-promotions/answers/${answerId}`,
     method: 'POST',

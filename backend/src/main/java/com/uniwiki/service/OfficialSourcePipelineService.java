@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLHandshakeException;
 
@@ -34,6 +35,7 @@ import javax.net.ssl.SSLHandshakeException;
 @Slf4j
 @RequiredArgsConstructor
 public class OfficialSourcePipelineService {
+    private final AtomicBoolean collectingActiveSources = new AtomicBoolean();
 
     private static final Pattern EXPLICIT_YEAR =
             Pattern.compile("(?<!\\d)(19\\d{2}|20\\d{2})(?!\\d)");
@@ -174,16 +176,24 @@ public class OfficialSourcePipelineService {
     }
 
     public void collectActiveSources() {
-        for (OfficialSource source : sourceRepository.findByActiveTrueOrderByIdAsc()) {
-            try {
-                OfficialSourceDto.CollectionResult result = selfProvider.getObject().collect(source.getId());
-                log.info("Official source collection: source={}, discovered={}, created={}, changed={}, unchanged={}, failed={}",
-                        source.getName(), result.discovered(), result.created(), result.changed(),
-                        result.unchanged(), result.failed());
-            } catch (Exception exception) {
-                log.warn("Official source collection failed: source={}, error={}",
-                        source.getName(), exception.getMessage());
+        if (!collectingActiveSources.compareAndSet(false, true)) {
+            log.info("Official source collection skipped because another run is active");
+            return;
+        }
+        try {
+            for (OfficialSource source : sourceRepository.findByActiveTrueOrderByIdAsc()) {
+                try {
+                    OfficialSourceDto.CollectionResult result = selfProvider.getObject().collect(source.getId());
+                    log.info("Official source collection: source={}, discovered={}, created={}, changed={}, unchanged={}, failed={}",
+                            source.getName(), result.discovered(), result.created(), result.changed(),
+                            result.unchanged(), result.failed());
+                } catch (Exception exception) {
+                    log.warn("Official source collection failed: source={}, error={}",
+                            source.getName(), exception.getMessage());
+                }
             }
+        } finally {
+            collectingActiveSources.set(false);
         }
     }
 

@@ -12,8 +12,8 @@ public class OfficialSourceScheduler {
     private final OfficialSourcePipelineService pipelineService;
 
     @Scheduled(
-            fixedDelayString = "${uniwiki.official-sources.interval-ms:3600000}",
-            initialDelayString = "${uniwiki.official-sources.initial-delay-ms:60000}"
+            cron = "${uniwiki.official-sources.cron:0 0 0 * * *}",
+            zone = "${uniwiki.official-sources.zone:Asia/Seoul}"
     )
     public void collect() {
         pipelineService.collectActiveSources();

@@ -15,6 +15,8 @@ export function AdminPage() {
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [collecting, setCollecting] = useState(false);
+  const [collectionStatus, setCollectionStatus] = useState('');
 
   const loadDashboard = useCallback(async () => {
     setLoading(true);
@@ -26,12 +28,34 @@ export function AdminPage() {
 
   useEffect(() => { loadDashboard(); }, [loadDashboard]);
 
+  async function collectOfficialSources() {
+    setCollecting(true);
+    setCollectionStatus('');
+    try {
+      await api.collectOfficialSources();
+      setCollectionStatus('전체 공식 자료 수집을 시작했습니다. 완료 후 벡터 동기화가 순차 진행됩니다.');
+    } catch (requestError) {
+      setCollectionStatus(requestError.message);
+    } finally {
+      setCollecting(false);
+    }
+  }
+
   if (loading) return <main className="admin-page container"><LoadingSpinner label="운영 현황을 불러오는 중입니다" /></main>;
   if (error) return <main className="admin-page container"><ErrorMessage message={error} onRetry={loadDashboard} /></main>;
 
   return (
     <main className="admin-page container">
-      <header className="admin-heading"><span>ADMIN CONSOLE</span><h1>서비스 운영 현황</h1><button className="text-button" onClick={loadDashboard}>새로고침</button></header>
+      <header className="admin-heading">
+        <span>ADMIN CONSOLE</span><h1>서비스 운영 현황</h1>
+        <div className="admin-actions">
+          <button className="button button-small" onClick={collectOfficialSources} disabled={collecting}>
+            {collecting ? '수집 요청 중...' : '공식 자료 수집'}
+          </button>
+          <button className="text-button" onClick={loadDashboard}>새로고침</button>
+        </div>
+      </header>
+      {collectionStatus && <p className="admin-collection-status" role="status">{collectionStatus}</p>}
       <section className="admin-metrics">
         {cards.map(([key, label]) => <article key={key}><span>{label}</span><strong>{dashboard[key].toLocaleString()}</strong></article>)}
         <article className={dashboard.failedSyncCount ? 'metric-warning' : ''}><span>동기화 실패</span><strong>{dashboard.failedSyncCount}</strong></article>

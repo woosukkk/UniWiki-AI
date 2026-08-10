@@ -4,13 +4,48 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.jupiter.api.Test;
 import com.uniwiki.entity.OfficialSource;
+import com.uniwiki.repository.OfficialSourceRepository;
+
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 class OfficialSourcePipelineServiceTest {
 
     private final OfficialSourcePipelineService service =
             new OfficialSourcePipelineService(null, null, null, null, null, null, null, null, null, null);
+
+    @Test
+    void skipsOverlappingFullCollectionRuns() throws Exception {
+        OfficialSourceRepository repository = mock(OfficialSourceRepository.class);
+        CountDownLatch entered = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        when(repository.findByActiveTrueOrderByIdAsc()).thenAnswer(invocation -> {
+            entered.countDown();
+            release.await(2, TimeUnit.SECONDS);
+            return List.of();
+        });
+        OfficialSourcePipelineService pipeline = new OfficialSourcePipelineService(
+                repository, null, null, null, null, null, null, null, null, null);
+
+        try (var executor = Executors.newSingleThreadExecutor()) {
+            var firstRun = executor.submit(pipeline::collectActiveSources);
+            assertThat(entered.await(1, TimeUnit.SECONDS)).isTrue();
+
+            pipeline.collectActiveSources();
+            verify(repository, times(1)).findByActiveTrueOrderByIdAsc();
+
+            release.countDown();
+            firstRun.get(2, TimeUnit.SECONDS);
+        }
+    }
 
     @Test
     void buildsListPageUrlsForSupportedBoards() {

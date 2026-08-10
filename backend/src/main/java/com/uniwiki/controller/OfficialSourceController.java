@@ -6,7 +6,8 @@ import com.uniwiki.entity.User;
 import com.uniwiki.repository.UserRepository;
 import com.uniwiki.service.OfficialSourcePipelineService;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,10 +17,19 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/official-sources")
-@RequiredArgsConstructor
 public class OfficialSourceController {
     private final OfficialSourcePipelineService pipelineService;
     private final UserRepository userRepository;
+    private final TaskExecutor taskExecutor;
+
+    public OfficialSourceController(
+            OfficialSourcePipelineService pipelineService,
+            UserRepository userRepository,
+            @Qualifier("applicationTaskExecutor") TaskExecutor taskExecutor) {
+        this.pipelineService = pipelineService;
+        this.userRepository = userRepository;
+        this.taskExecutor = taskExecutor;
+    }
 
     @PostMapping
     public ResponseEntity<OfficialSourceDto.Response> register(
@@ -40,6 +50,13 @@ public class OfficialSourceController {
             @LoginUserId Long userId, @PathVariable Long sourceId) {
         requireAdmin(userId);
         return ResponseEntity.ok(pipelineService.collect(sourceId));
+    }
+
+    @PostMapping("/collect-active")
+    public ResponseEntity<Void> collectActive(@LoginUserId Long userId) {
+        requireAdmin(userId);
+        taskExecutor.execute(pipelineService::collectActiveSources);
+        return ResponseEntity.accepted().build();
     }
 
     @PostMapping("/documents/{rawDocumentId}/approve")

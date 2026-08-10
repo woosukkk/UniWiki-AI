@@ -56,8 +56,8 @@ uniwiki:
     topic-rebuild-enabled: ${OFFICIAL_TOPIC_REBUILD_ENABLED:false}
     collect-on-startup: ${OFFICIAL_SOURCE_COLLECT_ON_STARTUP:false}
     scheduler-enabled: ${OFFICIAL_SOURCE_SCHEDULER_ENABLED:false}
-    interval-ms: ${OFFICIAL_SOURCE_INTERVAL_MS:3600000}
-    initial-delay-ms: ${OFFICIAL_SOURCE_INITIAL_DELAY_MS:60000}
+    cron: ${OFFICIAL_SOURCE_CRON:0 0 0 * * *}
+    zone: ${OFFICIAL_SOURCE_ZONE:Asia/Seoul}
     max-list-pages-per-run: ${OFFICIAL_SOURCE_MAX_LIST_PAGES:300}
     author-id: ${OFFICIAL_SOURCE_AUTHOR_ID:1}
     author-email: ${OFFICIAL_SOURCE_AUTHOR_EMAIL:official-source@local.invalid}
