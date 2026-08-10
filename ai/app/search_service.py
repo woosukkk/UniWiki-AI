@@ -56,12 +56,23 @@ class SemanticSearchService:
             else list(dict.fromkeys(result.category_id for result in seeds[:5]))
         )
         category_results = self.vector_store.records_for_categories(category_ids)
+        all_results = vector_results + keyword_results + category_results
         results = self._rerank(
             request.query,
-            vector_results + keyword_results + category_results,
+            all_results,
             max(top_k * 6, 30),
         )
         results = self._prefer_current_period(request.query, results)
+        exact_titles = self._rerank(
+            request.query,
+            [result for result in all_results
+             if self._title_is_in_query(request.query, result.title)],
+            1,
+        )
+        if exact_titles and all(
+                result.wiki_post_id != exact_titles[0].wiki_post_id
+                for result in results[:top_k]):
+            results = exact_titles + results[:max(0, top_k - 1)]
         results = results[:top_k]
         return SemanticSearchResponse(
             query=request.query,
@@ -136,6 +147,11 @@ class SemanticSearchService:
     @staticmethod
     def _canonical_title(title):
         return re.sub(r"[^0-9a-z가-힣]", "", title.lower())
+
+    @classmethod
+    def _title_is_in_query(cls, query, title):
+        normalized_title = cls._canonical_title(title)
+        return len(normalized_title) >= 4 and normalized_title in cls._canonical_title(query)
 
     @staticmethod
     def _titles_are_duplicates(left, right):
