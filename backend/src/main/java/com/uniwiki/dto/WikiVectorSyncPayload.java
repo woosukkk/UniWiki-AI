@@ -25,7 +25,8 @@ public record WikiVectorSyncPayload(
         if (compact.contains("소프트웨어학과") && compact.contains("졸업")) {
             return "software-graduation-requirements";
         }
-        if (compact.contains("등록금납부와등록안내")
+        if (compact.contains("2026학년도2학기학부재학생등록금납부안내")
+                || compact.contains("등록금납부와등록안내")
                 || (compact.contains("등록금") && compact.contains("기본"))) {
             return "tuition-policy";
         }

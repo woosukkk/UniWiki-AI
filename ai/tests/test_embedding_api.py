@@ -61,4 +61,7 @@ def test_classifies_stable_source_keys_from_titles() -> None:
     assert classify_source_key("2026 소프트웨어학과 졸업 이수학점 안내") == \
         "software-graduation-requirements"
     assert classify_source_key("세종대학교 등록금 납부와 등록 안내") == "tuition-policy"
+    assert classify_source_key(
+        "2026학년도 2학기 학부 재학생 등록금 납부 안내(재학생, 복학생, 재입학생)"
+    ) == "tuition-policy"
     assert classify_source_key("교내장학금 기본 안내") == "scholarship-policy"

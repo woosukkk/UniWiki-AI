@@ -26,7 +26,8 @@ def classify_source_key(title: str) -> str:
     compact = title.replace(" ", "")
     if "소프트웨어학과" in compact and "졸업" in compact:
         return "software-graduation-requirements"
-    if "등록금납부와등록안내" in compact or (
+    if "2026학년도2학기학부재학생등록금납부안내" in compact \
+            or "등록금납부와등록안내" in compact or (
             "등록금" in compact and "기본" in compact):
         return "tuition-policy"
     if "장학금" in compact and any(term in compact for term in ("기본", "교내", "제도")):
