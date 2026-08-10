@@ -127,7 +127,7 @@ GET    /api/vector-store/stats
 
 검색 개선 과정은 [`docs/AI_TUNING_HISTORY.md`](../docs/AI_TUNING_HISTORY.md), 전체 구조는 [`docs/PRESENTATION_AI_PIPELINE.md`](../docs/PRESENTATION_AI_PIPELINE.md)를 참고하세요.
 
-## v1.5.0 검색·메모리 정책
+## v1.5.1 검색·메모리 정책
 
 - 벡터 후보는 최대 60개만 조회하고 정확 키워드는 Chroma 서버 측 본문 필터로 최대 20개만 보강합니다.
 - 최종 선택된 위키 ID의 청크만 다시 읽어 전체 컬렉션의 Python 메모리 적재를 피합니다.
@@ -138,4 +138,4 @@ GET    /api/vector-store/stats
 - 근거가 부족하면 `grounded: false`를 반환하고 프론트엔드는 질문 게시판으로 연결합니다.
 - `COMMUNITY_WIKI_CATEGORY_ID`를 설정하면 후기·팁·취업·프로젝트 질문은 함께 만든 위키를, 일정·규정·장학금·졸업·수강 질문은 공식 위키를 우선합니다.
 
-공식 자료 재적재는 MySQL 공식 위키·원문과 Chroma 벡터를 같은 범위로 정리한 뒤 수집 → 벡터 동기화 순서로 진행합니다. `OFFICIAL_SOURCE_RESET_ENABLED`는 일회성 복구 옵션이며 완료 즉시 `false`로 되돌립니다.
+공식 자료를 초기화해야 하는 예외적 복구에서는 MySQL 공식 위키·원문과 Chroma 벡터를 같은 범위로 정리한 뒤 수집 → 벡터 동기화 순서로 진행합니다. 현재 운영 데이터는 유지하며 `OFFICIAL_SOURCE_RESET_ENABLED=false`, `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=false`입니다. 이후 자정·관리자 수집 요청에만 robots 정책을 적용하고 변경된 위키만 벡터 동기화합니다.

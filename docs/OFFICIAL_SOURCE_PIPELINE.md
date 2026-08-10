@@ -144,4 +144,10 @@ npm.cmd run dev -- --host 127.0.0.1
 
 ## robots.txt 준수
 
-2026-08-11 확인한 공식 호스트 정책을 신규 요청에 적용한다. `www.sejong.ac.kr`은 요청 간 10초를 유지하고 `mode=download` 및 내부 리소스 경로를 수집하지 않는다. `tosc.sejong.ac.kr`과 `udream.sejong.ac.kr`은 루트 외 경로가 차단되어 자동 수집에서 제외한다. 기존 공식 데이터를 초기화한 뒤에도 허용된 URL만 다시 적재한다.
+2026-08-11 확인한 공식 호스트 정책을 신규 네트워크 요청에 적용한다. `www.sejong.ac.kr`은 요청 간 10초를 유지하고 `mode=download` 및 내부 리소스 경로를 수집하지 않는다. `tosc.sejong.ac.kr`과 `udream.sejong.ac.kr`은 루트 외 경로가 차단되어 이후 자동 수집에서 제외한다.
+
+정책 적용 전에 적재된 공식 위키·원문·벡터는 삭제하지 않는다. 운영에서는 기존 방식의 일회성 수집을 완료한 뒤 `OFFICIAL_SOURCE_COLLECT_ON_STARTUP=false`, `OFFICIAL_SOURCE_RESET_ENABLED=false`로 전환했으며, 이후 자정 스케줄과 관리자 수동 수집부터 위 정책을 적용한다.
+
+## 카테고리 인코딩 호환
+
+과거 운영 초기화 과정에서 Latin-1 또는 Windows-1252로 잘못 해석된 UTF-8 카테고리가 정상 카테고리와 함께 남을 수 있다. 카테고리 API는 깨진 이름·설명을 정상 한글로 복원하고, 같은 이름의 정상 카테고리가 있으면 실제 공식 문서가 연결된 정상 ID를 우선한다. 원본 행을 즉시 삭제하지 않아 기존 위키의 외래키 연결은 유지한다.

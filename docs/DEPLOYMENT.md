@@ -30,6 +30,7 @@ Selenium 수집기는 Chrome 로그인과 영속 브라우저 프로필이 필�
 | `OFFICIAL_SOURCE_ZONE` | 수집 기준 시간대. 운영값 `Asia/Seoul` |
 | `OFFICIAL_SOURCE_RESET_ENABLED` | 공식 자료 일회성 초기화. 평상시 반드시 `false` |
 | `OFFICIAL_SOURCE_COLLECT_ON_STARTUP` | 배포 시작 시 전체 수집 여부. 복구 후 `false` |
+| `OFFICIAL_SOURCE_SCHEDULER_ENABLED` | 자정 정기 수집 활성화. 운영값 `true` |
 
 ### AI 서비스
 
@@ -80,5 +81,7 @@ docker compose --env-file infra/.env -f infra/docker-compose.yml up --build
 - 공식 위키와 함께 만든 위키가 AI 검색 결과에 모두 포함됨
 - 수집 import API가 관리자 권한과 전용 토큰으로 보호됨
 - 배포 태그와 실행 중인 커밋이 일치함
+- `/api/categories`에 깨진 한글이나 중복 이름이 없음
+- 기존 적재 자료는 유지되고 신규 공식 요청에만 robots 정책이 적용됨
 - AI 질문 직후 Railway 로그에 `Killed` 또는 컨테이너 재시작이 없음
 - AI 검색이 전체 Chroma 레코드가 아닌 최대 60개 후보와 선택된 위키 청크만 조회함
