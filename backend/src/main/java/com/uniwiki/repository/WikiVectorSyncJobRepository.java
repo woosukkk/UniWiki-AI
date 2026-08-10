@@ -6,6 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 public interface WikiVectorSyncJobRepository
         extends JpaRepository<WikiVectorSyncJob, Long> {
@@ -19,4 +22,25 @@ public interface WikiVectorSyncJobRepository
     List<WikiVectorSyncJob> findTop20ByOrderByCreatedAtDesc();
 
     long countByStatus(VectorSyncStatus status);
+
+    Optional<WikiVectorSyncJob> findFirstByWikiPostIdAndStatusInOrderByIdDesc(
+            Long wikiPostId,
+            Collection<VectorSyncStatus> statuses);
+
+    @Modifying
+    @Query(value = """
+            DELETE older FROM wiki_vector_sync_jobs older
+            JOIN wiki_vector_sync_jobs newer
+              ON newer.wiki_post_id = older.wiki_post_id AND newer.id > older.id
+            WHERE older.status = 'COMPLETED'
+            """, nativeQuery = true)
+    int deleteSupersededCompletedJobs();
+
+    @Modifying
+    @Query(value = """
+            UPDATE wiki_vector_sync_jobs
+            SET payload = NULL
+            WHERE status = 'COMPLETED' AND payload IS NOT NULL
+            """, nativeQuery = true)
+    int clearCompletedPayloads();
 }

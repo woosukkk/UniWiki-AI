@@ -19,10 +19,13 @@ import org.springframework.stereotype.Component;
 public class OfficialTopicWikiBootstrap implements ApplicationRunner {
 
     private final OfficialSourcePipelineService pipelineService;
+    private final WikiVectorSyncService vectorSyncService;
 
     @Override
     public void run(ApplicationArguments args) {
+        int pruned = vectorSyncService.pruneCompletedJobs();
         int rebuilt = pipelineService.rebuildTopicWikis();
-        log.info("Official topic wiki rebuild completed: documents={}", rebuilt);
+        log.info("Official topic wiki rebuild completed: documents={}, prunedVectorJobs={}",
+                rebuilt, pruned);
     }
 }

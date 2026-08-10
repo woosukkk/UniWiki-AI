@@ -13,5 +13,6 @@ public class WikiVectorSyncScheduler {
     @Scheduled(fixedDelayString = "${uniwiki.vector-sync.interval-ms:60000}")
     public void synchronize() {
         syncService.processPendingJobs();
+        syncService.pruneCompletedJobs();
     }
 }

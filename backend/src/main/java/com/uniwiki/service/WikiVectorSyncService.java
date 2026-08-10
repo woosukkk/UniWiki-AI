@@ -31,7 +31,12 @@ public class WikiVectorSyncService {
     @Transactional
     public void enqueueUpsert(WikiPost wikiPost) {
         String payload = serialize(WikiVectorSyncPayload.from(wikiPost));
-        jobRepository.save(WikiVectorSyncJob.upsert(wikiPost.getId(), payload));
+        jobRepository.findFirstByWikiPostIdAndStatusInOrderByIdDesc(
+                        wikiPost.getId(), RETRYABLE_STATUSES)
+                .ifPresentOrElse(
+                        job -> job.replaceWithUpsert(payload),
+                        () -> jobRepository.save(WikiVectorSyncJob.upsert(
+                                wikiPost.getId(), payload)));
     }
 
     @Transactional
@@ -51,6 +56,13 @@ public class WikiVectorSyncService {
             process(job);
         }
         return jobs.size();
+    }
+
+    @Transactional
+    public int pruneCompletedJobs() {
+        int deleted = jobRepository.deleteSupersededCompletedJobs();
+        jobRepository.clearCompletedPayloads();
+        return deleted;
     }
 
     private void process(WikiVectorSyncJob job) {

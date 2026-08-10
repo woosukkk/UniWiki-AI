@@ -67,8 +67,18 @@ public class WikiVectorSyncJob {
         return new WikiVectorSyncJob(wikiPostId, VectorSyncOperation.DELETE, null);
     }
 
+    public void replaceWithUpsert(String payload) {
+        this.operation = VectorSyncOperation.UPSERT;
+        this.payload = payload;
+        this.status = VectorSyncStatus.PENDING;
+        this.attemptCount = 0;
+        this.lastError = null;
+        this.processedAt = null;
+    }
+
     public void markCompleted() {
         this.status = VectorSyncStatus.COMPLETED;
+        this.payload = null;
         this.attemptCount++;
         this.lastError = null;
         this.processedAt = LocalDateTime.now();
