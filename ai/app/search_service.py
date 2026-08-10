@@ -46,9 +46,10 @@ class SemanticSearchService:
             request.category_id,
             limit=40,
         )
+        canonical_results = self._canonical_records(request.query)
         results = self._rerank(
             expanded_query,
-            vector_results + keyword_results,
+            canonical_results + vector_results + keyword_results,
             max(top_k * 6, 30),
         )
         guide_terms = self._canonical_search_terms(request.query)
@@ -65,11 +66,10 @@ class SemanticSearchService:
                 request.category_id,
                 limit=30,
             )
-            canonical_results = self._canonical_records(request.query)
             results = self._rerank(
                 expanded_query,
-                vector_results + keyword_results + guide_vector_results
-                + guide_results + canonical_results,
+                canonical_results + vector_results + keyword_results
+                + guide_vector_results + guide_results,
                 max(top_k * 6, 30),
             )
         results = self._prefer_current_period(request.query, results)
@@ -228,10 +228,15 @@ class SemanticSearchService:
 
     def _canonical_records(self, query):
         normalized = re.sub(r"\s+", "", query.lower())
+        keys = []
         if re.search(r"졸업(?!생)", normalized) and re.search(
                 r"소프트웨어(?:학과|과)?|소융대", normalized):
-            return self.vector_store.records_for_wiki_posts([47])
-        return []
+            keys.append("software-graduation-requirements")
+        if re.search(r"등록금|학비|등록(?:납부|고지|환불|반환)", normalized):
+            keys.append("tuition-policy")
+        if re.search(r"교내장학|학교장학|장학금", normalized):
+            keys.append("scholarship-policy")
+        return self.vector_store.records_for_source_keys(keys)
 
     @staticmethod
     def _canonical_title(title):

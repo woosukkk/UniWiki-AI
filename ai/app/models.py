@@ -8,6 +8,7 @@ class WikiDocumentRequest(BaseModel):
     title: str = Field(min_length=1, max_length=200)
     content: str = Field(min_length=1)
     category_id: int = Field(alias="categoryId", gt=0)
+    source_key: str = Field(default="", alias="sourceKey", max_length=100)
 
     @field_validator("title", "content")
     @classmethod
@@ -26,6 +27,7 @@ class ChunkMetadata(BaseModel):
     category_id: int = Field(alias="categoryId")
     chunk_index: int = Field(alias="chunkIndex")
     document_type: str = Field(default="GENERAL", alias="documentType")
+    source_key: str = Field(default="", alias="sourceKey")
 
 
 class EmbeddedChunk(BaseModel):
@@ -108,6 +110,7 @@ class SemanticSearchResult(BaseModel):
     category_id: int = Field(alias="categoryId")
     chunk_index: int = Field(alias="chunkIndex")
     document_type: str = Field(default="GENERAL", alias="documentType")
+    source_key: str = Field(default="", alias="sourceKey")
     score: float
 
 

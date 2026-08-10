@@ -67,6 +67,43 @@ class WikiVectorSyncServiceTest {
     }
 
     @Test
+    void assignsStableKeyToSoftwareGraduationGuide() {
+        WikiPost wikiPost = mock(WikiPost.class);
+        Category category = mock(Category.class);
+        when(wikiPost.getId()).thenReturn(47L);
+        when(wikiPost.getTitle()).thenReturn("2026 소프트웨어학과 졸업 이수학점 안내");
+        when(wikiPost.getContent()).thenReturn("졸업학점 130학점");
+        when(wikiPost.getCategory()).thenReturn(category);
+        when(category.getId()).thenReturn(174L);
+
+        syncService.upsertNow(wikiPost);
+
+        ArgumentCaptor<WikiVectorSyncPayload> payload =
+                ArgumentCaptor.forClass(WikiVectorSyncPayload.class);
+        verify(aiVectorStoreClient).upsert(payload.capture());
+        assertThat(payload.getValue().sourceKey())
+                .isEqualTo("software-graduation-requirements");
+    }
+
+    @Test
+    void retriesImmediateReindexWhenReadBackVerificationFails() {
+        WikiPost wikiPost = mock(WikiPost.class);
+        Category category = mock(Category.class);
+        when(wikiPost.getId()).thenReturn(47L);
+        when(wikiPost.getTitle()).thenReturn("소프트웨어학과 졸업 이수학점 안내");
+        when(wikiPost.getContent()).thenReturn("졸업학점 130학점");
+        when(wikiPost.getCategory()).thenReturn(category);
+        when(category.getId()).thenReturn(174L);
+        doThrow(new IllegalStateException("read-back failed"))
+                .doNothing()
+                .when(aiVectorStoreClient).upsert(any());
+
+        syncService.upsertNow(wikiPost);
+
+        verify(aiVectorStoreClient, times(2)).upsert(any());
+    }
+
+    @Test
     void processesUpsertJobAndMarksItCompleted() {
         WikiVectorSyncJob job = WikiVectorSyncJob.upsert(
                 7L,

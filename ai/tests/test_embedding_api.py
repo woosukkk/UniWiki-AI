@@ -43,6 +43,7 @@ def test_creates_chunks_embeddings_and_metadata() -> None:
         "categoryId": 2,
         "chunkIndex": 0,
         "documentType": "OFFICIAL_NOTICE",
+        "sourceKey": "",
     }
 
 

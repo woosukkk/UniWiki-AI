@@ -37,6 +37,9 @@ class FakeVectorStore:
     def records_for_wiki_posts(self, wiki_post_ids):
         return []
 
+    def records_for_source_keys(self, source_keys):
+        return []
+
     def keyword_records(self, terms, category_id=None, limit=20):
         return []
 
@@ -66,6 +69,7 @@ def test_searches_wiki_chunks_with_top_k_and_metadata() -> None:
         "categoryId": 2,
         "chunkIndex": 0,
         "documentType": "GENERAL",
+        "sourceKey": "",
         "score": 0.91,
     }
     assert vector_store.search_arguments == ([1.0, 0.0, 0.0], 60, 2)
@@ -176,8 +180,8 @@ def test_software_graduation_query_loads_canonical_wiki_directly() -> None:
             super().__init__()
             self.requested_ids = None
 
-        def records_for_wiki_posts(self, wiki_post_ids):
-            self.requested_ids = wiki_post_ids
+        def records_for_source_keys(self, source_keys):
+            self.requested_ids = source_keys
             return []
 
     store = CanonicalStore()
@@ -185,7 +189,37 @@ def test_software_graduation_query_loads_canonical_wiki_directly() -> None:
 
     service._canonical_records("소프트웨어학과 졸업 요건 알려줘")
 
-    assert store.requested_ids == [47]
+    assert store.requested_ids == ["software-graduation-requirements"]
+
+
+def test_critical_questions_return_their_canonical_source_first() -> None:
+    class CriticalStore(FakeVectorStore):
+        def records_for_source_keys(self, source_keys):
+            key = source_keys[0] if source_keys else ""
+            titles = {
+                "software-graduation-requirements": "소프트웨어학과 졸업 이수학점 안내",
+                "tuition-policy": "등록금 납부 및 반환 기준",
+                "scholarship-policy": "교내장학금 기본 안내",
+            }
+            if not key:
+                return []
+            return [SemanticSearchResult(
+                chunkId=f"{key}-0", wikiPostId=100,
+                title=titles[key], content="핵심 기준 문서 본문",
+                categoryId=2, chunkIndex=0, documentType="CANONICAL_GUIDE",
+                sourceKey=key, score=0.0,
+            )]
+
+    cases = {
+        "소프트웨어학과 졸업 요건 알려줘": "software-graduation-requirements",
+        "등록금 납부와 반환 기준 알려줘": "tuition-policy",
+        "교내 장학금 종류 알려줘": "scholarship-policy",
+    }
+    service = SemanticSearchService(FakeEmbedder(), CriticalStore(), 5)
+
+    for query, expected_key in cases.items():
+        results = service.search(SemanticSearchRequest(query=query, topK=5)).results
+        assert results[0].source_key == expected_key
 
 
 def test_source_priority_follows_question_intent() -> None:

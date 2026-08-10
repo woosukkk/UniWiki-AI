@@ -43,7 +43,17 @@ public class WikiVectorSyncService {
     }
 
     public void upsertNow(WikiPost wikiPost) {
-        aiVectorStoreClient.upsert(WikiVectorSyncPayload.from(wikiPost));
+        WikiVectorSyncPayload payload = WikiVectorSyncPayload.from(wikiPost);
+        RuntimeException lastFailure = null;
+        for (int attempt = 0; attempt < 3; attempt++) {
+            try {
+                aiVectorStoreClient.upsert(payload);
+                return;
+            } catch (RuntimeException exception) {
+                lastFailure = exception;
+            }
+        }
+        throw lastFailure;
     }
 
     @Transactional

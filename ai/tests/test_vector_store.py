@@ -105,6 +105,18 @@ def test_reads_chunks_only_for_selected_documents(tmp_path: Path) -> None:
     assert [record.chunk_index for record in records] == [0, 1]
 
 
+def test_reads_canonical_documents_by_stable_source_key(tmp_path: Path) -> None:
+    store = create_store(tmp_path)
+    graduation = embedding_response(47, ["졸업학점 130학점"])
+    graduation.chunks[0].metadata.source_key = "software-graduation-requirements"
+    store.replace_document(graduation)
+
+    records = store.records_for_source_keys(["software-graduation-requirements"])
+
+    assert [record.wiki_post_id for record in records] == [47]
+    assert records[0].source_key == "software-graduation-requirements"
+
+
 def test_finds_exact_keyword_without_loading_every_document(tmp_path: Path) -> None:
     store = create_store(tmp_path)
     matching = embedding_response(1, ["멘토링 내용"])

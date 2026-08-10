@@ -11,6 +11,8 @@ COPY requirements.txt ./
 RUN pip install --upgrade pip \
     && pip install -r requirements.txt
 COPY app app
+COPY tests tests
+RUN pytest -q
 COPY docker-entrypoint.sh /usr/local/bin/uniwiki-ai-entrypoint
 RUN mkdir -p /data/chroma && chown -R 10001:10001 /app /data
 RUN sed -i 's/\r$//' /usr/local/bin/uniwiki-ai-entrypoint \

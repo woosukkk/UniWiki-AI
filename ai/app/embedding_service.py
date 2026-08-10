@@ -12,7 +12,7 @@ def classify_document(title: str) -> str:
     compact = title.replace(" ", "")
     if any(term in compact for term in (
         "기본안내", "기본원칙", "이수학점안내", "적용기준", "수강편람",
-        "학사규정", "장학제도", "교내장학금",
+        "학사규정", "장학제도", "교내장학금", "등록금",
     )):
         return "CANONICAL_GUIDE"
     if any(term in compact for term in (
@@ -51,6 +51,7 @@ class WikiEmbeddingService:
                     categoryId=document.category_id,
                     chunkIndex=chunk.index,
                     documentType=classify_document(document.title),
+                    sourceKey=document.source_key,
                 ),
             )
             for chunk, vector in zip(text_chunks, vectors)

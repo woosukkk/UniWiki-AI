@@ -40,6 +40,7 @@ class RagAnswerService:
         partial_min_score: float,
         max_context_chars: int,
     ) -> None:
+        self._rewrite_query.cache_clear()
         self.search_service = search_service
         self.language_model = language_model
         self.top_k = top_k

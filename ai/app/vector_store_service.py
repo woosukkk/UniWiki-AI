@@ -20,6 +20,11 @@ class WikiVectorStoreService:
     def save(self, document: WikiDocumentRequest) -> VectorStoreWriteResponse:
         embedding = self.embedding_service.embed(document)
         stored_count = self.vector_store.replace_document(embedding)
+        stored = self.vector_store.get_document(document.wiki_post_id)
+        if stored.chunk_count != stored_count or any(
+                chunk.metadata.source_key != document.source_key
+                for chunk in stored.chunks):
+            raise RuntimeError("벡터 저장 후 검증에 실패했습니다.")
         return VectorStoreWriteResponse(
             wikiPostId=document.wiki_post_id,
             storedChunkCount=stored_count,

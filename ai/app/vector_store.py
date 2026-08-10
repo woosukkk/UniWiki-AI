@@ -39,6 +39,12 @@ class VectorStore(Protocol):
     ) -> list[SemanticSearchResult]:
         """Return chunks only for the requested wiki documents."""
 
+    def records_for_source_keys(
+        self,
+        source_keys: list[str],
+    ) -> list[SemanticSearchResult]:
+        """Return chunks belonging to stable canonical source keys."""
+
     def keyword_records(
         self,
         terms: list[str],
@@ -154,6 +160,7 @@ class ChromaVectorStore:
                     categoryId=metadata["categoryId"],
                     chunkIndex=metadata["chunkIndex"],
                     documentType=metadata.get("documentType", "GENERAL"),
+                    sourceKey=metadata.get("sourceKey", ""),
                     score=max(-1.0, min(1.0, 1.0 - distance)),
                 )
             )
@@ -179,6 +186,32 @@ class ChromaVectorStore:
                 categoryId=metadata["categoryId"],
                 chunkIndex=metadata["chunkIndex"],
                 documentType=metadata.get("documentType", "GENERAL"),
+                sourceKey=metadata.get("sourceKey", ""),
+                score=0.0,
+            )
+            for index, (chunk_id, metadata) in enumerate(
+                zip(result["ids"], result["metadatas"])
+            )
+        ]
+
+    def records_for_source_keys(self, source_keys: list[str]) -> list[SemanticSearchResult]:
+        unique_keys = list(dict.fromkeys(key for key in source_keys if key))
+        if not unique_keys:
+            return []
+        result = self.collection.get(
+            where={"sourceKey": {"$in": unique_keys}},
+            include=["documents", "metadatas"],
+        )
+        return [
+            SemanticSearchResult(
+                chunkId=chunk_id,
+                wikiPostId=metadata["wikiPostId"],
+                title=metadata["title"],
+                content=result["documents"][index],
+                categoryId=metadata["categoryId"],
+                chunkIndex=metadata["chunkIndex"],
+                documentType=metadata.get("documentType", "GENERAL"),
+                sourceKey=metadata.get("sourceKey", ""),
                 score=0.0,
             )
             for index, (chunk_id, metadata) in enumerate(
@@ -235,6 +268,7 @@ class ChromaVectorStore:
                         categoryId=metadata["categoryId"],
                         chunkIndex=metadata["chunkIndex"],
                         documentType=metadata.get("documentType", "GENERAL"),
+                        sourceKey=metadata.get("sourceKey", ""),
                         score=0.0,
                     ))
                     if len(records) >= limit:
