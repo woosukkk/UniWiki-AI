@@ -198,26 +198,37 @@ class ChromaVectorStore:
         records = []
         seen_chunk_ids = set()
         for term in unique_terms:
-            result = self.collection.get(
-                where=where,
-                where_document={"$contains": term},
-                limit=limit - len(records),
-                include=["documents", "metadatas"],
-            )
-            for index, (chunk_id, metadata) in enumerate(
-                    zip(result["ids"], result["metadatas"])):
-                if chunk_id in seen_chunk_ids:
-                    continue
-                seen_chunk_ids.add(chunk_id)
-                records.append(SemanticSearchResult(
-                    chunkId=chunk_id,
-                    wikiPostId=metadata["wikiPostId"],
-                    title=metadata["title"],
-                    content=result["documents"][index],
-                    categoryId=metadata["categoryId"],
-                    chunkIndex=metadata["chunkIndex"],
-                    score=0.0,
-                ))
-                if len(records) >= limit:
-                    return records
+            title_where = {"title": term}
+            if category_id is not None:
+                title_where = {"$and": [{"categoryId": category_id}, title_where]}
+            results = [
+                self.collection.get(
+                    where=title_where,
+                    limit=limit - len(records),
+                    include=["documents", "metadatas"],
+                ),
+                self.collection.get(
+                    where=where,
+                    where_document={"$contains": term},
+                    limit=limit - len(records),
+                    include=["documents", "metadatas"],
+                ),
+            ]
+            for result in results:
+                for index, (chunk_id, metadata) in enumerate(
+                        zip(result["ids"], result["metadatas"])):
+                    if chunk_id in seen_chunk_ids:
+                        continue
+                    seen_chunk_ids.add(chunk_id)
+                    records.append(SemanticSearchResult(
+                        chunkId=chunk_id,
+                        wikiPostId=metadata["wikiPostId"],
+                        title=metadata["title"],
+                        content=result["documents"][index],
+                        categoryId=metadata["categoryId"],
+                        chunkIndex=metadata["chunkIndex"],
+                        score=0.0,
+                    ))
+                    if len(records) >= limit:
+                        return records
         return records

@@ -120,3 +120,14 @@ def test_finds_exact_keyword_without_loading_every_document(tmp_path: Path) -> N
     records = store.keyword_records(["우아한테크코스", "교육"])
 
     assert [record.wiki_post_id for record in records] == [1, 3]
+
+
+def test_finds_exact_title_when_keyword_is_not_in_content(tmp_path: Path) -> None:
+    store = create_store(tmp_path)
+    matching = embedding_response(4, ["장학 제도 본문"])
+    matching.chunks[0].metadata.title = "교내장학금"
+    store.replace_document(matching)
+
+    records = store.keyword_records(["교내장학금"])
+
+    assert [record.wiki_post_id for record in records] == [4]
