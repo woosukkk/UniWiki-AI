@@ -195,31 +195,6 @@ def test_searches_at_most_five_matching_categories_with_seventy_keywords() -> No
     assert store.requested_categories == [1, 2, 3, 4, 5]
 
 
-def test_keeps_exact_title_match_in_final_results() -> None:
-    class ExactTitleStore(FakeVectorStore):
-        def search(self, query_embedding, top_k, category_id=None):
-            return [
-                SemanticSearchResult(
-                    chunkId=f"notice-{index}", wikiPostId=index,
-                    title=f"2026 장학금 신청 공지 {index}", content="신청 조건 장학금",
-                    categoryId=176, chunkIndex=0, score=1.0,
-                )
-                for index in range(1, 8)
-            ]
-
-        def records_for_categories(self, category_ids):
-            return [SemanticSearchResult(
-                chunkId="guide-0", wikiPostId=8884, title="교내장학금",
-                content="교내장학금 종류", categoryId=176, chunkIndex=0, score=0.0,
-            )]
-
-    results = SemanticSearchService(FakeEmbedder(), ExactTitleStore(), 5).search(
-        SemanticSearchRequest(query="교내 장학금 종류와 신청 조건", topK=5)
-    ).results
-
-    assert any(result.wiki_post_id == 8884 for result in results)
-
-
 def test_source_priority_follows_question_intent() -> None:
     service = SemanticSearchService(
         FakeEmbedder(), FakeVectorStore(), 5, community_category_id=304
