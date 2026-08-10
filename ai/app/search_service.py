@@ -51,9 +51,10 @@ class SemanticSearchService:
             vector_results + keyword_results,
             max(top_k * 6, 30),
         )
-        if self._needs_evidence_retry(request.query, results):
+        guide_terms = self._canonical_search_terms(request.query)
+        if guide_terms:
             guide_results = self.vector_store.keyword_records(
-                self._canonical_search_terms(request.query),
+                guide_terms,
                 request.category_id,
                 limit=30,
             )
@@ -198,21 +199,6 @@ class SemanticSearchService:
         if adjustment < 0:
             return 0
         return 1
-
-    @classmethod
-    def _needs_evidence_retry(cls, query, results):
-        normalized = re.sub(r"\s+", "", query.lower())
-        evidence = " ".join(f"{result.title} {result.content}" for result in results)
-        if re.search(r"졸업(?!생)|졸업조건|졸업기준|졸업요건|졸업학점", normalized):
-            return not (
-                "졸업" in evidence
-                and any(term in evidence for term in ("이수학점", "졸업학점", "전공필수"))
-            )
-        if re.search(r"교내장학|학교장학|장학금(?:종류|제도)|장학.*(?:종류|어떤|뭐)", normalized):
-            return not any(term in evidence for term in (
-                "교내장학", "기본 원칙", "기본 안내", "자체 선발", "중복수혜",
-            ))
-        return False
 
     @staticmethod
     def _canonical_search_terms(query):
