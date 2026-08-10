@@ -2,11 +2,11 @@
 
 세종대학교 생활 정보를 공식 자료와 학생 질문·답변으로 정리하고, 실제 위키 문서를 근거로 AI 답변을 제공하는 서비스입니다.
 
-> 2026 콘텐츠소프트웨어학과 학술제 제출 릴리스: [`v1.4.0`](https://github.com/woosukkk/UniWiki-AI/releases/tag/v1.4.0)
+> 2026 콘텐츠소프트웨어학과 학술제 최종 릴리스: [`v1.5.0`](https://github.com/woosukkk/UniWiki-AI/releases/tag/v1.5.0)
 
 ## 학술제 심사 안내
 
-UniWiki-AI는 별도의 실행 파일을 내려받아 실행하는 프로그램이 아니라, Vercel과 Railway에 배포된 웹 프로젝트입니다. 따라서 GitHub Releases에는 로컬 실행 파일 대신 심사 기준 커밋을 나타내는 `v1.4.0` 태그를 등록했습니다.
+UniWiki-AI는 별도의 실행 파일을 내려받아 실행하는 프로그램이 아니라, Vercel과 Railway에 배포된 웹 프로젝트입니다. 따라서 GitHub Releases에는 로컬 실행 파일 대신 심사 기준 커밋을 나타내는 `v1.5.0` 태그를 등록했습니다.
 
 | 항목 | 주소 |
 |---|---|
@@ -15,13 +15,21 @@ UniWiki-AI는 별도의 실행 파일을 내려받아 실행하는 프로그램�
 | AI 챗봇 | https://frontend-six-pi-h5i7tztups.vercel.app/chatbot |
 | 질문 게시판 | https://frontend-six-pi-h5i7tztups.vercel.app/questions |
 | GitHub Repository | https://github.com/woosukkk/UniWiki-AI |
-| 제출 릴리스 | https://github.com/woosukkk/UniWiki-AI/releases/tag/v1.4.0 |
+| 제출 릴리스 | https://github.com/woosukkk/UniWiki-AI/releases/tag/v1.5.0 |
 
 심사 시에는 별도 설치 없이 배포 웹사이트에 접속하면 됩니다. 위키 열람과 AI 질문은 로그인하지 않아도 사용할 수 있으며, 질문·답변 작성 등 사용자 기능은 회원가입 후 사용할 수 있습니다.
 
 로컬에서 전체 서비스를 실행하려면 Java 21, Python 3.10 이상, Node.js, Docker가 필요합니다. 아래의 `로컬 실행` 절차에 따라 MySQL, 백엔드, AI 서비스, 프론트엔드를 순서대로 실행합니다. 비밀키와 운영 계정 정보는 저장소에 포함하지 않으므로 AI 답변 등 외부 서비스 연동에는 별도의 환경변수 설정이 필요합니다.
 
 ## 주요 기능
+
+### v1.5.0 운영 안정화
+
+- 공식 문서 적재 정책: SW중심대학사업단·TOSC·uDream은 출처별 통합, 그 외는 하위 문서 1건당 위키 1건
+- 2024년 이후 공식 문서를 수집하며 관리자가 즉시 수집할 수 있고 정기 수집은 매일 자정 실행
+- 완료된 벡터 동기화 작업의 본문과 중복 작업을 소규모 배치로 정리해 MySQL·컨테이너 용량 사용을 제한
+- AI 검색은 Chroma 전체를 메모리에 올리지 않고 제한된 벡터 후보와 정확 키워드 후보를 결합
+- 근거 부족 답변은 질문 게시판 작성 흐름으로 연결
 
 - 세종대학교 공식 공지와 PDF·Excel·DOCX 첨부파일 수집
 - 연도·학기·카테고리별 위키 검색과 출처 확인

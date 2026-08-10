@@ -26,6 +26,10 @@ Selenium 수집기는 Chrome 로그인과 영속 브라우저 프로필이 필�
 | `AI_SERVICE_BASE_URL` | AI 서비스 주소 |
 | `EVERYTIME_IMPORT_TOKEN` | 로컬 수집 결과 import 검증 토큰 |
 | `PORT` | 플랫폼이 할당한 포트 |
+| `OFFICIAL_SOURCE_CRON` | 공식 자료 수집 시각. 운영값 `0 0 0 * * *` |
+| `OFFICIAL_SOURCE_ZONE` | 수집 기준 시간대. 운영값 `Asia/Seoul` |
+| `OFFICIAL_SOURCE_RESET_ENABLED` | 공식 자료 일회성 초기화. 평상시 반드시 `false` |
+| `OFFICIAL_SOURCE_COLLECT_ON_STARTUP` | 배포 시작 시 전체 수집 여부. 복구 후 `false` |
 
 ### AI 서비스
 

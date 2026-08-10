@@ -126,3 +126,14 @@ GET    /api/vector-store/stats
 - OpenAI 키와 내부 AI 서비스 주소는 프론트엔드에 노출하지 않습니다.
 
 검색 개선 과정은 [`docs/AI_TUNING_HISTORY.md`](../docs/AI_TUNING_HISTORY.md), 전체 구조는 [`docs/PRESENTATION_AI_PIPELINE.md`](../docs/PRESENTATION_AI_PIPELINE.md)를 참고하세요.
+
+## v1.5.0 검색·메모리 정책
+
+- 벡터 후보는 최대 60개만 조회하고 정확 키워드는 Chroma 서버 측 본문 필터로 최대 20개만 보강합니다.
+- 최종 선택된 위키 ID의 청크만 다시 읽어 전체 컬렉션의 Python 메모리 적재를 피합니다.
+- 우아한테크코스·그리디 같은 정확한 고유명사는 키워드 후보 우선순위를 유지합니다.
+- 벡터 UPSERT는 4개 단위로 처리하고 완료된 동기화 작업의 payload는 제거합니다.
+- 제목의 연도·학기 신호를 반영해 최신 공식 문서를 우선합니다.
+- 근거가 부족하면 `grounded: false`를 반환하고 프론트엔드는 질문 게시판으로 연결합니다.
+
+공식 자료 재적재는 MySQL 공식 위키·원문과 Chroma 벡터를 같은 범위로 정리한 뒤 수집 → 벡터 동기화 순서로 진행합니다. `OFFICIAL_SOURCE_RESET_ENABLED`는 일회성 복구 옵션이며 완료 즉시 `false`로 되돌립니다.
