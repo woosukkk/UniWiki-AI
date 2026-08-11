@@ -4,9 +4,6 @@
 
 > 2026 콘텐츠소프트웨어학과 학술제 최종 릴리스: [`v1.5.1`](https://github.com/woosukkk/UniWiki-AI/releases/tag/v1.5.1)
 
-## 학술제 심사 안내
-
-UniWiki-AI는 별도의 실행 파일을 내려받아 실행하는 프로그램이 아니라, Vercel과 Railway에 배포된 웹 프로젝트입니다. 따라서 GitHub Releases에는 로컬 실행 파일 대신 심사 기준 커밋을 나타내는 `v1.5.1` 태그를 등록했습니다.
 
 | 항목 | 주소 |
 |---|---|
