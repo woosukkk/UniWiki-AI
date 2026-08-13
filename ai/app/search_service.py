@@ -30,7 +30,8 @@ class SemanticSearchService:
 
     def search(self, request: SemanticSearchRequest) -> SemanticSearchResponse:
         top_k = request.top_k or self.default_top_k
-        query_text = f"질문: {request.query}"
+        query = self._expand_query(request.query)
+        query_text = f"질문: {query}"
         query_vectors = self.embedder.encode([query_text])
         if len(query_vectors) != 1:
             raise RuntimeError("검색 질문 임베딩 생성에 실패했습니다.")
@@ -41,12 +42,12 @@ class SemanticSearchService:
             category_id=request.category_id,
         )
         keyword_results = self.vector_store.keyword_records(
-            self._lexical_tokens(request.query),
+            self._lexical_tokens(query),
             request.category_id,
             limit=70,
         )
         seeds = self._rerank(
-            request.query,
+            query,
             vector_results + keyword_results,
             max(top_k * 6, 30),
         )
@@ -58,15 +59,15 @@ class SemanticSearchService:
         category_results = self.vector_store.records_for_categories(category_ids)
         required_results = (
             self.vector_store.records_for_titles(["교내장학금"])
-            if "장학금" in request.query else []
+            if "장학금" in query else []
         )
         results = self._rerank(
-            request.query,
+            query,
             vector_results + keyword_results + category_results + required_results,
             max(top_k * 6, 30),
         )
-        results = self._prefer_current_period(request.query, results)
-        required = self._rerank(request.query, required_results, 1)
+        results = self._prefer_current_period(query, results)
+        required = self._rerank(query, required_results, 1)
         if required and all(
                 result.wiki_post_id != required[0].wiki_post_id
                 for result in results[:top_k]):
@@ -81,7 +82,7 @@ class SemanticSearchService:
 
     @staticmethod
     def _expand_query(query):
-        return query
+        return re.sub(r"복수\s*전공", "제2전공", query)
 
     def _rerank(self, query, vector_results, top_k):
         vector_scores = {}

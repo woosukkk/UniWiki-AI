@@ -7,6 +7,11 @@ from app.models import SemanticSearchRequest, SemanticSearchResult
 from app.search_service import SemanticSearchService
 
 
+def test_normalizes_double_major_to_second_major() -> None:
+    assert SemanticSearchService._expand_query("복수전공 신청 방법") == "제2전공 신청 방법"
+    assert SemanticSearchService._expand_query("복수 전공 포기") == "제2전공 포기"
+
+
 class FakeEmbedder:
     model_name = "test-model"
 
