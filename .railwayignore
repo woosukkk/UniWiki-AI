@@ -1,0 +1,7 @@
+.git
+.gradle-test-cache
+backend/.gradle
+backend/build
+frontend/node_modules
+ai/.venv
+**/__pycache__
