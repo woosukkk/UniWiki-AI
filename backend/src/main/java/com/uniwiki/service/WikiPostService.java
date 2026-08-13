@@ -10,6 +10,8 @@ import com.uniwiki.repository.UserRepository;
 import com.uniwiki.repository.WikiPostRepository;
 import com.uniwiki.repository.LectureReviewWikiDraftRepository;
 import com.uniwiki.repository.EverytimeWikiDocumentRepository;
+import com.uniwiki.repository.QuestionWikiPromotionRepository;
+import com.uniwiki.repository.AnswerWikiPromotionRepository;
 import com.uniwiki.entity.EverytimeContentType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,6 +30,8 @@ public class WikiPostService {
     private final WikiPostRepository wikiPostRepository;
     private final LectureReviewWikiDraftRepository lectureReviewWikiDraftRepository;
     private final EverytimeWikiDocumentRepository everytimeWikiDocumentRepository;
+    private final QuestionWikiPromotionRepository questionWikiPromotionRepository;
+    private final AnswerWikiPromotionRepository answerWikiPromotionRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final WikiVectorSyncService vectorSyncService;
@@ -143,6 +147,10 @@ public class WikiPostService {
         validateAuthor(wikiPost, userId);
 
         vectorSyncService.enqueueDelete(wikiPostId);
+        questionWikiPromotionRepository.findByWikiPost_Id(wikiPostId)
+                .ifPresent(questionWikiPromotionRepository::delete);
+        answerWikiPromotionRepository.findByWikiPost_Id(wikiPostId)
+                .ifPresent(answerWikiPromotionRepository::delete);
         wikiPostRepository.delete(wikiPost);
     }
 

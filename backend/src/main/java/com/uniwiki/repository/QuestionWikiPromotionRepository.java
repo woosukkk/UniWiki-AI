@@ -14,6 +14,8 @@ public interface QuestionWikiPromotionRepository
 
     Optional<QuestionWikiPromotion> findByQuestion_Id(Long questionId);
 
+    Optional<QuestionWikiPromotion> findByWikiPost_Id(Long wikiPostId);
+
     @Query("""
             SELECT promotion
             FROM QuestionWikiPromotion promotion
