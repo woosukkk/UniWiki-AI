@@ -1,6 +1,18 @@
 # UniWiki-AI
 
-세종대학교 생활 정보를 공식 자료와 학생 질문·답변으로 정리하고, 실제 위키 문서를 근거로 AI 답변을 제공하는 서비스입니다.
+세종대학교 공식 자료와 학생 경험을 읽기 좋은 위키로 연결하고, 실제 문서를 근거로 답하는 대학생활 지식 플랫폼입니다.
+
+## 빠른 링크
+
+| 항목 | 링크 |
+|---|---|
+| 실제 배포 서비스 | <https://frontend-six-pi-h5i7tztups.vercel.app> |
+| 포트폴리오 문서 | [docs/PORTFOLIO.md](docs/PORTFOLIO.md) |
+| 발표 자료 | 개인정보 공개 동의 확인 전까지 게시 보류 |
+| 시스템 아키텍처 | [docs/architecture.md](docs/architecture.md) |
+| 주요 기술 | [기술 스택](#기술-스택) |
+| 실행 방법 | [로컬 실행](#로컬-실행) |
+| GitHub 저장소 | <https://github.com/woosukkk/UniWiki-AI> |
 
 > 2026 콘텐츠소프트웨어학과 학술제 최종 릴리스: [`v1.5.1`](https://github.com/woosukkk/UniWiki-AI/releases/tag/v1.5.1)
 
