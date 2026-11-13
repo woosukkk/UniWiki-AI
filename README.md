@@ -7,14 +7,11 @@
 
 | 항목 | 주소 |
 |---|---|
-| 배포 웹사이트 | https://frontend-six-pi-h5i7tztups.vercel.app |
-| 위키 문서 목록 | https://frontend-six-pi-h5i7tztups.vercel.app/wiki |
-| AI 챗봇 | https://frontend-six-pi-h5i7tztups.vercel.app/chatbot |
-| 질문 게시판 | https://frontend-six-pi-h5i7tztups.vercel.app/questions |
+| 배포 웹사이트 | 학술제 기간에 운영했으며 현재 서버 배포는 중단됨 |
 | GitHub Repository | https://github.com/woosukkk/UniWiki-AI |
 | 제출 릴리스 | https://github.com/woosukkk/UniWiki-AI/releases/tag/v1.5.1 |
 
-심사 시에는 별도 설치 없이 배포 웹사이트에 접속하면 됩니다. 위키 열람과 AI 질문은 로그인하지 않아도 사용할 수 있으며, 질문·답변 작성 등 사용자 기능은 회원가입 후 사용할 수 있습니다.
+학술제 기간에는 배포 웹사이트에서 위키 열람과 AI 질문을 로그인 없이, 질문·답변 작성 등 사용자 기능은 회원가입 후 사용할 수 있었습니다. 현재는 서버 배포를 중단했으므로, 서비스를 확인하려면 아래의 `로컬 실행` 절차를 따르면 됩니다.
 
 로컬에서 전체 서비스를 실행하려면 Java 21, Python 3.10 이상, Node.js, Docker가 필요합니다. 아래의 `로컬 실행` 절차에 따라 MySQL, 백엔드, AI 서비스, 프론트엔드를 순서대로 실행합니다. 비밀키와 운영 계정 정보는 저장소에 포함하지 않으므로 AI 답변 등 외부 서비스 연동에는 별도의 환경변수 설정이 필요합니다.
 
