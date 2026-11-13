@@ -22,6 +22,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        schema_update.unique_constraint_strategy: RECREATE_QUIETLY
         dialect: org.hibernate.dialect.MySQLDialect
 
 server:

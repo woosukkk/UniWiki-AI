@@ -15,6 +15,7 @@ import java.util.List;
 public class CommunityPostTransferService {
     private final CommunityPostImportService importService;
     private final RestClient.Builder restClientBuilder;
+    private final LectureReviewSanitizer sanitizer;
 
     @Value("${uniwiki.everytime.community-upload-url:}")
     private String uploadUrl;
@@ -29,7 +30,14 @@ public class CommunityPostTransferService {
         CommunityPostImportResponseDto response = restClientBuilder.build().post()
                 .uri(uploadUrl)
                 .header("X-Crawler-Token", uploadToken)
-                .body(new CommunityPostImportRequestDto(posts))
+                .body(new CommunityPostImportRequestDto(posts.stream()
+                        .map(post -> new CommunityPostImportItemDto(
+                                post.sourceUrl(), post.boardType(),
+                                sanitizer.maskPersonalInformation(post.title()),
+                                sanitizer.maskPersonalInformation(post.content()),
+                                post.likesCount(), post.commentsCount(),
+                                sanitizer.maskPersonalInformation(post.commentsJson() == null ? "[]" : post.commentsJson())))
+                        .toList()))
                 .retrieve()
                 .body(CommunityPostImportResponseDto.class);
         if (response == null) throw new IllegalStateException("Community post upload returned an empty response");

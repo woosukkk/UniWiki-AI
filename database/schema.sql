@@ -284,6 +284,7 @@ CREATE TABLE official_attachments (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     raw_document_id BIGINT NOT NULL,
     source_url VARCHAR(1000) NOT NULL,
+    source_url_hash CHAR(64) GENERATED ALWAYS AS (SHA2(source_url, 256)) STORED,
     file_name VARCHAR(500) NOT NULL,
     content_type VARCHAR(150),
     file_size BIGINT NOT NULL,
@@ -293,7 +294,8 @@ CREATE TABLE official_attachments (
     extraction_error VARCHAR(1000),
     first_collected_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     last_collected_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT uq_official_attachment_url UNIQUE (raw_document_id, source_url),
+    -- Hash full URLs to stay within the utf8mb4 index byte limit.
+    UNIQUE INDEX uq_official_attachment_url (raw_document_id, source_url_hash),
     CONSTRAINT fk_official_attachment_raw FOREIGN KEY (raw_document_id)
         REFERENCES raw_official_documents(id) ON DELETE CASCADE
 );

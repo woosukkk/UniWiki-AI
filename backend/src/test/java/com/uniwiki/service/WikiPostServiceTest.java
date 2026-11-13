@@ -3,6 +3,8 @@ package com.uniwiki.service;
 import com.uniwiki.dto.WikiPostDto;
 import com.uniwiki.entity.*;
 import com.uniwiki.repository.CategoryRepository;
+import com.uniwiki.repository.QuestionWikiPromotionRepository;
+import com.uniwiki.repository.AnswerWikiPromotionRepository;
 import com.uniwiki.repository.UserRepository;
 import com.uniwiki.repository.WikiPostRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +35,12 @@ class WikiPostServiceTest {
 
     @Mock
     private WikiVectorSyncService vectorSyncService;
+
+    @Mock
+    private QuestionWikiPromotionRepository questionWikiPromotionRepository;
+
+    @Mock
+    private AnswerWikiPromotionRepository answerWikiPromotionRepository;
 
     @InjectMocks
     private WikiPostService wikiPostService;
