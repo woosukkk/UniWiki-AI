@@ -32,13 +32,14 @@ Content-Type: application/json
 
 ###
 
-### 에브리타임 크롤링 테스트 (자유게시판 등)
-POST http://localhost:8080/api/admin/crawl/everytime
+### 에브리타임 핫 게시판 수집 (로컬 브라우저에서 직접 로그인)
+POST http://localhost:8080/api/admin/crawl/everytime/board
+Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "everytimeId": "smhan295@naver.com",
-  "everytimePassword": "gkstjdals@95",
-  "boardUrl": "https://everytime.kr/370441", 
-  "targetTable": "Question"
+  "boardUrl": "https://everytime.kr/hotarticle",
+  "boardType": "핫 게시판",
+  "startPage": 1,
+  "endPage": 3
 }
