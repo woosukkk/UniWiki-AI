@@ -31,11 +31,15 @@ public class LectureReviewSanitizer {
             return Result.rejected("모욕적 표현이 포함되어 있습니다.");
         }
 
-        String sanitized = EMAIL.matcher(normalized).replaceAll("[이메일 삭제]");
-        sanitized = PHONE.matcher(sanitized).replaceAll("[연락처 삭제]");
-        sanitized = STUDENT_ID.matcher(sanitized).replaceAll("[학번 삭제]");
+        String sanitized = maskPersonalInformation(normalized);
         sanitized = URL.matcher(sanitized).replaceAll("[외부 링크 삭제]");
         return Result.accepted(sanitized);
+    }
+
+    String maskPersonalInformation(String content) {
+        String sanitized = EMAIL.matcher(content).replaceAll("[이메일 삭제]");
+        sanitized = PHONE.matcher(sanitized).replaceAll("[연락처 삭제]");
+        return STUDENT_ID.matcher(sanitized).replaceAll("[학번 삭제]");
     }
 
     public record Result(boolean accepted, String content, String reason) {

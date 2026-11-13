@@ -44,6 +44,7 @@ public class EverytimeCrawlerService {
         logger.info("에브리타임 일반 게시판 크롤링 시작: {}", boardUrl);
         
         ChromeOptions options = new ChromeOptions();
+        options.setUnhandledPromptBehaviour(org.openqa.selenium.UnexpectedAlertBehaviour.IGNORE);
         
         // 팀원마다 각자의 PC에 개별 크롬 프로필(자동로그인 저장소)을 생성하도록 경로 지정
         String profilePath = System.getProperty("java.io.tmpdir") + "/EverytimeChromeProfile";
@@ -61,7 +62,8 @@ public class EverytimeCrawlerService {
             driver.get(LOGIN_URL);
             logger.info("에브리타임 로그인 페이지로 이동했습니다. 수동 로그인이 필요할 수 있습니다.");
 
-            WebDriverWait loginWait = new WebDriverWait(driver, Duration.ofSeconds(60));
+            WebDriverWait loginWait = new WebDriverWait(driver, Duration.ofMinutes(5));
+            loginWait.ignoring(org.openqa.selenium.UnhandledAlertException.class);
             loginWait.until(webDriver -> webDriver.getCurrentUrl().startsWith("https://everytime.kr/")
                     && !webDriver.getCurrentUrl().contains("/login"));
 

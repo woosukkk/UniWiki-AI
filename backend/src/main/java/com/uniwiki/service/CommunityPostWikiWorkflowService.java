@@ -29,6 +29,7 @@ public class CommunityPostWikiWorkflowService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final ObjectMapper objectMapper;
+    private final LectureReviewSanitizer sanitizer;
 
     @Value("${uniwiki.everytime-community.author-id:1}")
     private Long authorId;
@@ -44,7 +45,7 @@ public class CommunityPostWikiWorkflowService {
                 rejected++;
                 continue;
             }
-            raw.accept(0, EverytimeContentType.SCHOOL_LIFE, raw.getContent());
+            raw.accept(0, EverytimeContentType.SCHOOL_LIFE, sanitizer.maskPersonalInformation(raw.getContent()));
             publishQuestion(raw);
             accepted++;
         }
@@ -81,14 +82,14 @@ public class CommunityPostWikiWorkflowService {
     private void publishQuestion(RawCommunityPost raw) {
         User author = userRepository.findById(authorId)
                 .orElseThrow(() -> new IllegalStateException("Everytime question author was not found."));
-        String rawTitle = raw.getTitle().strip();
+        String rawTitle = sanitizer.maskPersonalInformation(raw.getTitle()).strip();
         String title = rawTitle.endsWith("?")
                 ? rawTitle
                 : rawTitle + " 관련 정보가 궁금합니다";
         if (title.length() > 200) title = title.substring(0, 200);
         final String publishedTitle = title;
 
-        String content = raw.getContent() + "\n\n"
+        String content = raw.getSanitizedContent() + "\n\n"
                 + "---\n"
                 + "학생 커뮤니티에서 수집된 내용을 질문으로 정리했습니다. "
                 + "경험이나 공식 근거를 포함한 답변을 남겨주세요.\n"
@@ -111,6 +112,7 @@ public class CommunityPostWikiWorkflowService {
 
         parseComments(raw.getCommentsJson()).stream()
                 .map(String::trim)
+                .map(sanitizer::maskPersonalInformation)
                 .filter(comment -> !comment.isBlank())
                 .filter(comment -> !containsAbusiveLanguage(comment))
                 .limit(30)
