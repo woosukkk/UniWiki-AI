@@ -11,3 +11,7 @@ INSERT IGNORE INTO categories (name, description) VALUES
 ('프로젝트', '학술제, 캡스톤, 공모전, 팀프로젝트 정보'),
 ('FAQ', '자주 묻는 질문'),
 ('학생 팁', '학생들이 직접 작성한 수강 팁과 학교생활 노하우');
+
+INSERT INTO users (email, password, nickname, role)
+VALUES ('community-source@local.invalid', SHA2(UUID(), 256), '에브리타임 수집', 'USER')
+ON DUPLICATE KEY UPDATE nickname = VALUES(nickname);
